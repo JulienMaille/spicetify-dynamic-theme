@@ -1,0 +1,134 @@
+:root {
+    --image_url: '';
+    --is_light: 0;
+    --transition: linear 0.35s;
+    /* You can darken (eg. -20) or lighten (eg. +20) the main color*/
+    --custom_darken: -5;
+}
+
+.main-rootlist-rootlistDividerGradient {
+    background: linear-gradient(180deg, var(--modspotify_main_bg), transparent);
+}
+
+input {
+    background-color: unset !important;
+    border-bottom: solid 1px var(--modspotify_main_fg) !important;
+    border-radius: 0 !important;
+    padding: 6px 10px 6px 48px;
+    color: var(--modspotify_main_fg) !important;
+}
+
+.x-833-searchInput-searchInputSearchIcon {
+    color: var(--modspotify_main_fg) !important;
+}
+
+
+.main-playButton-PlayButton.main-playButton-primary {
+    color: white;
+}
+
+
+/* Topbar visibility bug */
+.main-topBar-topbarContent:not(.main-topBar-topbarContentFadeIn)>* {
+    opacity: unset !important;
+}
+.main-entityHeader-topbarContent:not(.main-entityHeader-topbarContentFadeIn)>* {
+    opacity: 0 !important;
+}
+
+/* Remove Topbar background colour */
+.main-topBar-background {
+    background-color: unset !important;
+}
+.main-topBar-overlay {
+    background-color: var(--modspotify_main_bg);
+}
+
+.main-entityHeader-shadow {
+    box-shadow: 0 04px 20px #21212130;
+}
+
+.main-trackList-playingIcon {
+    filter: grayscale(1);
+}
+
+span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
+    fill: black;
+}
+
+.main-navBar-navBarLinkActive {
+    background-color: rgba(var(--modspotify_rgb_indicator_fg_and_button_bg),1);
+}
+
+/* Full window artist background */
+.main-entityHeader-background.main-entityHeader-gradient {
+    opacity: 0.3;
+}
+
+.main-entityHeader-container.main-entityHeader-withBackgroundImage,
+.main-entityHeader-background,
+.main-entityHeader-background.main-entityHeader-overlay:after {
+    height: 100vh;
+}
+
+.main-entityHeader-withBackgroundImage .main-entityHeader-headerText {
+    justify-content: center;
+}
+
+.main-entityHeader-container.main-entityHeader-nonWrapped.main-entityHeader-withBackgroundImage {
+    padding-left: 9%;
+}
+
+.main-entityHeader-background.main-entityHeader-overlay:after {
+    background-image: linear-gradient(transparent,transparent),linear-gradient(var(--modspotify_main_bg), var(--modspotify_main_bg));
+}
+
+.artist-artistOverview-overview .main-entityHeader-withBackgroundImage h1 {
+    font-size: 175px !important;
+    line-height: 175px !important;
+}
+
+.Root__top-container::before {
+    content: '';
+    background-image: var(--image_url);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(15px);
+    pointer-events: none;
+    backface-visibility: hidden;
+    will-change: transform;
+    transition: background-image var(--transition);
+    opacity: 0.09;
+    z-index: +4;
+}
+
+.main-contextMenu-menu {
+    border: 1px solid var(--modspotify_slider_bg);
+}
+
+.collection-collectionEntityHeroCard-descriptionContainer,
+div.collection-collectionEntityHeroCard-container a,
+div.collection-collectionEntityHeroCard-container {
+    color: var(--modspotify_preserve_1) !important;
+}
+
+.main-actionBarBackground-background{
+    opacity: 0.6;
+}
+
+.main-entityHeader-backgroundColor {
+    opacity: 0.35;
+}
+
+.main-trackList-rowPlayPauseButton:hover {
+    color: var(--modspotify_secondary_fg);
+    transform: scale(1.15);
+    transition: transform 30ms linear;
+}
