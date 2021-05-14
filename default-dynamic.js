@@ -7,95 +7,98 @@ function waitForElement(els, func, timeout = 100) {
     }
 }
 
-var big_album_cover = document.querySelector('#now-playing-image-small');
-
-var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.type == "attributes") {
-            if(big_album_cover.getAttribute("data-log-context") === "cover-large"){
-                document.documentElement.style.setProperty('--move_buddy_list', "250px");
-            }else{
-                document.documentElement.style.setProperty('--move_buddy_list', "0px");
-            }
-        }
-    });
-});
-
 function getAlbumInfo(uri) {
     return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`);
 }
 
 function isLight(hex) {
-    var [r,g,b] = hexToRgb(hex).split(',').map(Number);
-    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return brightness > 128;
+    var [r,g,b] = hexToRgb(hex).split(',').map(Number)
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
+    return brightness > 128
 }
 
 function hexToRgb(hex) {
-    var bigint = parseInt(hex.replace("#",""), 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-    return r + "," + g + "," + b;
+    var bigint = parseInt(hex.replace("#",""), 16)
+    var r = (bigint >> 16) & 255
+    var g = (bigint >> 8) & 255
+    var b = bigint & 255
+    return r + "," + g + "," + b
 }
 
 const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('');
 
 let nearArtistSpan = null
 let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
-let mainColor2 = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_bg')
-let isLightBg = isLight(mainColor2)
+let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_bg')
 
 waitForElement([".main-trackInfo-artists"], (queries) => {
-    nearArtistSpan = document.createElement("span");
-    nearArtistSpan.id = "dribbblish-album-info";
-    queries[0].append(nearArtistSpan);
+    nearArtistSpan = document.createElement("span")
+    nearArtistSpan.id = "dribbblish-album-info"
+    queries[0].append(nearArtistSpan)
 });
 
-function updateColors(root) {
-    if( root===null) return;
+function setRootColor(name, colHex) {
+    let root = document.documentElement
+    if( root===null) return
+    root.style.setProperty('--modspotify_' + name, colHex)
+    root.style.setProperty('--modspotify_rgb_' + name, hexToRgb(colHex))
+}
+
+function toggleDark() {
+    isLightBg = isLight(mainColorBg)
+    mainColorBg = isLightBg ? "#0A0A0A" : "#FAFAFA"
+
+    setRootColor('main_bg', mainColorBg)
+    setRootColor('secondary_fg', isLightBg ? "#F0F0F0" : "#3D3D3D")
+    setRootColor('selected_button', isLightBg ? "#6F6F6F" : "#FE6F61")
+    setRootColor('selected_button_fg', isLightBg ? "#F0F0F0" : "#DEDEDE")
+    setRootColor('sidebar_and_player_bg', isLightBg ? "#0A0A0A" : "#FAFAFA")
+    setRootColor('cover_overlay_and_shadow', isLightBg ? "#111111" : "#AAAAAA")
+    setRootColor('cover_indicator_fg_and_button_bg', isLightBg ? "#6F6F6F" : "#FE6F61")
+    setRootColor('miscellaneous_bg', isLightBg ? "#6F6F6F" : "#3F3C45")
+    setRootColor('miscellaneous_hover_bg', isLightBg ? "#585858" : "#383145")
+
+    updateColors()
+}
+
+waitForElement([".main-topBar-indicators"], (queries) => {
+    // Add activator on top bar
+    const button = document.createElement("button")
+    button.classList.add("main-userWidget-box", "light-dark-button")
+    button.setAttribute("title", "Light/Dark")
+    button.onclick = toggleDark
+    button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path>
+</svg>`
+    queries[0].append(button)
+});
+
+function updateColors() {
     let colHex = mainColor
-    if( isLightBg ) colHex = LightenDarkenColor(colHex, -5) // vibrant color is always too bright for white bg mode
+    let isLightBg = isLight(mainColorBg)
+    if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
     let colRGB = hexToRgb(colHex)
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 45 : -40)
-    let darkerColRGB = hexToRgb(darkerColHex)
-
     let sliderColHex = LightenDarkenColor(colHex, isLightBg ? 40 : -65)
-    let sliderColRGB = hexToRgb(sliderColHex)    
-    let buttonBgColHex = isLightBg ? "#FFFFFF" : LightenDarkenColor(colHex, -80)
-    let buttonBgColRGB = hexToRgb(buttonBgColHex)
+    let buttonBgColHex = isLightBg ? "#EEEEEE" : LightenDarkenColor(colHex, -80)
 
-    root.style.setProperty('--is_light', isLightBg ? 1 : 0)
-    
-    root.style.setProperty('--modspotify_main_fg', colHex)
-    root.style.setProperty('--modspotify_active_control_fg', colHex)
-    root.style.setProperty('--modspotify_secondary_bg', colHex)
-    root.style.setProperty('--modspotify_pressing_button_bg', buttonBgColHex)
-    root.style.setProperty('--modspotify_indicator_fg_and_button_bg', darkerColHex)
-    root.style.setProperty('--modspotify_pressing_fg', colHex)
-    root.style.setProperty('--modspotify_sidebar_indicator_and_hover_button_bg', colHex)
-    root.style.setProperty('--modspotify_scrollbar_fg_and_selected_row_bg', buttonBgColHex)
-    root.style.setProperty('--modspotify_selected_button', darkerColHex)
-    //root.style.setProperty('--modspotify_miscellaneous_hover_bg', colHex)
-    root.style.setProperty('--modspotify_slider_bg', sliderColHex)
-    
-    root.style.setProperty('--modspotify_rgb_main_fg', colRGB)
-    root.style.setProperty('--modspotify_rgb_active_control_fgg', colRGB)
-    root.style.setProperty('--modspotify_rgb_secondary_bg', colRGB)
-    root.style.setProperty('--modspotify_rgb_pressing_button_bg', buttonBgColRGB)
-    root.style.setProperty('--modspotify_rgb_indicator_fg_and_button_bg', darkerColRGB)    
-    root.style.setProperty('--modspotify_rgb_pressing_fg', colRGB)
-    root.style.setProperty('--modspotify_rgb_sidebar_indicator_and_hover_button_bg', colRGB)
-    root.style.setProperty('--modspotify_rgb_scrollbar_fg_and_selected_row_bg', buttonBgColRGB)
-    root.style.setProperty('--modspotify_rgb_selected_button', darkerColRGB)
-    //root.style.setProperty('--modspotify_rgb_miscellaneous_hover_bg', colRGB)
-    root.style.setProperty('--modspotify_rgb_slider_bg', sliderColRGB)
+    document.documentElement.style.setProperty('--is_light', isLightBg ? 1 : 0)
+    setRootColor('main_fg', colHex)
+    setRootColor('active_control_fg', colHex)
+    setRootColor('secondary_bg', colHex)
+    setRootColor('pressing_button_bg', buttonBgColHex)
+    setRootColor('indicator_fg_and_button_bg', darkerColHex)
+    setRootColor('pressing_fg', colHex)
+    setRootColor('sidebar_indicator_and_hover_button_bg', colHex)
+    setRootColor('scrollbar_fg_and_selected_row_bg', buttonBgColHex)
+    setRootColor('selected_button', darkerColHex)
+    //setRootColor('miscellaneous_hover_bg', colHex)
+    setRootColor('slider_bg', sliderColHex)
 
     // Also update the color of the icons for bright and white backgrounds to remain readable.
-    let isLightFg = isLight(colHex);
-    if( isLightBg ) isLightFg = !isLightFg;
-    iconCol = getComputedStyle(document.documentElement).getPropertyValue(isLightFg ? '--modspotify_main_bg' : '--modspotify_secondary_fg');
-    root.style.setProperty('--modspotify_preserve_1', iconCol);
+    let isLightFg = isLight(colHex)
+    if( isLightBg ) isLightFg = !isLightFg
+    iconCol = getComputedStyle(document.documentElement).getPropertyValue(isLightFg ? '--modspotify_main_bg' : '--modspotify_secondary_fg')
+    setRootColor('preserve_1', iconCol)
 }
 
 async function songchange() {
@@ -134,10 +137,10 @@ async function songchange() {
 
             // Spotify returns hex colors with improper length
             while( mainColor.length!=4 && mainColor.length<7 )
-                { mainColor = mainColor.replace("#", "#0"); }
+                { mainColor = mainColor.replace("#", "#0") }
 
             // main app
-            updateColors(document.documentElement)
+            updateColors()
 
         }, (err) => {
             console.log(err)
