@@ -1,5 +1,6 @@
 # DefaultDynamic for Spicetify
-This is a tweaked version of the Default theme. The main difference is that the highligh color is dynamic, ie. it will match the current album art colours (note: local files are excluded).
+This is a tweaked version of the Default theme.
+The main differences are the the light/dark toggle, the background cover and the dynamic highligh color, ie. it will match the current album art colours (note: local files are excluded).
 
 ## More
 Requires spicetify-cli **v2.0 or newer**.
