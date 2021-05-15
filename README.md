@@ -20,7 +20,7 @@ mkdir -p ../../Extensions
 cp default-dynamic.js ../../Extensions/.
 spicetify config extensions default-dynamic.js
 spicetify config current_theme DefaultDynamic
-spicetify config inject_css 1 replace_colors 1
+spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
 spicetify apply
 ```
 
@@ -31,7 +31,7 @@ cd "$(spicetify -c | Split-Path)\Themes\DefaultDynamic"
 Copy-Item default-dynamic.js ..\..\Extensions
 spicetify config extensions default-dynamic.js
 spicetify config current_theme DefaultDynamic
-spicetify config inject_css 1 replace_colors 1
+spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
 spicetify apply
 ```
 
