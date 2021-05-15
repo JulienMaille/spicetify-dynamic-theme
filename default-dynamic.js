@@ -28,7 +28,6 @@ function hexToRgb(hex) {
 const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('');
 
 let nearArtistSpan = null
-let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
 let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_bg')
 
 waitForElement([".main-trackInfo-artists"], (queries) => {
@@ -39,24 +38,29 @@ waitForElement([".main-trackInfo-artists"], (queries) => {
 
 function setRootColor(name, colHex) {
     let root = document.documentElement
-    if( root===null) return
+    if (root===null) return
     root.style.setProperty('--modspotify_' + name, colHex)
     root.style.setProperty('--modspotify_rgb_' + name, hexToRgb(colHex))
 }
 
-function toggleDark() {
-    isLightBg = isLight(mainColorBg)
-    mainColorBg = isLightBg ? "#0A0A0A" : "#FAFAFA"
+function toggleDark(setDark) {
+    if (setDark===undefined) setDark = isLight(mainColorBg)
+    console.log(setDark)
+    mainColorBg = setDark ? "#0A0A0A" : "#FAFAFA"
 
     setRootColor('main_bg', mainColorBg)
-    setRootColor('secondary_fg', isLightBg ? "#F0F0F0" : "#3D3D3D")
-    setRootColor('sidebar_and_player_bg', isLightBg ? "#0A0A0A" : "#FAFAFA")
-    setRootColor('miscellaneous_bg', isLightBg ? "#6F6F6F" : "#3F3C45")
-    setRootColor('miscellaneous_hover_bg', isLightBg ? "#303030" : "#DDDDDD")
-    setRootColor('cover_overlay_and_shadow', isLightBg ? "#303030" : "#DDDDDD")
+    setRootColor('secondary_fg', setDark ? "#F0F0F0" : "#3D3D3D")
+    setRootColor('sidebar_and_player_bg', setDark ? "#0A0A0A" : "#FAFAFA")
+    setRootColor('miscellaneous_bg', setDark ? "#6F6F6F" : "#3F3C45")
+    setRootColor('miscellaneous_hover_bg', setDark ? "#303030" : "#DDDDDD")
+    setRootColor('cover_overlay_and_shadow', setDark ? "#303030" : "#DDDDDD")
 
-    updateColors()
+    let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
+    updateColors(mainColor)
 }
+
+/* Init with current system light/dark mode */
+toggleDark(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--system_is_dark'))==1)
 
 waitForElement([".main-topBar-indicators"], (queries) => {
     // Add activator on top bar
@@ -65,16 +69,15 @@ waitForElement([".main-topBar-indicators"], (queries) => {
     queries[0].append(div)
     
     const button = document.createElement("button")
-    button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "light-dark-button")
+    button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "main-topBarStatusIndicator-hasTooltip")
     button.setAttribute("title", "Light/Dark")
-    button.onclick = toggleDark
+    button.onclick = () => { toggleDark(); };
     button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path>
 </svg>`
     div.append(button)
 });
 
-function updateColors() {
-    let colHex = mainColor
+function updateColors(colHex) {
     let isLightBg = isLight(mainColorBg)
     if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
     let colRGB = hexToRgb(colHex)
@@ -134,14 +137,14 @@ async function songchange() {
 
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
         .then((colors) => {
-            mainColor = colors['LIGHT_VIBRANT']
+            let mainColor = colors['LIGHT_VIBRANT']
 
             // Spotify returns hex colors with improper length
             while( mainColor.length!=4 && mainColor.length<7 )
                 { mainColor = mainColor.replace("#", "#0") }
 
             // main app
-            updateColors()
+            updateColors(mainColor)
 
         }, (err) => {
             console.log(err)

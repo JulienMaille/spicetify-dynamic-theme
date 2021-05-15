@@ -4,6 +4,13 @@
     --transition: linear 0.35s;
     /* You can darken (eg. -20) or lighten (eg. +20) the main color*/
     --custom_darken: -5;
+    --system_is_dark: 1;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --system_is_dark: 0;
+    }
 }
 
 .main-rootlist-rootlistDividerGradient {
