@@ -7,8 +7,7 @@ Requires spicetify-cli **v2.0 or newer**.
 
 ## Screenshots
 
-#### Dark
-![demo-dark](./Dark.gif)
+![demo-base](./Dark.gif)
 
 ### How to install
 Run these command:
@@ -20,7 +19,7 @@ cd "$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
 mkdir -p ../../Extensions
 cp default-dynamic.js ../../Extensions/.
 spicetify config extensions default-dynamic.js
-spicetify config current_theme DefaultDynamic color_scheme dark
+spicetify config current_theme DefaultDynamic
 spicetify config inject_css 1 replace_colors 1
 spicetify apply
 ```
@@ -31,7 +30,7 @@ In **Powershell**:
 cd "$(spicetify -c | Split-Path)\Themes\DefaultDynamic"
 Copy-Item default-dynamic.js ..\..\Extensions
 spicetify config extensions default-dynamic.js
-spicetify config current_theme DefaultDynamic color_scheme dark
+spicetify config current_theme DefaultDynamic
 spicetify config inject_css 1 replace_colors 1
 spicetify apply
 ```
