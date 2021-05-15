@@ -50,13 +50,10 @@ function toggleDark() {
 
     setRootColor('main_bg', mainColorBg)
     setRootColor('secondary_fg', isLightBg ? "#F0F0F0" : "#3D3D3D")
-    setRootColor('selected_button', isLightBg ? "#6F6F6F" : "#FE6F61")
-    setRootColor('selected_button_fg', isLightBg ? "#F0F0F0" : "#DEDEDE")
     setRootColor('sidebar_and_player_bg', isLightBg ? "#0A0A0A" : "#FAFAFA")
-    setRootColor('cover_overlay_and_shadow', isLightBg ? "#111111" : "#AAAAAA")
-    setRootColor('cover_indicator_fg_and_button_bg', isLightBg ? "#6F6F6F" : "#FE6F61")
     setRootColor('miscellaneous_bg', isLightBg ? "#6F6F6F" : "#3F3C45")
-    setRootColor('miscellaneous_hover_bg', isLightBg ? "#111111" : "#AAAAAA")
+    setRootColor('miscellaneous_hover_bg', isLightBg ? "#303030" : "#DDDDDD")
+    setRootColor('cover_overlay_and_shadow', isLightBg ? "#303030" : "#DDDDDD")
 
     updateColors()
 }
@@ -81,7 +78,7 @@ function updateColors() {
     let isLightBg = isLight(mainColorBg)
     if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
     let colRGB = hexToRgb(colHex)
-    let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 45 : -40)
+    let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
     let sliderColHex = LightenDarkenColor(colHex, isLightBg ? 40 : -65)
     let buttonBgColHex = isLightBg ? "#EEEEEE" : LightenDarkenColor(colHex, -80)
 

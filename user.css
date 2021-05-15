@@ -22,11 +22,9 @@ input {
     color: var(--modspotify_main_fg) !important;
 }
 
-
 .main-playButton-PlayButton.main-playButton-primary {
     color: white;
 }
-
 
 /* Topbar visibility bug */
 .main-topBar-topbarContent:not(.main-topBar-topbarContentFadeIn)>* {
@@ -48,6 +46,7 @@ input {
     box-shadow: 0 04px 20px #21212130;
 }
 
+.artist-artistVerifiedBadge-badge svg,
 .main-trackList-playingIcon {
     filter: grayscale(1);
 }
@@ -88,6 +87,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     line-height: 175px !important;
 }
 
+/* translucid background cover */
 .Root__top-container::before {
     content: '';
     background-image: var(--image_url);
@@ -119,6 +119,7 @@ div.collection-collectionEntityHeroCard-container {
     color: #EEEEEE !important;
 }
 
+/* spotify dynamic gradients */
 .main-home-homeHeader {
     opacity: calc(0.7 - 0.4 * var(--is_light, 0));
 }
@@ -128,9 +129,10 @@ div.collection-collectionEntityHeroCard-container {
 }
 
 .main-entityHeader-backgroundColor {
-    opacity: calc(0.35 - 0.15 * var(--is_light, 0));
+    opacity: calc(0.3 - 0.1 * var(--is_light, 0));
 }
 
+/* play button in playlist table */
 .main-trackList-rowPlayPauseButton:hover {
     color: var(--modspotify_secondary_fg);
     transform: scale(1.15);
@@ -140,4 +142,31 @@ div.collection-collectionEntityHeroCard-container {
 .main-collectionLinkButton-collectionLinkButton,
 .main-createPlaylistButton-button {
     color: var(--modspotify_secondary_fg);
+}
+
+/* h2-like titles */
+.main-entityHeader-titleButton,
+.main-entityHeader-title,
+.main-shelf-title,
+.main-type-canon {
+    color: var(--modspotify_secondary_fg) !important;
+}
+
+/* profile icon */
+.main-entityHeader-imagePlaceholder {
+    color: unset;
+}
+
+/* left menu active item background */
+.main-navBar-navBarLinkActive {
+    color: var(--modspotify_secondary_fg) !important;
+}
+
+/* connect */
+.connect-title {
+    color: var(--modspotify_secondary_fg) !important;    
+}
+
+.connect-header {
+    display: none;
 }
