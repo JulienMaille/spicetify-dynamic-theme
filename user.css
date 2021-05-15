@@ -44,6 +44,12 @@ input {
     color: var(--modspotify_main_fg) !important;
 }
 
+input:focus {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
 .x-833-searchInput-searchInputSearchIcon {
     color: var(--modspotify_main_fg) !important;
 }

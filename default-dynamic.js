@@ -28,6 +28,7 @@ function hexToRgb(hex) {
 const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('');
 
 let nearArtistSpan = null
+let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
 let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_bg')
 
 waitForElement([".main-trackInfo-artists"], (queries) => {
@@ -55,7 +56,6 @@ function toggleDark(setDark) {
     setRootColor('miscellaneous_hover_bg', setDark ? "#303030" : "#DDDDDD")
     setRootColor('cover_overlay_and_shadow', setDark ? "#303030" : "#DDDDDD")
 
-    let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
     updateColors(mainColor)
 }
 
@@ -137,7 +137,7 @@ async function songchange() {
 
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
         .then((colors) => {
-            let mainColor = colors['LIGHT_VIBRANT']
+            mainColor = colors['LIGHT_VIBRANT']
 
             // Spotify returns hex colors with improper length
             while( mainColor.length!=4 && mainColor.length<7 )
