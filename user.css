@@ -171,9 +171,13 @@ div.collection-collectionEntityHeroCard-container {
 
 /* connect */
 .connect-title {
-    color: var(--modspotify_secondary_fg) !important;    
+    color: var(--modspotify_secondary_fg) !important;
 }
 
 .connect-header {
     display: none;
+}
+
+.main-buttons-button:hover {
+    color: var(--modspotify_main_bg) !important;
 }
