@@ -10,6 +10,7 @@ Requires spicetify-cli **v2.0 or newer**.
 ![demo-base](./Dark.gif)
 
 ### How to install
+**Uninstall legacy themes**, especially Dribbblish or DribbblishDynamic: https://github.com/morpheusthewhite/spicetify-themes/tree/master/DribbblishDynamic#how-to-uninstall
 Run these command:
 
 #### Linux and MacOS:

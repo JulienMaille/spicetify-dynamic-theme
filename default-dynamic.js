@@ -12,7 +12,7 @@ function getAlbumInfo(uri) {
 }
 
 function isLight(hex) {
-    var [r,g,b] = hexToRgb(hex).split(',').map(Number)
+    var [r,g,b] = hexToRgb(hex).map(Number)
     const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
     return brightness > 128
 }
@@ -22,10 +22,62 @@ function hexToRgb(hex) {
     var r = (bigint >> 16) & 255
     var g = (bigint >> 8) & 255
     var b = bigint & 255
-    return r + "," + g + "," + b
+    return [r, g, b]
+}
+
+function rgbToHex([r, g, b]) {
+    const rgb = (r << 16) | (g << 8) | (b << 0);
+    return '#' + (0x1000000 + rgb).toString(16).slice(1);
 }
 
 const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('');
+
+function rgbToHsl([r, g, b]) {
+  r /= 255, g /= 255, b /= 255;
+  var max = Math.max(r, g, b), min = Math.min(r, g, b);
+  var h, s, l = (max + min) / 2;
+  if (max == min) {
+    h = s = 0; // achromatic
+  } else {
+    var d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [h, s, l];
+}
+
+function hslToRgb([h, s, l]) {
+  var r, g, b;
+  if (s == 0) {
+    r = g = b = l; // achromatic
+  } else {
+    function hue2rgb(p, q, t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    }
+    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    var p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  return [r * 255, g * 255, b * 255];
+}
+
+function setLightness(hex, lightness) {
+    hsl = rgbToHsl(hexToRgb(hex))
+    hsl[2] = lightness
+    return rgbToHex(hslToRgb(hsl))
+}
 
 let nearArtistSpan = null
 let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
@@ -41,12 +93,11 @@ function setRootColor(name, colHex) {
     let root = document.documentElement
     if (root===null) return
     root.style.setProperty('--modspotify_' + name, colHex)
-    root.style.setProperty('--modspotify_rgb_' + name, hexToRgb(colHex))
+    root.style.setProperty('--modspotify_rgb_' + name, hexToRgb(colHex).join(','))
 }
 
 function toggleDark(setDark) {
     if (setDark===undefined) setDark = isLight(mainColorBg)
-    console.log(setDark)
     mainColorBg = setDark ? "#0A0A0A" : "#FAFAFA"
 
     setRootColor('main_bg', mainColorBg)
@@ -54,7 +105,6 @@ function toggleDark(setDark) {
     setRootColor('sidebar_and_player_bg', setDark ? "#0A0A0A" : "#FAFAFA")
     setRootColor('miscellaneous_bg', setDark ? "#6F6F6F" : "#3F3C45")
     setRootColor('miscellaneous_hover_bg', setDark ? "#303030" : "#DDDDDD")
-    setRootColor('cover_overlay_and_shadow', setDark ? "#303030" : "#DDDDDD")
 
     updateColors(mainColor)
 }
@@ -67,7 +117,7 @@ waitForElement([".main-topBar-indicators"], (queries) => {
     const div = document.createElement("div")
     div.classList.add("main-topBarStatusIndicator-TopBarStatusIndicatorContainer")
     queries[0].append(div)
-    
+
     const button = document.createElement("button")
     button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "main-topBarStatusIndicator-hasTooltip")
     button.setAttribute("title", "Light/Dark")
@@ -80,10 +130,10 @@ waitForElement([".main-topBar-indicators"], (queries) => {
 function updateColors(colHex) {
     let isLightBg = isLight(mainColorBg)
     if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
-    let colRGB = hexToRgb(colHex)
+
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
     let sliderColHex = LightenDarkenColor(colHex, isLightBg ? 40 : -65)
-    let buttonBgColHex = isLightBg ? "#EEEEEE" : LightenDarkenColor(colHex, -80)
+    let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.08)
 
     document.documentElement.style.setProperty('--is_light', isLightBg ? 1 : 0)
     setRootColor('main_fg', colHex)
@@ -107,7 +157,7 @@ function updateColors(colHex) {
 
 async function songchange() {
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
-    
+
     if (album_uri!==undefined) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
 

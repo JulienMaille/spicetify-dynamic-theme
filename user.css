@@ -88,7 +88,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 }
 
 .main-navBar-navBarLinkActive {
-    background-color: rgba(var(--modspotify_rgb_indicator_fg_and_button_bg),1);
+    background-color: rgba(var(--modspotify_rgb_indicator_fg_and_button_bg), 0.5);
 }
 
 /* Full window artist background */
@@ -141,14 +141,28 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     z-index: +4;
 }
 
+/* context menu */
 .main-contextMenu-menu {
-    border: 1px solid var(--modspotify_slider_bg);
+    border: 1px solid rgba(var(--modspotify_rgb_slider_bg), calc(1 - 0.4 * var(--is_light, 0)));
 }
 
+/* notification toaster */
+.main-notificationBubbleContainer-NotificationBubbleContainer .main-notificationBubble-NotificationBubble {
+    color: #EEEEEE;
+    background-color: var(--modspotify_indicator_fg_and_button_bg);
+}
+
+/* collection card shown in library */
 .collection-collectionEntityHeroCard-descriptionContainer,
 div.collection-collectionEntityHeroCard-container a,
 div.collection-collectionEntityHeroCard-container {
     color: #EEEEEE !important;
+}
+
+.collection-collectionEntityHeroCard-likedSongs,
+.collection-collectionEntityHeroCard-likedSongs:focus-within,
+.collection-collectionEntityHeroCard-likedSongs:hover {
+    background: linear-gradient(149.46deg, var(--modspotify_slider_bg), var(--modspotify_main_fg) 99.16%) !important;
 }
 
 /* spotify dynamic gradients */
@@ -205,4 +219,11 @@ div.collection-collectionEntityHeroCard-container {
 
 .main-buttons-button:hover {
     color: var(--modspotify_main_bg) !important;
+}
+
+/* top buttons */
+.main-userWidget-box,
+.main-topBar-historyButtons
+.main-topBar-button {
+    background-color: var(--modspotify_miscellaneous_hover_bg);
 }
