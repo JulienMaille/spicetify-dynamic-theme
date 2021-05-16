@@ -227,3 +227,21 @@ div.collection-collectionEntityHeroCard-container {
 .main-topBar-button {
     background-color: var(--modspotify_miscellaneous_hover_bg);
 }
+
+/* bubble arrow */
+.main-notificationBubble-NotificationBubble {
+    border: 1px solid var(--modspotify_main_fg);
+}
+
+.main-notificationBubble-withTopRightPointer:before {
+    right: 32px;
+    top: -17px;
+    border: 8px solid transparent;
+    border-bottom-color: var(--modspotify_main_fg);
+    bottom: 100%;
+    content: "";
+    height: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 0;
+}
