@@ -93,6 +93,6 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   Write-Done
 }
 else {
-  Write-Part "`nYour Powershell version is lesser than "; Write-Emphasized "$PSMinVersion";
+  Write-Part "`nYour Powershell version is less than "; Write-Emphasized "$PSMinVersion";
   Write-Part "`nPlease, update your Powershell downloading the "; Write-Emphasized "'Windows Management Framework'"; Write-Part " greater than "; Write-Emphasized "$PSMinVersion"
 }
