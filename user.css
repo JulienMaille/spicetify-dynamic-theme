@@ -137,7 +137,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: calc(0.1 + 0.07 * var(--is_light, 0));
+    opacity: calc(0.07 + 0.03 * var(--is_light, 0));
     z-index: +4;
 }
 
@@ -167,18 +167,21 @@ div.collection-collectionEntityHeroCard-container {
 
 /* spotify dynamic gradients */
 .main-home-homeHeader {
-    opacity: calc(0.7 - 0.4 * var(--is_light, 0));
+    opacity: 0.3;
+    background-color: var(--modspotify_main_fg) !important;
 }
 
-.main-actionBarBackground-background {
-    opacity: calc(0.4 - 0.3 * var(--is_light, 0));
-}
-
+.main-actionBarBackground-background,
 .main-entityHeader-backgroundColor {
-    opacity: calc(0.3 - 0.1 * var(--is_light, 0));
+    opacity: 0.15;
+    background-color: var(--modspotify_main_fg) !important;
+    filter: grayscale(0.5);
 }
 
 /* play button in playlist table */
+.main-trackList-rowPlayPauseButton {
+    padding: 0px;
+}
 .main-trackList-rowPlayPauseButton:hover {
     color: var(--modspotify_secondary_fg);
     transform: scale(1.15);

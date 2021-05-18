@@ -156,6 +156,10 @@ function updateColors(colHex) {
 }
 
 async function songchange() {
+    // warning popup
+    if (Spicetify.PlaybackControl.featureVersion < "1.1.57")
+        Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
+    
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
 
     if (album_uri!==undefined) {
