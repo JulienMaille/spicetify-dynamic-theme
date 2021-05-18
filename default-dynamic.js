@@ -134,13 +134,15 @@ function updateColors(colHex) {
     let isLightBg = isLight(mainColorBg)
     if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
 
+    let darkColHex = LightenDarkenColor(colHex, isLightBg ? 12 : -20)
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
     let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.08)
     setRootColor('text', colHex)
     setRootColor('button', darkerColHex)
-    setRootColor('button-active', darkerColHex)
-    setRootColor('tab-active', buttonBgColHex)
+    setRootColor('button-active', darkColHex)
     setRootColor('selected-row', darkerColHex)
+    setRootColor('tab-active', buttonBgColHex)
+    setRootColor('button-disabled', buttonBgColHex)
 }
 
 async function songchange() {
