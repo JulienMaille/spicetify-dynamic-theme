@@ -33,15 +33,15 @@ body {
 }
 
 .main-rootlist-rootlistDividerGradient {
-    background: linear-gradient(180deg, var(--modspotify_main_bg), transparent);
+    background: linear-gradient(180deg, var(--spice-main), transparent);
 }
 
 input {
     background-color: unset !important;
-    border-bottom: solid 1px var(--modspotify_main_fg) !important;
+    border-bottom: solid 1px var(--spice-text) !important;
     border-radius: 0 !important;
     padding: 6px 10px 6px 48px;
-    color: var(--modspotify_main_fg) !important;
+    color: var(--spice-text) !important;
 }
 
 input:focus {
@@ -51,7 +51,7 @@ input:focus {
 }
 
 .x-833-searchInput-searchInputSearchIcon {
-    color: var(--modspotify_main_fg) !important;
+    color: var(--spice-text) !important;
 }
 
 .main-playButton-PlayButton.main-playButton-primary {
@@ -71,7 +71,7 @@ input:focus {
     background-color: unset !important;
 }
 .main-topBar-overlay {
-    background-color: var(--modspotify_main_bg);
+    background-color: var(--spice-main);
 }
 
 .main-entityHeader-shadow {
@@ -88,7 +88,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 }
 
 .main-navBar-navBarLinkActive {
-    background-color: rgba(var(--modspotify_rgb_indicator_fg_and_button_bg), 0.5);
+    background-color: rgba(var(--spice-rgb-button), 0.5);
 }
 
 /* Full window artist background */
@@ -111,7 +111,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 }
 
 .main-entityHeader-background.main-entityHeader-overlay:after {
-    background-image: linear-gradient(transparent,transparent),linear-gradient(var(--modspotify_main_bg), var(--modspotify_main_bg));
+    background-image: linear-gradient(transparent,transparent),linear-gradient(var(--spice-main), var(--spice-main));
 }
 
 .artist-artistOverview-overview .main-entityHeader-withBackgroundImage h1 {
@@ -143,13 +143,13 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 
 /* context menu */
 .main-contextMenu-menu {
-    border: 1px solid rgba(var(--modspotify_rgb_slider_bg), calc(1 - 0.4 * var(--is_light, 0)));
+    border: 1px solid var(--spice-tab-active);
 }
 
 /* notification toaster */
 .main-notificationBubbleContainer-NotificationBubbleContainer .main-notificationBubble-NotificationBubble {
     color: #EEEEEE;
-    background-color: var(--modspotify_indicator_fg_and_button_bg);
+    background-color: var(--spice-button);
 }
 
 /* collection card shown in library */
@@ -162,19 +162,19 @@ div.collection-collectionEntityHeroCard-container {
 .collection-collectionEntityHeroCard-likedSongs,
 .collection-collectionEntityHeroCard-likedSongs:focus-within,
 .collection-collectionEntityHeroCard-likedSongs:hover {
-    background: linear-gradient(149.46deg, var(--modspotify_slider_bg), var(--modspotify_main_fg) 99.16%) !important;
+    background: linear-gradient(149.46deg, var(--spice-button), var(--spice-text) 99.16%) !important;
 }
 
 /* spotify dynamic gradients */
 .main-home-homeHeader {
     opacity: 0.3;
-    background-color: var(--modspotify_main_fg) !important;
+    background-color: var(--spice-text) !important;
 }
 
 .main-actionBarBackground-background,
 .main-entityHeader-backgroundColor {
     opacity: 0.15;
-    background-color: var(--modspotify_main_fg) !important;
+    background-color: var(--spice-text) !important;
     filter: grayscale(0.5);
 }
 
@@ -183,14 +183,14 @@ div.collection-collectionEntityHeroCard-container {
     padding: 0px;
 }
 .main-trackList-rowPlayPauseButton:hover {
-    color: var(--modspotify_secondary_fg);
+    color: var(--spice-subtext);
     transform: scale(1.15);
     transition: transform 30ms linear;
 }
 
 .main-collectionLinkButton-collectionLinkButton,
 .main-createPlaylistButton-button {
-    color: var(--modspotify_secondary_fg);
+    color: var(--spice-subtext);
 }
 
 /* h2-like titles */
@@ -198,7 +198,7 @@ div.collection-collectionEntityHeroCard-container {
 .main-entityHeader-title,
 .main-shelf-title,
 .main-type-canon {
-    color: var(--modspotify_secondary_fg) !important;
+    color: var(--spice-subtext) !important;
 }
 
 /* profile icon */
@@ -208,12 +208,12 @@ div.collection-collectionEntityHeroCard-container {
 
 /* left menu active item background */
 .main-navBar-navBarLinkActive {
-    color: var(--modspotify_secondary_fg) !important;
+    color: var(--spice-subtext) !important;
 }
 
 /* connect */
 .connect-title {
-    color: var(--modspotify_secondary_fg) !important;
+    color: var(--spice-subtext) !important;
 }
 
 .connect-header {
@@ -221,26 +221,26 @@ div.collection-collectionEntityHeroCard-container {
 }
 
 .main-buttons-button:hover {
-    color: var(--modspotify_main_bg) !important;
+    color: var(--spice-main) !important;
 }
 
 /* top buttons */
 .main-userWidget-box,
 .main-topBar-historyButtons
 .main-topBar-button {
-    background-color: var(--modspotify_miscellaneous_hover_bg);
+    background-color: var(--spice-notification);
 }
 
 /* bubble arrow */
 .main-notificationBubble-NotificationBubble {
-    border: 1px solid var(--modspotify_main_fg);
+    border: 1px solid var(--spice-text);
 }
 
 .main-notificationBubble-withTopRightPointer:before {
     right: 32px;
     top: -17px;
     border: 8px solid transparent;
-    border-bottom-color: var(--modspotify_main_fg);
+    border-bottom-color: var(--spice-text);
     bottom: 100%;
     content: "";
     height: 0;

@@ -80,8 +80,8 @@ function setLightness(hex, lightness) {
 }
 
 let nearArtistSpan = null
-let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_fg')
-let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--modspotify_main_bg')
+let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--spice-text')
+let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--spice-main')
 
 waitForElement([".main-trackInfo-artists"], (queries) => {
     nearArtistSpan = document.createElement("span")
@@ -92,19 +92,22 @@ waitForElement([".main-trackInfo-artists"], (queries) => {
 function setRootColor(name, colHex) {
     let root = document.documentElement
     if (root===null) return
-    root.style.setProperty('--modspotify_' + name, colHex)
-    root.style.setProperty('--modspotify_rgb_' + name, hexToRgb(colHex).join(','))
+    root.style.setProperty('--spice-' + name, colHex)
+    root.style.setProperty('--spice-rgb-' + name, hexToRgb(colHex).join(','))
 }
 
 function toggleDark(setDark) {
     if (setDark===undefined) setDark = isLight(mainColorBg)
+
+    document.documentElement.style.setProperty('--is_light', setDark ? 0 : 1)
     mainColorBg = setDark ? "#0A0A0A" : "#FAFAFA"
 
-    setRootColor('main_bg', mainColorBg)
-    setRootColor('secondary_fg', setDark ? "#F0F0F0" : "#3D3D3D")
-    setRootColor('sidebar_and_player_bg', setDark ? "#0A0A0A" : "#FAFAFA")
-    setRootColor('miscellaneous_bg', setDark ? "#6F6F6F" : "#3F3C45")
-    setRootColor('miscellaneous_hover_bg', setDark ? "#303030" : "#DDDDDD")
+    setRootColor('main', mainColorBg)
+    setRootColor('sidebar', mainColorBg)
+    setRootColor('player', mainColorBg)
+    setRootColor('card', setDark ? "#040404" : "#ECECEC")
+    setRootColor('subtext', setDark ? "#F0F0F0" : "#3D3D3D")
+    setRootColor('notification', setDark ? "#303030" : "#DDDDDD")
 
     updateColors(mainColor)
 }
@@ -132,27 +135,12 @@ function updateColors(colHex) {
     if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
 
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
-    let sliderColHex = LightenDarkenColor(colHex, isLightBg ? 40 : -65)
     let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.08)
-
-    document.documentElement.style.setProperty('--is_light', isLightBg ? 1 : 0)
-    setRootColor('main_fg', colHex)
-    setRootColor('active_control_fg', colHex)
-    setRootColor('secondary_bg', colHex)
-    setRootColor('pressing_button_bg', buttonBgColHex)
-    setRootColor('indicator_fg_and_button_bg', darkerColHex)
-    setRootColor('pressing_fg', colHex)
-    setRootColor('sidebar_indicator_and_hover_button_bg', colHex)
-    setRootColor('scrollbar_fg_and_selected_row_bg', buttonBgColHex)
-    setRootColor('selected_button', darkerColHex)
-    //setRootColor('miscellaneous_hover_bg', colHex)
-    setRootColor('slider_bg', sliderColHex)
-
-    // Also update the color of the icons for bright and white backgrounds to remain readable.
-    let isLightFg = isLight(colHex)
-    if( isLightBg ) isLightFg = !isLightFg
-    iconCol = getComputedStyle(document.documentElement).getPropertyValue(isLightFg ? '--modspotify_main_bg' : '--modspotify_secondary_fg')
-    setRootColor('preserve_1', iconCol)
+    setRootColor('text', colHex)
+    setRootColor('button', darkerColHex)
+    setRootColor('button-active', darkerColHex)
+    setRootColor('tab-active', buttonBgColHex)
+    setRootColor('selected-row', darkerColHex)
 }
 
 async function songchange() {
