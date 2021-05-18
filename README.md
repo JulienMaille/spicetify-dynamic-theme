@@ -2,7 +2,7 @@
 This is a tweaked version of the Default theme.
 The main differences are the the light/dark toggle, the background cover and the dynamic highligh color, ie. it will match the current album art (note: local files are excluded).
 
-Requires spicetify-cli **v2.0 or newer**.
+Requires spicetify-cli **v2.2 or newer**.
 
 ## Screenshots
 ![demo-base](./Dark.gif)
