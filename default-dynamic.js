@@ -83,9 +83,9 @@ let nearArtistSpan = null
 let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--spice-text')
 let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--spice-main')
 
-waitForElement([".main-trackInfo-artists"], (queries) => {
-    nearArtistSpan = document.createElement("span")
-    nearArtistSpan.id = "dribbblish-album-info"
+waitForElement([".main-trackInfo-container"], (queries) => {
+    nearArtistSpan = document.createElement("div")
+    nearArtistSpan.classList.add("main-trackInfo-artists", "ellipsis-one-line", "main-type-finale")
     queries[0].append(nearArtistSpan)
 });
 
@@ -162,7 +162,7 @@ async function songchange() {
         album_link = "<a title=\""+Spicetify.Player.data.track.metadata.album_title+"\" href=\""+album_uri+"\" data-uri=\""+album_uri+"\" data-interaction-target=\"album-name\" class=\"tl-cell__content\">"+Spicetify.Player.data.track.metadata.album_title+"</a>"
         
         if (nearArtistSpan!==null)
-            nearArtistSpan.innerHTML = " — " + album_link + " • " + album_date
+            nearArtistSpan.innerHTML = album_link + " — " + album_date
         else
             setTimeout(songchange, 200)
     } else if (Spicetify.Player.data.track.metadata.album_track_number==0) {
@@ -170,7 +170,7 @@ async function songchange() {
         nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else if (Spicetify.Player.data.track.metadata.is_local=="true") {
         // local file
-        nearArtistSpan.innerText = " — " + Spicetify.Player.data.track.metadata.album_title
+        nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
         // todo: retry only once?
