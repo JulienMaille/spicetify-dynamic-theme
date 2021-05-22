@@ -5,6 +5,12 @@
     /* You can darken (eg. -20) or lighten (eg. +20) the main color*/
     --custom_darken: -5;
     --system_is_dark: 1;
+    --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on theme README page.";
+}
+
+div.ReactModalPortal:last-of-type::before {
+    font-size: 30px;
+    content: var(--warning_message);
 }
 
 @media (prefers-color-scheme: light) {
@@ -242,6 +248,12 @@ div.collection-collectionEntityHeroCard-container {
     pointer-events: none;
     position: absolute;
     width: 0;
+}
+
+/* buddy shadow */
+.main-buddyFeed-buddyFeed {
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 
 /* drop down */

@@ -113,7 +113,8 @@ function toggleDark(setDark) {
 }
 
 /* Init with current system light/dark mode */
-toggleDark(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--system_is_dark'))==1)
+let systemDark = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--system_is_dark'))==1
+toggleDark(systemDark)
 
 waitForElement([".main-topBar-indicators"], (queries) => {
     // Add activator on top bar
@@ -199,3 +200,13 @@ async function songchange() {
 }
 
 Spicetify.Player.addEventListener("songchange", songchange)
+document.documentElement.style.setProperty('--warning_message', ' ');
+
+(function Startup() {
+    if (!Spicetify.showNotification) {
+        setTimeout(Startup, 300)
+        return
+    }
+    console.log("ok")
+    Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.")
+})()
