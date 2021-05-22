@@ -136,7 +136,7 @@ function updateColors(colHex) {
 
     let darkColHex = LightenDarkenColor(colHex, isLightBg ? 12 : -20)
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
-    let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.08)
+    let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.14)
     setRootColor('text', colHex)
     setRootColor('button', darkerColHex)
     setRootColor('button-active', darkColHex)

@@ -243,3 +243,19 @@ div.collection-collectionEntityHeroCard-container {
     position: absolute;
     width: 0;
 }
+
+/* drop down */
+.main-dropDown-dropDown,
+select,
+option {
+    color: var(--modspotify_secondary_fg) !important;
+    background-color: var(--spice-notification) !important;
+    font-weight: 400 !important;
+    border-radius: 4px !important;
+    margin-left: 0 !important;
+}
+
+/* lyrics plus app */
+.lyrics-lyricsContainer-LyricsContainer {
+    margin-top: unset;
+}
