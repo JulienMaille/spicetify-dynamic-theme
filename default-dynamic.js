@@ -1,3 +1,5 @@
+let current = '2.2'
+
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el));
     if (queries.every(a => a)) {
@@ -119,10 +121,12 @@ toggleDark(systemDark)
 waitForElement([".main-topBar-indicators"], (queries) => {
     // Add activator on top bar
     const div = document.createElement("div")
+    div.id = 'main-topBar-moon-div'
     div.classList.add("main-topBarStatusIndicator-TopBarStatusIndicatorContainer")
     queries[0].append(div)
 
     const button = document.createElement("button")
+    button.id = 'main-topBar-moon-button'
     button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "main-topBarStatusIndicator-hasTooltip")
     button.setAttribute("title", "Light/Dark")
     button.onclick = () => { toggleDark(); };
@@ -207,6 +211,16 @@ document.documentElement.style.setProperty('--warning_message', ' ');
         setTimeout(Startup, 300)
         return
     }
-    console.log("ok")
+    // Check latest release
+    fetch('https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest').then(response => {
+      return response.json();
+    }).then(data => {
+      if( data.tag_name > current ) {
+          document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable")
+          document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`)
+      }
+    }).catch(err => {
+      // Do something for an error here
+    });
     Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.")
 })()

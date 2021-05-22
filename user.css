@@ -271,3 +271,8 @@ option {
 .lyrics-lyricsContainer-LyricsContainer {
     margin-top: unset;
 }
+
+/* update text */
+.main-topBarUpdateAvailable {
+    max-width: unset;
+}
