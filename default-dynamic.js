@@ -218,6 +218,7 @@ document.documentElement.style.setProperty('--warning_message', ' ');
       if( data.tag_name > current ) {
           document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable")
           document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`)
+          document.querySelector("#main-topBar-moon-button").setAttribute("title", `Changes: ${data.name}`)
       }
     }).catch(err => {
       // Do something for an error here
