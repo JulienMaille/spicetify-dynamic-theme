@@ -276,3 +276,10 @@ option {
 .main-topBarUpdateAvailable {
     max-width: unset;
 }
+
+/* playlist header */
+.main-duration-container,
+.main-entityHeader-metaDataText,
+.playlist-playlist-playlistDescription {
+    color: var(--spice-text);
+}
