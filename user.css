@@ -272,7 +272,7 @@ option {
     margin-top: unset;
 }
 
-/* update text */
+/* available update text */
 .main-topBarUpdateAvailable {
     max-width: unset;
 }
@@ -282,4 +282,9 @@ option {
 .main-entityHeader-metaDataText,
 .playlist-playlist-playlistDescription {
     color: var(--spice-text);
+}
+
+/* lyrics header */
+.lyrics-lyricsContainer-LyricsBackground {
+   background: linear-gradient(180deg, transparent 60px, var(--lyrics-color-background) 350px) !important;
 }
