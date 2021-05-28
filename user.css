@@ -149,7 +149,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 
 /* notification toaster */
 .main-notificationBubbleContainer-NotificationBubbleContainer .main-notificationBubble-NotificationBubble {
-    color: #EEEEEE;
+    color: #FFFFFF;
     background-color: var(--spice-button);
 }
 

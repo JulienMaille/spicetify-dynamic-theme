@@ -108,7 +108,7 @@ function toggleDark(setDark) {
     setRootColor('sidebar', mainColorBg)
     setRootColor('player', mainColorBg)
     setRootColor('card', setDark ? "#040404" : "#ECECEC")
-    setRootColor('subtext', setDark ? "#F0F0F0" : "#3D3D3D")
+    setRootColor('subtext', setDark ? "#EAEAEA" : "#3D3D3D")
     setRootColor('notification', setDark ? "#303030" : "#DDDDDD")
 
     updateColors(mainColor)
