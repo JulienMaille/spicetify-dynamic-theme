@@ -324,3 +324,16 @@ option {
 .main-rootlist-rootlist {
     --left-sidebar-item-height: 28px; /* try 26px */
 }
+
+.main-rootlist-rootlistDivider {
+    background-color: unset;
+}
+
+/* Hightlight selected playlist */
+.main-rootlist-rootlistItemLink.main-rootlist-rootlistItemLinkActive {
+    color: var(--spice-subtext);
+    background-color: rgba(var(--spice-rgb-button), 0.5);
+    border-radius: 4px;
+    padding: 0 16px;
+    margin: 0 -16px;
+}
