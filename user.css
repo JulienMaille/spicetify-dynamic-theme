@@ -299,3 +299,26 @@ option {
 .main-coverSlotExpandedCollapseButton-collapseButton:hover {
     background-color: rgba(var(--spice-rgb-subtext), 0.6) !important;
 }
+
+/* save vertical space in left menu */
+.spotify__container--is-desktop:not(.fullscreen) .main-navBar-entryPoints {
+    padding-top: 12px;
+}
+
+.main-navBar-navBarLink {
+    height: 34px; /* try 32px */
+}
+
+.main-rootlist-rootlist {
+    margin-top: 6px;
+}
+
+.main-createPlaylistButton-button,
+.main-collectionLinkButton-collectionLinkButton {
+    padding-top: 3px;
+    padding-bottom: 4px;
+}
+
+.main-rootlist-rootlist {
+    --left-sidebar-item-height: 28px; /* try 26px */
+}
