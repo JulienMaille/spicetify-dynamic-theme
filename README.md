@@ -10,14 +10,17 @@ Requires spicetify-cli **v2.2 or newer**.
 ## How to install
 Run these command:
 
-#### Windows
+### Windows
 In **Powershell**:
 ```powershell
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/install.ps1" | Invoke-Expression
 ```
+#### Hide Window Controls:
+Windows user, please edit your Spotify shortcut and add flag `--transparent-window-controls` after the Spotify.exe
+![hide-controls](./windows-shortcut-instruction.png)
 
-#### Linux and MacOS:
-**Uninstall legacy themes**, especially Dribbblish or DribbblishDynamic: https://github.com/morpheusthewhite/spicetify-themes/tree/master/DribbblishDynamic#how-to-uninstall
+### Linux and MacOS:
+**Uninstall legacy themes with js**, especially Dribbblish or DribbblishDynamic: https://github.com/morpheusthewhite/spicetify-themes/tree/master/DribbblishDynamic#how-to-uninstall
 
 In **Bash**:
 ```bash
