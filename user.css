@@ -270,6 +270,8 @@ option {
 /* lyrics plus app */
 .lyrics-lyricsContainer-LyricsContainer {
     margin-top: unset;
+    --lyrics-color-active: var(--spice-subtext) !important;
+    --lyrics-color-inactive: var(--spice-main) !important;
 }
 
 /* available update text */
@@ -286,7 +288,7 @@ option {
 
 /* lyrics header */
 .lyrics-lyricsContainer-LyricsBackground {
-    background: linear-gradient(180deg, transparent 60px, var(--lyrics-color-background) 350px) !important;
+    background: linear-gradient(180deg, transparent 60px, var(--lyrics-color-background) 100%) !important;
 }
 
 /* cover collapsed button */
