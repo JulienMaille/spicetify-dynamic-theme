@@ -337,3 +337,26 @@ option {
     padding: 0 16px;
     margin: 0 -16px;
 }
+
+/* Menu item hover */
+.main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):focus, .main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):hover {
+    background-color: rgba(var(--spice-rgb-selected-row), 0.2);
+}
+
+/* bookmark extension */
+.bookmark-menuitem {
+    padding: 5px !important;
+}
+
+.bookmark-menuitem:hover {
+    background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
+}
+
+.bookmark-controls {
+    color: var(--spice-main) !important;
+    background-color: rgba(var(--spice-rgb-subtext), 0.25) !important;
+}
+
+.bookmark-controls:hover {
+    background-color: rgba(var(--spice-rgb-subtext), 0.6) !important;
+}
