@@ -354,9 +354,26 @@ option {
 
 .bookmark-controls {
     color: var(--spice-main) !important;
-    background-color: rgba(var(--spice-rgb-subtext), 0.25) !important;
+    background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
 }
 
 .bookmark-controls:hover {
-    background-color: rgba(var(--spice-rgb-subtext), 0.6) !important;
+    background-color: rgba(var(--spice-rgb-subtext), 0.5) !important;
+}
+
+/* new-releases & lyrics-plus settings */
+.new-releases-header button.switch,
+.lyrics-tabBar-header button.switch {
+    background-color: var(--spice-notification) !important;
+    color: var(--spice-text);
+}
+
+#new-releases-config-container button.switch,
+#lyrics-plus-config-container button.switch {
+    background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
+}
+
+#new-releases-config-container button.switch:hover,
+#lyrics-plus-config-container button.switch:hover {
+    background-color: rgba(var(--spice-rgb-subtext), 0.5) !important;
 }
