@@ -292,11 +292,14 @@ option {
 }
 
 /* cover collapsed button */
+.main-coverSlotCollapsed-expandButton,
 .x-removeButton-RemoveButton,
 .main-coverSlotExpandedCollapseButton-collapseButton {
     color: var(--spice-main) !important;
     background-color: rgba(var(--spice-rgb-subtext), 0.25) !important;
 }
+
+.main-coverSlotCollapsed-expandButton:hover,
 .x-removeButton-RemoveButton:hover,
 .main-coverSlotExpandedCollapseButton-collapseButton:hover {
     background-color: rgba(var(--spice-rgb-subtext), 0.6) !important;
@@ -368,11 +371,13 @@ option {
     color: var(--spice-text);
 }
 
+.reddit-sort-container button.switch,
 #new-releases-config-container button.switch,
 #lyrics-plus-config-container button.switch {
     background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
 }
 
+.reddit-sort-container button.switch:hover,
 #new-releases-config-container button.switch:hover,
 #lyrics-plus-config-container button.switch:hover {
     background-color: rgba(var(--spice-rgb-subtext), 0.5) !important;
