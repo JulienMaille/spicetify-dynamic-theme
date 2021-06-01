@@ -389,3 +389,12 @@ option {
 .main-yourEpisodesButton-yourEpisodesIcon {
     border-radius: 4px;
 }
+
+/* same radius on playlists and albums */
+.main-cardImage-imagePlaceholder,
+.main-cardImage-image,
+.x-entityImage-small,
+.x-entityImage-large,
+.main-cardImage-roundedCorners {
+    border-radius: 6px !important;
+}
