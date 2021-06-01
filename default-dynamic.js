@@ -13,6 +13,10 @@ function getAlbumInfo(uri) {
     return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`);
 }
 
+function getArtistHeader(artist) {
+    return Spicetify.CosmosAsync.get(`https://api-partner.spotify.com/pathfinder/v1/query?operationName=queryFullscreenMode&variables={"artistUri":"${artist}"}&extensions={"persistedQuery":{"version":1,"sha256Hash":"a90a0143ba80bf9d08aa03c61c86d33d214b9871b604e191d3a63cbb2767dd20"}}`);
+}
+
 function isLight(hex) {
     var [r,g,b] = hexToRgb(hex).map(Number)
     const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
@@ -156,8 +160,16 @@ async function songchange() {
         Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
     
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
+    let bgImage = Spicetify.Player.data.track.metadata.image_url
 
-    if (album_uri!==undefined) {
+    if (album_uri !== undefined && !album_uri.includes('spotify:show')) {
+        const artistHeader = await getArtistHeader(Spicetify.Player.data.track.metadata.artist_uri);
+        if (!artistHeader.error && artistHeader?.data?.artist?.visuals?.headerImage?.sources) {
+            const headerImages = artistHeader.data.artist.visuals.headerImage.sources;
+            const headerImg = headerImages.length === 1 ? headerImages[0] : headerImages[headerImages.length * Math.random() | 0];
+            
+            bgImage = headerImg.url;
+        }
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
 
         let album_date = new Date(albumInfo.year, (albumInfo.month || 1)-1, albumInfo.day|| 0)
@@ -170,20 +182,22 @@ async function songchange() {
             nearArtistSpan.innerHTML = album_link + " — " + album_date
         else
             setTimeout(songchange, 200)
-    } else if (Spicetify.Player.data.track.metadata.album_track_number==0) {
+    } else if (Spicetify.Player.data.track.uri.includes('spotify:episode')) {
         // podcast
-        nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        bgImage = bgImage.replace('spotify:image:', 'https://i.scdn.co/image/')
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title;
     } else if (Spicetify.Player.data.track.metadata.is_local=="true") {
         // local file
-        nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title;
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
         // todo: retry only once?
         setTimeout(songchange, 200)
     }
 
-    document.documentElement.style.setProperty('--image_url', 'url("'+Spicetify.Player.data.track.metadata.image_url+'")')
+    document.documentElement.style.setProperty('--image_url', 'url("' + bgImage + '")');
 
+    if (!Spicetify.Player.data.track.metadata.image_url || Spicetify.Player.data.track.uri.includes('spotify:local')) return; // dont bother extracting colours if the image doesnt exist or is local
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
         .then((colors) => {
             mainColor = colors['LIGHT_VIBRANT']
