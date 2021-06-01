@@ -163,12 +163,12 @@ async function songchange() {
     let bgImage = Spicetify.Player.data.track.metadata.image_url
 
     if (album_uri !== undefined && !album_uri.includes('spotify:show')) {
-        const artistHeader = await getArtistHeader(Spicetify.Player.data.track.metadata.artist_uri);
+        const artistHeader = await getArtistHeader(Spicetify.Player.data.track.metadata.artist_uri)
         if (!artistHeader.error && artistHeader?.data?.artist?.visuals?.headerImage?.sources) {
-            const headerImages = artistHeader.data.artist.visuals.headerImage.sources;
-            const headerImg = headerImages.length === 1 ? headerImages[0] : headerImages[headerImages.length * Math.random() | 0];
+            const headerImages = artistHeader.data.artist.visuals.headerImage.sources
+            const headerImg = headerImages.length === 1 ? headerImages[0] : headerImages[headerImages.length * Math.random() | 0]
             
-            bgImage = headerImg.url;
+            bgImage = headerImg.url
         }
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
 
@@ -185,19 +185,19 @@ async function songchange() {
     } else if (Spicetify.Player.data.track.uri.includes('spotify:episode')) {
         // podcast
         bgImage = bgImage.replace('spotify:image:', 'https://i.scdn.co/image/')
-        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title;
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else if (Spicetify.Player.data.track.metadata.is_local=="true") {
         // local file
-        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title;
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
         // todo: retry only once?
         setTimeout(songchange, 200)
     }
 
-    document.documentElement.style.setProperty('--image_url', 'url("' + bgImage + '")');
+    document.documentElement.style.setProperty('--image_url', 'url("' + bgImage + '")')
 
-    if (!Spicetify.Player.data.track.metadata.image_url || Spicetify.Player.data.track.uri.includes('spotify:local')) return; // dont bother extracting colours if the image doesnt exist or is local
+    if (!Spicetify.Player.data.track.metadata.image_url || Spicetify.Player.data.track.uri.includes('spotify:local')) return // dont bother extracting colours if the image doesnt exist or is local
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
         .then((colors) => {
             mainColor = colors['LIGHT_VIBRANT']
