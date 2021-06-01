@@ -34,7 +34,7 @@ div.ReactModalPortal:last-of-type::before {
   src: url("https://local_resource_host/fonts/jost-v6-latin_cyrillic-500.woff2") format('woff2');
 }
 
-body {
+body, button, input {
     font-family: "Jost", "spotify-circular", "spotify-circular-cyrillic", "spotify-circular-arabic", "spotify-circular-hebrew", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -221,8 +221,10 @@ div.collection-collectionEntityHeroCard-container {
     display: none;
 }
 
+/* big oval buttons */
 .main-buttons-button:hover {
     color: var(--spice-main) !important;
+    background-color: var(--spice-button-active);
 }
 
 /* top buttons */
