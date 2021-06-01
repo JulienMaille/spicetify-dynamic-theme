@@ -156,8 +156,14 @@ async function songchange() {
         Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
     
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
+    let bgImage = Spicetify.Player.data.track.metadata.image_url
+    if (bgImage === undefined) {
+        bgImage = "/images/tracklist-row-song-fallback.svg"
+        mainColor = "#509bf5"
+        updateColors(mainColor)
+    }
 
-    if (album_uri!==undefined) {
+    if (album_uri !== undefined && !album_uri.includes('spotify:show')) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
 
         let album_date = new Date(albumInfo.year, (albumInfo.month || 1)-1, albumInfo.day|| 0)
@@ -170,41 +176,47 @@ async function songchange() {
             nearArtistSpan.innerHTML = album_link + " — " + album_date
         else
             setTimeout(songchange, 200)
-    } else if (Spicetify.Player.data.track.metadata.album_track_number==0) {
+    } else if (Spicetify.Player.data.track.uri.includes('spotify:episode')) {
         // podcast
-        nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        bgImage = bgImage.replace('spotify:image:', 'https://i.scdn.co/image/')
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else if (Spicetify.Player.data.track.metadata.is_local=="true") {
         // local file
-        nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
         // todo: retry only once?
         setTimeout(songchange, 200)
     }
 
-    document.documentElement.style.setProperty('--image_url', 'url("'+Spicetify.Player.data.track.metadata.image_url+'")')
-
-    Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
-        .then((colors) => {
-            mainColor = colors['LIGHT_VIBRANT']
-
-            // Spotify returns hex colors with improper length
-            while( mainColor.length!=4 && mainColor.length<7 )
-                { mainColor = mainColor.replace("#", "#0") }
-
-            // main app
-            updateColors(mainColor)
-
-        }, (err) => {
-            console.log(err)
-            // On startup we receive songChange too soon and colorExtractor will fail
-            // todo: retry only colorExtract
-            setTimeout(songchange, 200)
-        })
+    document.documentElement.style.setProperty('--image_url', 'url("' + bgImage + '")')
 }
 
 Spicetify.Player.addEventListener("songchange", songchange)
-document.documentElement.style.setProperty('--warning_message', ' ');
+
+function pickCoverColor(img) {
+    var swatches = new Vibrant(img, 12).swatches()
+    cols = isLight(mainColorBg) ? ["Vibrant", "DarkVibrant", "LightVibrant", "Muted"]
+                                : ["Vibrant", "LightVibrant", "DarkVibrant", "Muted"]
+    mainColor = "#509bf5"
+    for (var col in cols)
+        if (swatches[cols[col]]) {
+            mainColor = swatches[cols[col]].getHex()
+            break
+        }
+    updateColors(mainColor)
+}
+
+waitForElement([".cover-art-image"], (queries) => {
+    queries[0].addEventListener('load', function() {
+        try {
+            pickCoverColor(queries[0])
+        } catch (error) {
+            console.log(error);
+            setTimeout(pickCoverColor, 300, queries[0])
+        }
+    });
+});
 
 (function Startup() {
     if (!Spicetify.showNotification) {
@@ -225,3 +237,5 @@ document.documentElement.style.setProperty('--warning_message', ' ');
     });
     Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.")
 })()
+
+document.documentElement.style.setProperty('--warning_message', ' ');

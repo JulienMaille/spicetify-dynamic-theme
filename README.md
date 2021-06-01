@@ -1,6 +1,6 @@
 # DefaultDynamic for Spicetify
 This is a tweaked version of the Default theme.
-The main differences are the the light/dark toggle, the background cover and the dynamic highligh color, ie. it will match the current album art (note: local files are excluded).
+The main differences are the the light/dark toggle, the background cover and the dynamic highligh color, ie. it will match the current album art.
 
 Requires spicetify-cli **v2.2 or newer**.
 
@@ -27,7 +27,9 @@ In **Bash**:
 cd "$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
 mkdir -p ../../Extensions
 cp default-dynamic.js ../../Extensions/.
+cp Vibrant.min.js ../../Extensions/.
 spicetify config extensions default-dynamic.js
+spicetify config extensions Vibrant.min.js
 spicetify config current_theme DefaultDynamic
 spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
 spicetify apply
@@ -38,5 +40,6 @@ Remove the default-dynamic script with the following commands
 
 ```
 spicetify config extensions default-dynamic.js-
+spicetify config extensions Vibrant.min.js-
 spicetify apply
 ```
