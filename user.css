@@ -398,3 +398,32 @@ option {
 .main-cardImage-roundedCorners {
     border-radius: 6px !important;
 }
+
+/* smooth color transitions */
+@property --spice-sidebar {
+  syntax: '<color>';
+  initial-value: magenta;
+  inherits: true;
+}
+
+@property --spice-main {
+  syntax: '<color>';
+  initial-value: magenta;
+  inherits: true;
+}
+
+@property --spice-text {
+  syntax: '<color>';
+  initial-value: magenta;
+  inherits: true;
+}
+
+@property --spice-button {
+  syntax: '<color>';
+  initial-value: magenta;
+  inherits: true;
+}
+
+html {
+    transition: --spice-sidebar 1s, --spice-main 1s, --spice-text 1s, --spice-button 1s;
+}
