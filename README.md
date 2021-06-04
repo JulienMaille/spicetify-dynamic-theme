@@ -24,15 +24,7 @@ Windows user, please edit your Spotify shortcut and add flag `--transparent-wind
 
 In **Bash**:
 ```bash
-cd "$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
-mkdir -p ../../Extensions
-cp default-dynamic.js ../../Extensions/.
-cp Vibrant.min.js ../../Extensions/.
-spicetify config extensions default-dynamic.js
-spicetify config extensions Vibrant.min.js
-spicetify config current_theme DefaultDynamic
-spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
-spicetify apply
+curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/install.sh | sh
 ```
 
 # How to uninstall 
