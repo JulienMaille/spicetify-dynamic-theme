@@ -183,6 +183,7 @@ div.collection-collectionEntityHeroCard-container {
 .main-trackList-rowPlayPauseButton {
     padding: 0px;
 }
+
 .main-trackList-rowPlayPauseButton:hover {
     color: var(--spice-subtext);
     transform: scale(1.15);
@@ -367,22 +368,17 @@ option {
 }
 
 /* new-releases & lyrics-plus settings */
+.reddit-sort-container button.switch,
 .new-releases-header button.switch,
 .lyrics-tabBar-header button.switch {
-    background-color: var(--spice-notification) !important;
+    background-color: rgba(var(--spice-rgb-subtext), 0.15) !important;
     color: var(--spice-text);
 }
 
-.reddit-sort-container button.switch,
-#new-releases-config-container button.switch,
-#lyrics-plus-config-container button.switch {
-    background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
-}
-
 .reddit-sort-container button.switch:hover,
-#new-releases-config-container button.switch:hover,
-#lyrics-plus-config-container button.switch:hover {
-    background-color: rgba(var(--spice-rgb-subtext), 0.5) !important;
+.new-releases-header button.switch:hover,
+.lyrics-tabBar-header button.switch:hover {
+    background-color: rgba(var(--spice-rgb-subtext), 0.3) !important;
 }
 
 /* same border radius on all 3 icons (playlist, liked, podcasts) */
