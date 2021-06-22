@@ -5,7 +5,7 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    latest_release_uri="https://api.github.com/repos/JulienMaille/default-dynamic-theme/releases/latest"
+    latest_release_uri="https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
     echo "DOWNLOADING    $latest_release_uri"
     version=$( command curl -sSf "$latest_release_uri" |
         command grep -Eo '"tag_name": ".*' |
@@ -15,7 +15,7 @@ else
     version="${1}"
 fi
 
-download_uri="https://github.com/JulienMaille/default-dynamic-theme/archive/refs/tags/${version}.zip"
+download_uri="https://github.com/JulienMaille/spicetify-dynamic-theme/archive/refs/tags/${version}.zip"
 
 spicetify_install="${SPICETIFY_INSTALL:-$HOME/spicetify-cli/Themes}"
 
@@ -44,7 +44,7 @@ if [ ! -d "$sp_dot_dir" ]; then
 fi
 
 echo "COPYING"
-cp -rf "$spicetify_install/default-dynamic-theme-${version}/." "$sp_dot_dir"
+cp -rf "$spicetify_install/spicetify-dynamic-theme-${version}/." "$sp_dot_dir"
 
 echo "INSTALLING"
 cd "$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
