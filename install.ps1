@@ -30,6 +30,12 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   # Enable TLS 1.2 since it is required for connections to GitHub.
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+  $checkSpice = Get-Command spicetify -ErrorAction Silent
+  if ($null -eq $checkSpice) {
+      Write-Host -ForegroundColor Red "Spicetify not found"
+      Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
+  }
+
   if (-not $version) {
     # Determine latest release via GitHub API.
     $latest_release_uri =
@@ -68,7 +74,8 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   Write-Done
 
   # Check ~\.spicetify.\Themes directory already exists
-  $sp_dot_dir = "${HOME}\.spicetify\Themes\DefaultDynamic"
+  $spicePath = spicetify -c | Split-Path
+  $sp_dot_dir = "$spicePath\Themes\DefaultDynamic"
   if (-not (Test-Path $sp_dot_dir)) {
     Write-Part "MAKING FOLDER  "; Write-Emphasized $sp_dot_dir
     New-Item -Path $sp_dot_dir -ItemType Directory | Out-Null
@@ -81,14 +88,13 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   Write-Done
 
   # Installing.
-  Write-Part "INSTALLING     ";
+  Write-Part "INSTALLING";
   cd $sp_dot_dir
   Copy-Item default-dynamic.js ..\..\Extensions
   Copy-Item Vibrant.min.js ..\..\Extensions
   spicetify config extensions dribbblish-dynamic.js-
   spicetify config extensions dribbblish.js-
-  spicetify config extensions default-dynamic.js
-  spicetify config extensions Vibrant.min.js
+  spicetify config extensions default-dynamic.js extensions Vibrant.min.js
   spicetify config current_theme DefaultDynamic
   spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
   spicetify apply

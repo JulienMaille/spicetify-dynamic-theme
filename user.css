@@ -5,7 +5,7 @@
     /* You can darken (eg. -20) or lighten (eg. +20) the main color*/
     --custom_darken: -5;
     --system_is_dark: 1;
-    --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on theme README page.";
+    --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on the README page.";
 }
 
 div.ReactModalPortal:last-of-type::before {
@@ -24,14 +24,14 @@ div.ReactModalPortal:last-of-type::before {
   font-family: 'Jost';
   font-style: normal;
   font-weight: 400;
-  src: url("https://local_resource_host/fonts/jost-v6-latin_cyrillic-regular.woff2") format('woff2');
+  src: url("glue-resources/fonts/jost-v6-latin_cyrillic-regular.woff2") format('woff2');
 }
 /* jost-500 - latin_cyrillic */
 @font-face {
   font-family: 'Jost';
   font-style: normal;
   font-weight: 600;
-  src: url("https://local_resource_host/fonts/jost-v6-latin_cyrillic-500.woff2") format('woff2');
+  src: url("glue-resources/fonts/jost-v6-latin_cyrillic-500.woff2") format('woff2');
 }
 
 body, button, input {
