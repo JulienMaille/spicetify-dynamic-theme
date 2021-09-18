@@ -1,4 +1,4 @@
-let current = '2.5'
+let current = '2.6'
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el));
@@ -152,10 +152,15 @@ function updateColors(colHex) {
 
 let coverListenerInstalled = true
 async function songchange() {
-    // warning popup
-    if (Spicetify.PlaybackControl.featureVersion < "1.1.57")
-        Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
-    
+    try {
+        // warning popup
+        if (Spicetify.PlaybackControl.featureVersion < "1.1.57")
+            Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
+    }
+    catch(err) {
+      console.log(err.message);
+    }
+
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
     let bgImage = Spicetify.Player.data.track.metadata.image_url
     if (bgImage === undefined) {
