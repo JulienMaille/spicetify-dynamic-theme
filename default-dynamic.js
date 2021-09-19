@@ -1,16 +1,16 @@
 let current = '2.6'
 
 function waitForElement(els, func, timeout = 100) {
-    const queries = els.map(el => document.querySelector(el));
+    const queries = els.map(el => document.querySelector(el))
     if (queries.every(a => a)) {
-        func(queries);
+        func(queries)
     } else if (timeout > 0) {
-        setTimeout(waitForElement, 300, els, func, --timeout);
+        setTimeout(waitForElement, 300, els, func, --timeout)
     }
 }
 
 function getAlbumInfo(uri) {
-    return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`);
+    return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`)
 }
 
 function isLight(hex) {
@@ -28,51 +28,51 @@ function hexToRgb(hex) {
 }
 
 function rgbToHex([r, g, b]) {
-    const rgb = (r << 16) | (g << 8) | (b << 0);
-    return '#' + (0x1000000 + rgb).toString(16).slice(1);
+    const rgb = (r << 16) | (g << 8) | (b << 0)
+    return '#' + (0x1000000 + rgb).toString(16).slice(1)
 }
 
-const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('');
+const LightenDarkenColor = (h, p) => '#' + [1, 3, 5].map(s => parseInt(h.substr(s, 2), 16)).map(c => parseInt((c * (100 + p)) / 100)).map(c => (c < 255 ? c : 255)).map(c => c.toString(16).padStart(2, '0')).join('')
 
 function rgbToHsl([r, g, b]) {
-  r /= 255, g /= 255, b /= 255;
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, l = (max + min) / 2;
-  if (max == min) {
-    h = s = 0; // achromatic
-  } else {
-    var d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+    r /= 255, g /= 255, b /= 255
+    var max = Math.max(r, g, b), min = Math.min(r, g, b)
+    var h, s, l = (max + min) / 2
+    if (max == min) {
+        h = s = 0 // achromatic
+    } else {
+        var d = max - min
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0) break
+            case g: h = (b - r) / d + 2 break
+            case b: h = (r - g) / d + 4 break
+        }
+        h /= 6
     }
-    h /= 6;
-  }
-  return [h, s, l];
+    return [h, s, l]
 }
 
 function hslToRgb([h, s, l]) {
-  var r, g, b;
-  if (s == 0) {
-    r = g = b = l; // achromatic
-  } else {
-    function hue2rgb(p, q, t) {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/2) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-      return p;
+    var r, g, b
+    if (s == 0) {
+        r = g = b = l // achromatic
+    } else {
+        function hue2rgb(p, q, t) {
+            if (t < 0) t += 1
+            if (t > 1) t -= 1
+            if (t < 1/6) return p + (q - p) * 6 * t
+            if (t < 1/2) return q
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6
+            return p
+        }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s
+        var p = 2 * l - q
+        r = hue2rgb(p, q, h + 1/3)
+        g = hue2rgb(p, q, h)
+        b = hue2rgb(p, q, h - 1/3)
     }
-    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    var p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1/3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1/3);
-  }
-  return [r * 255, g * 255, b * 255];
+    return [r * 255, g * 255, b * 255]
 }
 
 function setLightness(hex, lightness) {
@@ -129,15 +129,14 @@ waitForElement([".main-topBar-indicators"], (queries) => {
     button.id = 'main-topBar-moon-button'
     button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "main-topBarStatusIndicator-hasTooltip")
     button.setAttribute("title", "Light/Dark")
-    button.onclick = () => { toggleDark(); };
-    button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path>
-</svg>`
+    button.onclick = () => { toggleDark() }
+    button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`
     div.append(button)
 });
 
 function updateColors(colHex) {
     let isLightBg = isLight(mainColorBg)
-    if( isLightBg ) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
+    if (isLightBg) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
 
     let darkColHex = LightenDarkenColor(colHex, isLightBg ? 12 : -20)
     let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
@@ -158,7 +157,7 @@ async function songchange() {
             Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
     }
     catch(err) {
-      console.log(err.message);
+        console.log(err.message)
     }
 
     let album_uri = Spicetify.Player.data.track.metadata.album_uri
@@ -180,7 +179,7 @@ async function songchange() {
         recent_date.setMonth(recent_date.getMonth() - 6)
         album_date = album_date.toLocaleString('default', album_date>recent_date ? { year: 'numeric', month: 'short' } : { year: 'numeric' })
         album_link = "<a title=\""+Spicetify.Player.data.track.metadata.album_title+"\" href=\""+album_uri+"\" data-uri=\""+album_uri+"\" data-interaction-target=\"album-name\" class=\"tl-cell__content\">"+Spicetify.Player.data.track.metadata.album_title+"</a>"
-        
+
         if (nearArtistSpan!==null)
             nearArtistSpan.innerHTML = album_link + " — " + album_date
         else
@@ -224,7 +223,7 @@ function hookCoverChange(pick) {
             try {
                 pickCoverColor(queries[0])
             } catch (error) {
-                console.log(error);
+                console.log(error)
                 setTimeout(pickCoverColor, 300, queries[0])
             }
         });
@@ -240,17 +239,17 @@ hookCoverChange(false);
     }
     // Check latest release
     fetch('https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest').then(response => {
-      return response.json();
+        return response.json()
     }).then(data => {
-      if( data.tag_name > current ) {
-          document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable")
-          document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`)
-          document.querySelector("#main-topBar-moon-button").setAttribute("title", `Changes: ${data.name}`)
-      }
+        if (data.tag_name > current) {
+            document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable")
+            document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`)
+            document.querySelector("#main-topBar-moon-button").setAttribute("title", `Changes: ${data.name}`)
+        }
     }).catch(err => {
       // Do something for an error here
-    });
+    })
     Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.")
 })()
 
-document.documentElement.style.setProperty('--warning_message', ' ');
+document.documentElement.style.setProperty('--warning_message', ' ')
