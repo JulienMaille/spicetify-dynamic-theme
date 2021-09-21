@@ -259,6 +259,14 @@ div.collection-collectionEntityHeroCard-container {
     box-shadow: none;
 }
 
+/* temporary color fix */
+.main-buddyFeed-activityMetadata .main-buddyFeed-usernameAndTimestamp,
+.main-buddyFeed-activityMetadata .main-buddyFeed-username,
+.main-buddyFeed-activityMetadata .main-buddyFeed-playbackContextLink,
+.main-buddyFeed-activityMetadata .main-buddyFeed-artistAndTrackName {
+    color: unset;
+}
+
 /* drop down */
 .main-dropDown-dropDown,
 select,
@@ -349,6 +357,10 @@ option {
     background-color: rgba(var(--spice-rgb-selected-row), 0.2);
 }
 
+.main-contextMenu-menuItemButton {
+    color: var(--spice-subtext);
+}
+
 /* bookmark extension */
 .bookmark-menuitem {
     padding: 5px !important;
@@ -393,6 +405,17 @@ option {
 .x-entityImage-large,
 .main-cardImage-roundedCorners {
     border-radius: 6px !important;
+}
+
+/* explicit lyrics icon */
+.main-tag-container {
+  color: var(--spice-subtext);
+  background-color: rgba(var(--spice-rgb-subtext), .2) !important;
+}
+
+/* playlist top buttons */
+.main-actionBar-ActionBarRow button:not(.main-playButton-primary) {
+  color: var(--spice-button);
 }
 
 /* smooth color transitions */

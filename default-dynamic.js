@@ -1,4 +1,4 @@
-let current = '2.6'
+let current = '2.7'
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el))
@@ -44,9 +44,12 @@ function rgbToHsl([r, g, b]) {
         var d = max - min
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
         switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0) break
-            case g: h = (b - r) / d + 2 break
-            case b: h = (r - g) / d + 4 break
+            case r: h = (g - b) / d + (g < b ? 6 : 0)
+                    break
+            case g: h = (b - r) / d + 2
+                    break
+            case b: h = (r - g) / d + 4
+                    break
         }
         h /= 6
     }
@@ -118,16 +121,16 @@ function toggleDark(setDark) {
 let systemDark = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--system_is_dark'))==1
 toggleDark(systemDark)
 
-waitForElement([".main-topBar-indicators"], (queries) => {
+waitForElement([".main-topBar-container"], (queries) => {
     // Add activator on top bar
     const div = document.createElement("div")
     div.id = 'main-topBar-moon-div'
     div.classList.add("main-topBarStatusIndicator-TopBarStatusIndicatorContainer")
-    queries[0].append(div)
+    queries[0].insertBefore(div, queries[0].querySelector(".main-userWidget-box"))
 
     const button = document.createElement("button")
     button.id = 'main-topBar-moon-button'
-    button.classList.add("main-topBarStatusIndicator-TopBarStatusIndicator", "main-topBarStatusIndicator-hasTooltip")
+    button.classList.add("main-noConnection-button", "main-topBarStatusIndicator-hasTooltip")
     button.setAttribute("title", "Light/Dark")
     button.onclick = () => { toggleDark() }
     button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`
