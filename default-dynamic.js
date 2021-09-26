@@ -1,4 +1,4 @@
-let current = '2.7'
+let current = '2.8'
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el))
@@ -84,15 +84,8 @@ function setLightness(hex, lightness) {
     return rgbToHex(hslToRgb(hsl))
 }
 
-let nearArtistSpan = null
-let mainColor = getComputedStyle(document.documentElement).getPropertyValue('--spice-text')
-let mainColorBg = getComputedStyle(document.documentElement).getPropertyValue('--spice-main')
-
-waitForElement([".main-trackInfo-container"], (queries) => {
-    nearArtistSpan = document.createElement("div")
-    nearArtistSpan.classList.add("main-trackInfo-artists", "ellipsis-one-line", "main-type-finale")
-    queries[0].append(nearArtistSpan)
-});
+let textColor = getComputedStyle(document.documentElement).getPropertyValue('--spice-text')
+let textColorBg = getComputedStyle(document.documentElement).getPropertyValue('--spice-main')
 
 function setRootColor(name, colHex) {
     let root = document.documentElement
@@ -102,19 +95,19 @@ function setRootColor(name, colHex) {
 }
 
 function toggleDark(setDark) {
-    if (setDark===undefined) setDark = isLight(mainColorBg)
+    if (setDark===undefined) setDark = isLight(textColorBg)
 
     document.documentElement.style.setProperty('--is_light', setDark ? 0 : 1)
-    mainColorBg = setDark ? "#0A0A0A" : "#FAFAFA"
+    textColorBg = setDark ? "#0A0A0A" : "#FAFAFA"
 
-    setRootColor('main', mainColorBg)
-    setRootColor('sidebar', mainColorBg)
-    setRootColor('player', mainColorBg)
+    setRootColor('main', textColorBg)
+    setRootColor('sidebar', textColorBg)
+    setRootColor('player', textColorBg)
     setRootColor('card', setDark ? "#040404" : "#ECECEC")
     setRootColor('subtext', setDark ? "#EAEAEA" : "#3D3D3D")
     setRootColor('notification', setDark ? "#303030" : "#DDDDDD")
 
-    updateColors(mainColor)
+    updateColors(textColor)
 }
 
 /* Init with current system light/dark mode */
@@ -137,14 +130,14 @@ waitForElement([".main-topBar-container"], (queries) => {
     div.append(button)
 });
 
-function updateColors(colHex) {
-    let isLightBg = isLight(mainColorBg)
-    if (isLightBg) colHex = LightenDarkenColor(colHex, -15) // vibrant color is always too bright for white bg mode
+function updateColors(textColHex) {
+    let isLightBg = isLight(textColorBg)
+    if (isLightBg) textColHex = LightenDarkenColor(textColHex, -15) // vibrant color is always too bright for white bg mode
 
-    let darkColHex = LightenDarkenColor(colHex, isLightBg ? 12 : -20)
-    let darkerColHex = LightenDarkenColor(colHex, isLightBg ? 30 : -40)
-    let buttonBgColHex = setLightness(colHex, isLightBg ? 0.90 : 0.14)
-    setRootColor('text', colHex)
+    let darkColHex = LightenDarkenColor(textColHex, isLightBg ? 12 : -20)
+    let darkerColHex = LightenDarkenColor(textColHex, isLightBg ? 30 : -40)
+    let buttonBgColHex = setLightness(textColHex, isLightBg ? 0.90 : 0.14)
+    setRootColor('text', textColHex)
     setRootColor('button', darkerColHex)
     setRootColor('button-active', darkColHex)
     setRootColor('selected-row', darkerColHex)
@@ -152,11 +145,12 @@ function updateColors(colHex) {
     setRootColor('button-disabled', buttonBgColHex)
 }
 
+let nearArtistSpanText = ""
 let coverListenerInstalled = true
 async function songchange() {
     try {
         // warning popup
-        if (Spicetify.PlaybackControl.featureVersion < "1.1.57")
+        if (Spicetify.PlaybackControl.featureVersion < "1.1.68")
             Spicetify.showNotification("Your version of Spotify (" + Spicetify.PlaybackControl.featureVersion + ") is un-supported")
     }
     catch(err) {
@@ -167,12 +161,11 @@ async function songchange() {
     let bgImage = Spicetify.Player.data.track.metadata.image_url
     if (bgImage === undefined) {
         bgImage = "/images/tracklist-row-song-fallback.svg"
-        mainColor = "#509bf5"
-        updateColors(mainColor)
+        textColor = "#509bf5"
+        updateColors(textColor)
         coverListenerInstalled = false
-    } else if (!coverListenerInstalled) {
-        hookCoverChange(true)
     }
+    hookCoverChange(true)
 
     if (album_uri !== undefined && !album_uri.includes('spotify:show')) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
@@ -182,24 +175,32 @@ async function songchange() {
         recent_date.setMonth(recent_date.getMonth() - 6)
         album_date = album_date.toLocaleString('default', album_date>recent_date ? { year: 'numeric', month: 'short' } : { year: 'numeric' })
         album_link = "<a title=\""+Spicetify.Player.data.track.metadata.album_title+"\" href=\""+album_uri+"\" data-uri=\""+album_uri+"\" data-interaction-target=\"album-name\" class=\"tl-cell__content\">"+Spicetify.Player.data.track.metadata.album_title+"</a>"
-
-        if (nearArtistSpan!==null)
-            nearArtistSpan.innerHTML = album_link + " — " + album_date
-        else
-            setTimeout(songchange, 200)
+        
+        nearArtistSpanText = album_link + " — " + album_date
     } else if (Spicetify.Player.data.track.uri.includes('spotify:episode')) {
         // podcast
         bgImage = bgImage.replace('spotify:image:', 'https://i.scdn.co/image/')
-        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        nearArtistSpanText = Spicetify.Player.data.track.metadata.album_title
     } else if (Spicetify.Player.data.track.metadata.is_local=="true") {
         // local file
-        if (nearArtistSpan?.innerText) nearArtistSpan.innerText = Spicetify.Player.data.track.metadata.album_title
+        nearArtistSpanText = Spicetify.Player.data.track.metadata.album_title
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
         // todo: retry only once?
         setTimeout(songchange, 200)
     }
 
+    if( document.querySelector("#main-trackInfo-year")===null ) {
+        waitForElement([".main-trackInfo-container"], (queries) => {
+            nearArtistSpan = document.createElement("div")
+            nearArtistSpan.id = 'main-trackInfo-year'
+            nearArtistSpan.classList.add("main-trackInfo-artists", "ellipsis-one-line", "main-type-finale")
+            nearArtistSpan.innerHTML = nearArtistSpanText
+            queries[0].append(nearArtistSpan)
+        })
+    } else {
+        nearArtistSpan.innerHTML = nearArtistSpanText
+    }
     document.documentElement.style.setProperty('--image_url', 'url("' + bgImage + '")')
 }
 
@@ -207,15 +208,15 @@ Spicetify.Player.addEventListener("songchange", songchange)
 
 function pickCoverColor(img) {
     var swatches = new Vibrant(img, 12).swatches()
-    cols = isLight(mainColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"]
+    cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"]
                                 : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"]
-    mainColor = "#509bf5"
+    textColor = "#509bf5"
     for (var col in cols)
         if (swatches[cols[col]]) {
-            mainColor = swatches[cols[col]].getHex()
+            textColor = swatches[cols[col]].getHex()
             break
         }
-    updateColors(mainColor)
+    updateColors(textColor)
 }
 
 function hookCoverChange(pick) {
