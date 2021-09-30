@@ -1,4 +1,4 @@
-let current = '2.8'
+let current = '2.9'
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el))
@@ -222,7 +222,7 @@ function pickCoverColor(img) {
 function hookCoverChange(pick) {
     waitForElement([".cover-art-image"], (queries) => {
         coverListenerInstalled = true
-        if (pick) pickCoverColor(queries[0])
+        if (pick && queries[0].complete && queries[0].naturalHeight !== 0) pickCoverColor(queries[0])
         queries[0].addEventListener('load', function() {
             try {
                 pickCoverColor(queries[0])
