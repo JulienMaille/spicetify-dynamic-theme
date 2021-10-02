@@ -415,7 +415,7 @@ option {
 
 /* playlist top buttons */
 .main-actionBar-ActionBarRow button:not(.main-playButton-primary) {
-  color: var(--spice-button);
+  color: var(--spice-sub-text);
 }
 
 /* smooth color transitions */
