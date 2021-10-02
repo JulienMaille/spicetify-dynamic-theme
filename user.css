@@ -259,11 +259,11 @@ div.collection-collectionEntityHeroCard-container {
     box-shadow: none;
 }
 
-/* temporary color fix */
+/* buddyFeed color fix */
 .main-buddyFeed-activityMetadata .main-buddyFeed-usernameAndTimestamp,
-.main-buddyFeed-activityMetadata .main-buddyFeed-username,
+.main-buddyFeed-activityMetadata .main-buddyFeed-username a,
 .main-buddyFeed-activityMetadata .main-buddyFeed-playbackContextLink,
-.main-buddyFeed-activityMetadata .main-buddyFeed-artistAndTrackName {
+.main-buddyFeed-activityMetadata .main-buddyFeed-artistAndTrackName a {
     color: unset;
 }
 
@@ -415,7 +415,7 @@ option {
 
 /* playlist top buttons */
 .main-actionBar-ActionBarRow button:not(.main-playButton-primary) {
-  color: var(--spice-sub-text);
+  color: var(--spice-subtext);
 }
 
 /* smooth color transitions */
