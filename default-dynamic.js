@@ -111,8 +111,12 @@ function toggleDark(setDark) {
 }
 
 /* Init with current system light/dark mode */
-let systemDark = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--system_is_dark'))==1
+let systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches
 toggleDark(systemDark)
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+    toggleDark(e.matches);
+ });
 
 waitForElement([".main-topBar-container"], (queries) => {
     // Add activator on top bar
