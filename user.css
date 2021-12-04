@@ -92,6 +92,15 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     background-color: rgba(var(--spice-rgb-button), 0.5);
 }
 
+.main-trackList-trackListRow:focus-within,
+.main-trackList-trackListRow:hover {
+    background-color: rgba(128,128,128,.1);
+}
+.main-trackList-trackListRow.main-trackList-selected,
+.main-trackList-trackListRow.main-trackList-selected:hover {
+    background-color: rgba(128,128,128,.3);
+}
+
 /* Full window artist background */
 .main-entityHeader-background.main-entityHeader-gradient {
     opacity: 0.3;
