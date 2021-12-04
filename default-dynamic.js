@@ -146,7 +146,6 @@ function updateColors(textColHex) {
 }
 
 let nearArtistSpanText = ""
-let coverListenerInstalled = true
 async function songchange() {
     try {
         // warning popup
@@ -161,9 +160,7 @@ async function songchange() {
         bgImage = "/images/tracklist-row-song-fallback.svg"
         textColor = "#509bf5"
         updateColors(textColor)
-        coverListenerInstalled = false
     }
-    hookCoverChange(true)
 
     if (album_uri !== undefined && !album_uri.includes('spotify:show')) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""))
@@ -210,34 +207,45 @@ Spicetify.Player.addEventListener("songchange", songchange)
 
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
-    var swatches = new Vibrant(img, 12).swatches()
-    cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"]
-                                : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"]
     textColor = "#509bf5"
-    for (var col in cols)
-        if (swatches[cols[col]]) {
-            textColor = swatches[cols[col]].getHex()
-            break
-        }
-    updateColors(textColor)
+    cols = isLight(textColorBg) ? ["VIBRANT", "DARK_VIBRANT", "DESATURATED", "LIGHT_VIBRANT"]
+                                : ["VIBRANT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"]
+    Spicetify.colorExtractor(Spicetify.Player.data.track.uri)
+        .then((swatches) => {
+            for (var col in cols)
+                if (swatches[cols[col]]) {
+                    textColor = swatches[cols[col]]
+                    break
+                }
+
+            // Spotify returns hex colors with improper length
+            while( textColor.length!=4 && textColor.length<7 )
+                { textColor = textColor.replace("#", "#0"); }
+            updateColors(textColor)
+
+        }, (err) => {
+            console.log(err)
+            // On startup we receive songChange too soon and colorExtractor will fail
+            // todo: retry only colorExtract
+            setTimeout(songchange, 200)
+        })
 }
 
-function hookCoverChange(pick) {
-    waitForElement([".cover-art-image"], (queries) => {
-        coverListenerInstalled = true
-        if (pick && queries[0].complete && queries[0].naturalHeight !== 0) pickCoverColor(queries[0])
-        queries[0].addEventListener('load', function() {
-            try {
-                pickCoverColor(queries[0])
-            } catch (error) {
-                console.log(error)
-                setTimeout(pickCoverColor, 300, queries[0])
-            }
-        });
+function registerCoverListener() {
+    if (!document.querySelector(".main-image-image.cover-art-image")) return setTimeout(registerCoverListener, 250);
+    pickCoverColor(document.querySelector(".main-image-image.cover-art-image"));
+
+    const observer = new MutationObserver((muts) => {
+        const img = document.querySelector(".main-image-image.cover-art-image");
+        if (!img) return registerCoverListener();
+        pickCoverColor(img);
+    });
+    observer.observe(document.querySelector(".main-image-image.cover-art-image"), {
+        attributes: true,
+        attributeFilter: ["src"]
     });
 }
-
-hookCoverChange(false);
+registerCoverListener();
 
 (function Startup() {
     if (!Spicetify.showNotification) {

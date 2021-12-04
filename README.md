@@ -29,6 +29,5 @@ Remove the default-dynamic script with the following commands
 
 ```
 spicetify config extensions default-dynamic.js-
-spicetify config extensions Vibrant.min.js-
 spicetify apply
 ```
