@@ -7,7 +7,7 @@ param (
 $PSMinVersion = 3
 
 if ($v) {
-    $version = $v
+  $version = $v
 }
 
 # Helper functions for pretty terminal output.
@@ -32,8 +32,8 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
 
   $checkSpice = Get-Command spicetify -ErrorAction Silent
   if ($null -eq $checkSpice) {
-      Write-Host -ForegroundColor Red "Spicetify not found"
-      Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
+    Write-Host -ForegroundColor Red "Spicetify not found"
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
   }
 
   if (-not $version) {

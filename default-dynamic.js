@@ -10,9 +10,7 @@ function waitForElement(els, func, timeout = 100) {
 }
 
 function getAlbumInfo(uri) {
-    return Spicetify.CosmosAsync.get(
-        `hm://album/v1/album-app/album/${uri}/desktop`
-    );
+    return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`);
 }
 
 function isLight(hex) {
@@ -99,12 +97,8 @@ function setLightness(hex, lightness) {
     return rgbToHex(hslToRgb(hsl));
 }
 
-let textColor = getComputedStyle(document.documentElement).getPropertyValue(
-    "--spice-text"
-);
-let textColorBg = getComputedStyle(document.documentElement).getPropertyValue(
-    "--spice-main"
-);
+let textColor = getComputedStyle(document.documentElement).getPropertyValue("--spice-text");
+let textColorBg = getComputedStyle(document.documentElement).getPropertyValue("--spice-main");
 
 function setRootColor(name, colHex) {
     let root = document.documentElement;
@@ -133,30 +127,20 @@ function toggleDark(setDark) {
 let systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 toggleDark(systemDark);
 
-window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (e) => {
-        toggleDark(e.matches);
-    });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    toggleDark(e.matches);
+});
 
 waitForElement([".main-topBar-container"], (queries) => {
     // Add activator on top bar
     const div = document.createElement("div");
     div.id = "main-topBar-moon-div";
-    div.classList.add(
-        "main-topBarStatusIndicator-TopBarStatusIndicatorContainer"
-    );
-    queries[0].insertBefore(
-        div,
-        queries[0].querySelector(".main-userWidget-box")
-    );
+    div.classList.add("main-topBarStatusIndicator-TopBarStatusIndicatorContainer");
+    queries[0].insertBefore(div, queries[0].querySelector(".main-userWidget-box"));
 
     const button = document.createElement("button");
     button.id = "main-topBar-moon-button";
-    button.classList.add(
-        "main-noConnection-button",
-        "main-topBarStatusIndicator-hasTooltip"
-    );
+    button.classList.add("main-noConnection-button", "main-topBarStatusIndicator-hasTooltip");
     button.setAttribute("title", "Light/Dark");
     button.onclick = () => {
         toggleDark();
@@ -184,10 +168,7 @@ let nearArtistSpanText = "";
 async function songchange() {
     try {
         // warning popup
-        if (Spicetify.Platform.PlatformData.client_version_triple < "1.1.68")
-            Spicetify.showNotification(
-                `Your version of Spotify ${Spicetify.Platform.PlatformData.client_version_triple}) is un-supported`
-            );
+        if (Spicetify.Platform.PlatformData.client_version_triple < "1.1.68") Spicetify.showNotification(`Your version of Spotify ${Spicetify.Platform.PlatformData.client_version_triple}) is un-supported`);
     } catch (err) {
         console.error(err);
     }
@@ -201,33 +182,13 @@ async function songchange() {
     }
 
     if (album_uri !== undefined && !album_uri.includes("spotify:show")) {
-        const albumInfo = await getAlbumInfo(
-            album_uri.replace("spotify:album:", "")
-        );
+        const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""));
 
-        let album_date = new Date(
-            albumInfo.year,
-            (albumInfo.month || 1) - 1,
-            albumInfo.day || 0
-        );
+        let album_date = new Date(albumInfo.year, (albumInfo.month || 1) - 1, albumInfo.day || 0);
         let recent_date = new Date();
         recent_date.setMonth(recent_date.getMonth() - 6);
-        album_date = album_date.toLocaleString(
-            "default",
-            album_date > recent_date
-                ? { year: "numeric", month: "short" }
-                : { year: "numeric" }
-        );
-        album_link =
-            '<a title="' +
-            Spicetify.Player.data.track.metadata.album_title +
-            '" href="' +
-            album_uri +
-            '" data-uri="' +
-            album_uri +
-            '" data-interaction-target="album-name" class="tl-cell__content">' +
-            Spicetify.Player.data.track.metadata.album_title +
-            "</a>";
+        album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
+        album_link = '<a title="' + Spicetify.Player.data.track.metadata.album_title + '" href="' + album_uri + '" data-uri="' + album_uri + '" data-interaction-target="album-name" class="tl-cell__content">' + Spicetify.Player.data.track.metadata.album_title + "</a>";
 
         nearArtistSpanText = album_link + " • " + album_date;
     } else if (Spicetify.Player.data.track.uri.includes("spotify:episode")) {
@@ -251,21 +212,14 @@ async function songchange() {
         waitForElement([".main-trackInfo-container"], (queries) => {
             nearArtistSpan = document.createElement("div");
             nearArtistSpan.id = "main-trackInfo-year";
-            nearArtistSpan.classList.add(
-                "main-trackInfo-artists",
-                "ellipsis-one-line",
-                "main-type-finale"
-            );
+            nearArtistSpan.classList.add("main-trackInfo-artists", "ellipsis-one-line", "main-type-finale");
             nearArtistSpan.innerHTML = nearArtistSpanText;
             queries[0].append(nearArtistSpan);
         });
     } else {
         nearArtistSpan.innerHTML = nearArtistSpanText;
     }
-    document.documentElement.style.setProperty(
-        "--image_url",
-        'url("' + bgImage + '")'
-    );
+    document.documentElement.style.setProperty("--image_url", 'url("' + bgImage + '")');
 }
 
 Spicetify.Player.addEventListener("songchange", songchange);
@@ -273,9 +227,7 @@ Spicetify.Player.addEventListener("songchange", songchange);
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
     textColor = "#509bf5";
-    cols = isLight(textColorBg)
-        ? ["VIBRANT", "DARK_VIBRANT", "DESATURATED", "LIGHT_VIBRANT"]
-        : ["VIBRANT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
+    cols = isLight(textColorBg) ? ["VIBRANT", "DARK_VIBRANT", "DESATURATED", "LIGHT_VIBRANT"] : ["VIBRANT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri).then(
         (swatches) => {
             for (var col in cols)
@@ -300,8 +252,7 @@ function pickCoverColor(img) {
 }
 
 function registerCoverListener() {
-    if (!document.querySelector(".main-image-image.cover-art-image"))
-        return setTimeout(registerCoverListener, 250);
+    if (!document.querySelector(".main-image-image.cover-art-image")) return setTimeout(registerCoverListener, 250);
     pickCoverColor(document.querySelector(".main-image-image.cover-art-image"));
 
     const observer = new MutationObserver((muts) => {
@@ -309,13 +260,10 @@ function registerCoverListener() {
         if (!img) return registerCoverListener();
         pickCoverColor(img);
     });
-    observer.observe(
-        document.querySelector(".main-image-image.cover-art-image"),
-        {
-            attributes: true,
-            attributeFilter: ["src"],
-        }
-    );
+    observer.observe(document.querySelector(".main-image-image.cover-art-image"), {
+        attributes: true,
+        attributeFilter: ["src"]
+    });
 }
 registerCoverListener();
 
@@ -325,31 +273,21 @@ registerCoverListener();
         return;
     }
     // Check latest release
-    fetch(
-        "https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
-    )
+    fetch("https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest")
         .then((response) => {
             return response.json();
         })
         .then((data) => {
             if (data.tag_name > current) {
-                document
-                    .querySelector("#main-topBar-moon-div")
-                    .classList.add("main-topBarUpdateAvailable");
-                document
-                    .querySelector("#main-topBar-moon-button")
-                    .append(`NEW v${data.tag_name} available`);
-                document
-                    .querySelector("#main-topBar-moon-button")
-                    .setAttribute("title", `Changes: ${data.name}`);
+                document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable");
+                document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`);
+                document.querySelector("#main-topBar-moon-button").setAttribute("title", `Changes: ${data.name}`);
             }
         })
         .catch((err) => {
             // Do something for an error here
         });
-    Spicetify.showNotification(
-        "Applied system " + (systemDark ? "dark" : "light") + " theme."
-    );
+    Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.");
 })();
 
 document.documentElement.style.setProperty("--warning_message", " ");
