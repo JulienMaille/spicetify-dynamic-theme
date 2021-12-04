@@ -9,7 +9,7 @@ if [ $# -eq 0 ]; then
     echo "DOWNLOADING    $latest_release_uri"
     version=$( command curl -sSf "$latest_release_uri" |
         command grep -Eo '"tag_name": ".*' |
-        command grep -Eo '[0-9.]*' )
+        command grep -Eo '[0-9.]+' )
     if [ ! "$version" ]; then exit 1; fi
 else
     version="${1}"
