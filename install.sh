@@ -54,4 +54,16 @@ spicetify config extensions dribbblish.js- extensions dribbblish-dynamic.js-
 spicetify config extensions default-dynamic.js
 spicetify config current_theme DefaultDynamic color_scheme base
 spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
+
+echo "PATCHING"
+PATCH='[Patch]
+xpui.js_find_8008 = ,(\\w+=)32,
+xpui.js_repl_8008 = ,\${1}28,'
+if cat config-xpui.ini | grep -o '\[Patch\]'; then
+    perl -i -0777 -pe "s/\[Patch\].*?($|(\r*\n){2})/$PATCH\n\n/s" config-xpui.ini
+else
+    echo -e "\n$PATCH" >> config-xpui.ini
+fi
+
+echo "APPLYING"
 spicetify apply
