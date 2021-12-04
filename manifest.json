@@ -1,0 +1,9 @@
+{
+    "name": "Default Dynamic",
+    "description": "A theme for Spicetify with support for light/dark modes and album art based colors.",
+    "preview": "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/Dark.gif",
+    "readme": "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/README.md",
+    "usercss": "user.css",
+    "schemes": "color.ini",
+    "include": ["https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/default-dynamic.js"]
+}

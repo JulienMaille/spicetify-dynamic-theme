@@ -1,4 +1,4 @@
-let current = '2.9'
+let current = '3.0'
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map(el => document.querySelector(el))
