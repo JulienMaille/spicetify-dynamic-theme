@@ -150,6 +150,8 @@ waitForElement([".main-topBar-container"], (queries) => {
 });
 
 function updateColors(textColHex) {
+    if (textColHex == undefined) return registerCoverListener();
+
     let isLightBg = isLight(textColorBg);
     if (isLightBg) textColHex = LightenDarkenColor(textColHex, -15); // vibrant color is always too bright for white bg mode
 
@@ -166,6 +168,7 @@ function updateColors(textColHex) {
 
 let nearArtistSpanText = "";
 async function songchange() {
+    if (!document.querySelector(".main-trackInfo-container")) return setTimeout(songchange, 300);
     try {
         // warning popup
         if (Spicetify.Platform.PlatformData.client_version_triple < "1.1.68") Spicetify.showNotification(`Your version of Spotify ${Spicetify.Platform.PlatformData.client_version_triple}) is un-supported`);
@@ -219,7 +222,8 @@ async function songchange() {
     } else {
         nearArtistSpan.innerHTML = nearArtistSpanText;
     }
-    document.documentElement.style.setProperty("--image_url", 'url("' + bgImage + '")');
+    document.documentElement.style.setProperty("--image_url", `url("${bgImage}")`);
+    registerCoverListener();
 }
 
 Spicetify.Player.addEventListener("songchange", songchange);
@@ -251,16 +255,24 @@ function pickCoverColor(img) {
     );
 }
 
+var coverListener;
 function registerCoverListener() {
-    if (!document.querySelector(".main-image-image.cover-art-image")) return setTimeout(registerCoverListener, 250);
-    pickCoverColor(document.querySelector(".main-image-image.cover-art-image"));
+    const img = document.querySelector(".main-image-image.cover-art-image");
+    if (!img) return setTimeout(registerCoverListener, 250); // Check if image exists
+    if (!img.complete) return img.addEventListener("load", registerCoverListener); // Check if image is loaded
+    pickCoverColor(img);
 
-    const observer = new MutationObserver((muts) => {
+    if (coverListener != null) {
+        coverListener.disconnect();
+        coverListener = null;
+    }
+
+    coverListener = new MutationObserver((muts) => {
         const img = document.querySelector(".main-image-image.cover-art-image");
         if (!img) return registerCoverListener();
         pickCoverColor(img);
     });
-    observer.observe(document.querySelector(".main-image-image.cover-art-image"), {
+    coverListener.observe(img, {
         attributes: true,
         attributeFilter: ["src"]
     });
