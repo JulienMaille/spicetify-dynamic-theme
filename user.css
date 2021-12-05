@@ -52,6 +52,10 @@ input {
     color: var(--spice-text) !important;
 }
 
+input::placeholder {
+    color: var(--spice-subtext) !important;
+}
+
 input:focus {
     border-top: none !important;
     border-left: none !important;
@@ -101,6 +105,18 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 .main-trackList-trackListRow.main-trackList-selected,
 .main-trackList-trackListRow.main-trackList-selected:hover {
     background-color: rgba(128, 128, 128, 0.3);
+}
+
+.main-entityHeader-subtitle.main-entityHeader-gray,
+.main-entityHeader-divider.main-type-mesto,
+.main-entityHeader-divider.main-type-mesto span,
+.main-type-mesto.main-type-mesto,
+.main-type-mesto.main-type-mesto span {
+    color: var(--spice-subtext) !important;
+}
+
+.contentSpacing hr {
+    border-color: rgba(128, 128, 128, 0.2);
 }
 
 /* Full window artist background */
@@ -165,9 +181,10 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 }
 
 /* collection card shown in library */
-.collection-collectionEntityHeroCard-descriptionContainer,
-div.collection-collectionEntityHeroCard-container a,
-div.collection-collectionEntityHeroCard-container {
+.collection-collectionEntityHeroCard-likedSongs,
+.collection-collectionEntityHeroCard-likedSongs .main-cardHeader-link,
+.collection-collectionEntityHeroCard-likedSongs .collection-collectionEntityHeroCard-descriptionContainer,
+.x-heroCategoryCard-heroTitle {
     color: #eeeeee !important;
 }
 
@@ -425,8 +442,8 @@ option {
 }
 
 /* playlist top buttons */
-.main-actionBar-ActionBarRow button:not(.main-playButton-primary) {
-    color: var(--spice-subtext);
+.os-viewport button:not(.main-playButton-primary) {
+    color: var(--spice-subtext) !important;
 }
 
 /* smooth color transitions */
