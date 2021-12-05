@@ -1,4 +1,4 @@
-let current = "3.1";
+let current = "3.2";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -32,14 +32,17 @@ function rgbToHex([r, g, b]) {
     return "#" + (0x1000000 + rgb).toString(16).slice(1);
 }
 
-const LightenDarkenColor = (h, p) =>
-    "#" +
-    [1, 3, 5]
-        .map((s) => parseInt(h.substr(s, 2), 16))
-        .map((c) => parseInt((c * (100 + p)) / 100))
-        .map((c) => (c < 255 ? c : 255))
-        .map((c) => c.toString(16).padStart(2, "0"))
-        .join("");
+function lightenDarkenColor(h, p) {
+    return (
+        "#" +
+        [1, 3, 5]
+            .map((s) => parseInt(h.substr(s, 2), 16))
+            .map((c) => parseInt((c * (100 + p)) / 100))
+            .map((c) => (c < 255 ? c : 255))
+            .map((c) => c.toString(16).padStart(2, "0"))
+            .join("")
+    );
+}
 
 function rgbToHsl([r, g, b]) {
     (r /= 255), (g /= 255), (b /= 255);
@@ -153,10 +156,10 @@ function updateColors(textColHex) {
     if (textColHex == undefined) return registerCoverListener();
 
     let isLightBg = isLight(textColorBg);
-    if (isLightBg) textColHex = LightenDarkenColor(textColHex, -15); // vibrant color is always too bright for white bg mode
+    if (isLightBg) textColHex = lightenDarkenColor(textColHex, -15); // vibrant color is always too bright for white bg mode
 
-    let darkColHex = LightenDarkenColor(textColHex, isLightBg ? 12 : -20);
-    let darkerColHex = LightenDarkenColor(textColHex, isLightBg ? 30 : -40);
+    let darkColHex = lightenDarkenColor(textColHex, isLightBg ? 12 : -20);
+    let darkerColHex = lightenDarkenColor(textColHex, isLightBg ? 30 : -40);
     let buttonBgColHex = setLightness(textColHex, isLightBg ? 0.9 : 0.14);
     setRootColor("text", textColHex);
     setRootColor("button", darkerColHex);
@@ -186,14 +189,18 @@ async function songchange() {
 
     if (album_uri !== undefined && !album_uri.includes("spotify:show")) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""));
-
         let album_date = new Date(albumInfo.year, (albumInfo.month || 1) - 1, albumInfo.day || 0);
         let recent_date = new Date();
         recent_date.setMonth(recent_date.getMonth() - 6);
         album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
-        album_link = '<a title="' + Spicetify.Player.data.track.metadata.album_title + '" href="' + album_uri + '" data-uri="' + album_uri + '" data-interaction-target="album-name" class="tl-cell__content">' + Spicetify.Player.data.track.metadata.album_title + "</a>";
-
-        nearArtistSpanText = album_link + " • " + album_date;
+        nearArtistSpanText = `
+            <span>
+                <span draggable="true">
+                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.track.metadata.album_title}</a>
+                </span>
+            </span>
+            <span> • ${album_date}</span>
+        `;
     } else if (Spicetify.Player.data.track.uri.includes("spotify:episode")) {
         // podcast
         bgImage = bgImage.replace("spotify:image:", "https://i.scdn.co/image/");
@@ -211,11 +218,11 @@ async function songchange() {
         setTimeout(songchange, 200);
     }
 
-    if (document.querySelector("#main-trackInfo-year") === null) {
+    if (!document.querySelector("#main-trackInfo-year")) {
         waitForElement([".main-trackInfo-container"], (queries) => {
             nearArtistSpan = document.createElement("div");
             nearArtistSpan.id = "main-trackInfo-year";
-            nearArtistSpan.classList.add("main-trackInfo-artists", "ellipsis-one-line", "main-type-finale");
+            nearArtistSpan.classList.add("main-trackInfo-artists", "standalone-ellipsis-one-line", "main-type-finale");
             nearArtistSpan.innerHTML = nearArtistSpanText;
             queries[0].append(nearArtistSpan);
         });
@@ -231,7 +238,7 @@ Spicetify.Player.addEventListener("songchange", songchange);
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
     textColor = "#509bf5";
-    cols = isLight(textColorBg) ? ["VIBRANT", "DARK_VIBRANT", "DESATURATED", "LIGHT_VIBRANT"] : ["VIBRANT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
+    cols = isLight(textColorBg) ? ["VIBRANT", "DARK_VIBRANT", "VIBRANT_NON_ALARMING", "DESATURATED", "LIGHT_VIBRANT"] : ["VIBRANT", "LIGHT_VIBRANT", "VIBRANT_NON_ALARMING", "DESATURATED", "DARK_VIBRANT"];
     Spicetify.colorExtractor(Spicetify.Player.data.track.uri).then(
         (swatches) => {
             for (var col in cols)
@@ -239,7 +246,6 @@ function pickCoverColor(img) {
                     textColor = swatches[cols[col]];
                     break;
                 }
-
             // Spotify returns hex colors with improper length
             while (textColor.length != 4 && textColor.length < 7) {
                 textColor = textColor.replace("#", "#0");
