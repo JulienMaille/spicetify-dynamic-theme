@@ -5,5 +5,8 @@
     "readme": "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/README.md",
     "usercss": "user.css",
     "schemes": "color.ini",
-    "include": ["https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/default-dynamic.js"]
+    "include": [
+        "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/default-dynamic.js",
+        "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/main/Vibrant.min.js"
+    ]
 }

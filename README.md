@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
 4. Add the 2 lines in `[Patch]` section of the config file (see details below)
 5. Run:
      ```
-     spicetify config extensions default-dynamic.js
+     spicetify config extensions default-dynamic.js extensions Vibrant.min.js
      spicetify config current_theme DefaultDynamic
      spicetify config color_scheme base
      spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
@@ -69,6 +69,6 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
 1. Remove Patch lines you added in config file earlier.
 2. Run:
     ```
-    spicetify config current_theme " " extensions default-dynamic.js-
+    spicetify config current_theme " " extensions default-dynamic.js- extensions Vibrant.min.js-
     spicetify apply
     ```

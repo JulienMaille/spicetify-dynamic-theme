@@ -238,27 +238,14 @@ Spicetify.Player.addEventListener("songchange", songchange);
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
     textColor = "#509bf5";
-    cols = isLight(textColorBg) ? ["VIBRANT", "DARK_VIBRANT", "VIBRANT_NON_ALARMING", "DESATURATED", "LIGHT_VIBRANT"] : ["VIBRANT", "LIGHT_VIBRANT", "VIBRANT_NON_ALARMING", "DESATURATED", "DARK_VIBRANT"];
-    Spicetify.colorExtractor(Spicetify.Player.data.track.uri).then(
-        (swatches) => {
-            for (var col in cols)
-                if (swatches[cols[col]]) {
-                    textColor = swatches[cols[col]];
-                    break;
-                }
-            // Spotify returns hex colors with improper length
-            while (textColor.length != 4 && textColor.length < 7) {
-                textColor = textColor.replace("#", "#0");
-            }
-            updateColors(textColor);
-        },
-        (err) => {
-            console.log(err);
-            // On startup we receive songChange too soon and colorExtractor will fail
-            // todo: retry only colorExtract
-            setTimeout(songchange, 200);
+    var swatches = new Vibrant(img, 12).swatches();
+    cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
+    for (var col in cols)
+        if (swatches[cols[col]]) {
+            textColor = swatches[cols[col]].getHex();
+            break;
         }
-    );
+    updateColors(textColor);
 }
 
 var coverListener;

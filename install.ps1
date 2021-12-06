@@ -91,8 +91,9 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   Write-Part "INSTALLING";
   cd $sp_dot_dir
   Copy-Item default-dynamic.js ..\..\Extensions
-  spicetify config extensions dribbblish-dynamic.js-  extensions dribbblish.js-
-  spicetify config extensions default-dynamic.js
+  Copy-Item Vibrant.min.js ..\..\Extensions
+  spicetify config extensions dribbblish-dynamic.js- extensions dribbblish.js-
+  spicetify config extensions default-dynamic.js extensions Vibrant.min.js
   spicetify config current_theme DefaultDynamic
   spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
   Write-Done
