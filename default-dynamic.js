@@ -1,4 +1,4 @@
-let current = "3.2";
+let current = "3.3";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -285,8 +285,11 @@ registerCoverListener();
         .then((data) => {
             if (data.tag_name > current) {
                 document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable");
-                document.querySelector("#main-topBar-moon-button").append(`NEW v${data.tag_name} available`);
-                document.querySelector("#main-topBar-moon-button").setAttribute("title", `Changes: ${data.name}`);
+                let updateLink = document.createElement("a");
+                updateLink.setAttribute("title", `Changes: ${data.name}`);
+                updateLink.setAttribute("href", "https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest");
+                updateLink.innerHTML = `v${data.tag_name} available`;
+                document.querySelector("#main-topBar-moon-button").append(updateLink);
             }
         })
         .catch((err) => {
