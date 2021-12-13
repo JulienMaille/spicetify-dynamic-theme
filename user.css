@@ -465,6 +465,12 @@ option {
     inherits: true;
 }
 
+@property --spice-sub-text {
+    syntax: "<color>";
+    initial-value: magenta;
+    inherits: true;
+}
+
 @property --spice-button {
     syntax: "<color>";
     initial-value: magenta;
@@ -472,5 +478,5 @@ option {
 }
 
 html {
-    transition: --spice-sidebar 1s, --spice-main 1s, --spice-text 1s, --spice-button 1s;
+    transition: --spice-sidebar 1s, --spice-main 1s, --spice-text 1s, --spice-sub-text 1s, --spice-button 1s;
 }
