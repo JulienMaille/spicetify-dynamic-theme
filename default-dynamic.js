@@ -1,4 +1,4 @@
-let current = "3.3";
+let current = "3.4";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -237,14 +237,16 @@ Spicetify.Player.addEventListener("songchange", songchange);
 
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
-    textColor = "#509bf5";
-    var swatches = new Vibrant(img, 12).swatches();
-    cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
-    for (var col in cols)
-        if (swatches[cols[col]]) {
-            textColor = swatches[cols[col]].getHex();
-            break;
-        }
+    if (img.complete) {
+        textColor = "#509bf5";
+        var swatches = new Vibrant(img, 12).swatches();
+        cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
+        for (var col in cols)
+            if (swatches[cols[col]]) {
+                textColor = swatches[cols[col]].getHex();
+                break;
+            }
+    }
     updateColors(textColor);
 }
 
