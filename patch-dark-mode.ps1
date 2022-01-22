@@ -1,7 +1,8 @@
 Get-Process -Name Spotify -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name SpotifyWebHelper -ErrorAction SilentlyContinue | Stop-Process -Force
 
-$sp = "$env:APPDATA\Spotify\Spotify.exe"
+$sp = spicetify config spotify_path
+$sp += "\Spotify.exe"
 Copy-Item $sp ($sp + ".backup")
 
 $bytes = [System.IO.File]::ReadAllBytes($sp);
@@ -10,7 +11,7 @@ $toRemove = [System.Text.Encoding]::UTF8.GetBytes("force-dark-mode");
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 for ($i = 0; $i -lt $bytes.Length; $i++) {
     if ($sw.Elapsed.TotalMilliseconds -ge 1000) {
-        Write-Progress -Activity "Eanbling dark mode in Spotify.exe" -status "Patching binary file $i" -percentComplete ($i / $bytes.Length*100);
+        Write-Progress -Activity "Enabling dark mode in Spotify.exe" -status "Patching binary file $i" -percentComplete ($i / $bytes.Length*100);
         $sw.Reset();
         $sw.Start();
     }
