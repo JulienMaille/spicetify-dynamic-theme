@@ -6,7 +6,7 @@ set -e
 
 echo "UN-INSTALLING"
 cd "$(dirname "$(spicetify -c)")"
-spicetify config current_theme " " extensions default-dynamic.js-
+spicetify config current_theme "SpicetifyDefault" extensions default-dynamic.js-
 
 echo "UN-PATCHING"
 if cat config-xpui.ini | grep -o '\[Patch\]'; then
