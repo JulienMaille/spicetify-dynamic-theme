@@ -181,10 +181,18 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
 }
 
 /* collection card shown in library */
+.main-heroCard-draggable,
+.main-heroCard-draggable a,
+.main-heroCard-draggable div,
 .collection-collectionEntityHeroCard-likedSongs,
 .collection-collectionEntityHeroCard-likedSongs .main-cardHeader-link,
 .collection-collectionEntityHeroCard-likedSongs .collection-collectionEntityHeroCard-descriptionContainer,
 .x-heroCategoryCard-heroTitle {
+    color: #eeeeee !important;
+}
+
+/* genre page card shown in search */
+#searchPage h3 {
     color: #eeeeee !important;
 }
 
