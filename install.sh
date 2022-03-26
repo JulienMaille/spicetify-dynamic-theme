@@ -9,7 +9,7 @@ xpui.js_repl_8008 = ,\${1}28,'
 cd "$(dirname "$(spicetify -c)")"
 if cat config-xpui.ini | grep -o '\[Patch\]'; then
     while true; do
-        read -p "Existing Spicetify patches will be overridden. Do you wish to continue? [y/n] " yn </dev/tty
+        read -p "Existing Spicetify patches will be overwritten. Do you wish to continue? [y/n] " yn </dev/tty
         case $yn in
         [Yy]*) break ;;
         [Nn]*) exit ;;
