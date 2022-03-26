@@ -20,7 +20,6 @@ if cat config-xpui.ini | grep -o '\[Patch\]'; then
     perl -i -0777 -pe "s/\[Patch\].*?($|(\r*\n){2})/${PATCH}\n\n/s" config-xpui.ini
 else
     echo "\n${PATCH}" >>config-xpui.ini
-    echo "else"
 fi
 
 echo "Finding lastest version (2/4)"
