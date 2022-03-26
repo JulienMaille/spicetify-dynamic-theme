@@ -10,7 +10,7 @@ function waitForElement(els, func, timeout = 100) {
 }
 
 function getAlbumInfo(uri) {
-    return Spicetify.CosmosAsync.get(`hm://album/v1/album-app/album/${uri}/desktop`);
+    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/albums/${uri}`);
 }
 
 function isLight(hex) {
@@ -189,7 +189,7 @@ async function songchange() {
 
     if (album_uri !== undefined && !album_uri.includes("spotify:show")) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""));
-        let album_date = new Date(albumInfo.year, (albumInfo.month || 1) - 1, albumInfo.day || 0);
+        let album_date = new Date(albumInfo.release_date);
         let recent_date = new Date();
         recent_date.setMonth(recent_date.getMonth() - 6);
         album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
