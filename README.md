@@ -11,7 +11,7 @@ The main differences are the light/dark toggle, the background cover and the dyn
 
 ## Install / Update
 
-Make sure you are using Spicetify >= v2.6.0 and Spotify >= v1.1.67.
+Make sure you are using latest releases of Spicetify and Spotify
 
 ### Windows (PowerShell)
 
@@ -28,8 +28,8 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
 ### Manual Install
 
 1. Download the latest [Source code (zip)](https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest)
-2. Extract the files to your [Spicetify/Themes folder](https://github.com/khanhas/spicetify-cli/wiki/Customization#themes) (rename the zipped folder to `DefaultDynamic`)
-3. Copy `default-dynamic.js` to your [Spicetify/Extensions folder](https://github.com/khanhas/spicetify-cli/wiki/Extensions#installing)
+2. Extract the files to your [Spicetify/Themes folder](https://spicetify.app/docs/development/customization#themes) (rename the zipped folder to `DefaultDynamic`)
+3. Copy `default-dynamic.js` to your [Spicetify/Extensions folder](https://spicetify.app/docs/advanced-usage/extensions#installing)
 4. Add the 2 lines in `[Patch]` section of the config file (see details below)
 5. Run:
     ```
