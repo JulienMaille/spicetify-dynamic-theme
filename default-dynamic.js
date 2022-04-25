@@ -222,7 +222,7 @@ async function songchange() {
         waitForElement([".main-trackInfo-container"], (queries) => {
             nearArtistSpan = document.createElement("div");
             nearArtistSpan.id = "main-trackInfo-year";
-            nearArtistSpan.classList.add("main-trackInfo-artists", "standalone-ellipsis-one-line", "main-type-finale");
+            nearArtistSpan.classList.add("main-trackInfo-release", "standalone-ellipsis-one-line", "main-type-finale");
             nearArtistSpan.innerHTML = nearArtistSpanText;
             queries[0].append(nearArtistSpan);
         });

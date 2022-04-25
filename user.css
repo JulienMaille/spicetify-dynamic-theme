@@ -445,6 +445,10 @@ option {
     color: var(--spice-subtext) !important;
 }
 
+/* album year info */
+.main-trackInfo-release {
+    font-size: 0.6875rem;
+}
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
