@@ -466,6 +466,10 @@ option {
     color: rgba(var(--spice-rgb-text), 0.7) !important;
 }
 
+/* fix discography buttons */
+.encore-dark-theme .encore-inverted-light-set {
+    --background-highlight: var(--spice-button-active);
+}
 /* fix green play buttons on hover */
 .main-topBar-topbarContent button:hover div,
 .main-card-PlayButtonContainer button:hover div,
