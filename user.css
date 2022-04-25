@@ -452,7 +452,7 @@ option {
 
 /* fix player bar buttons */
 .main-nowPlayingBar-left button,
-.main-nowPlayingBar-left button[aria-checked=false],
+.main-nowPlayingBar-left button[aria-checked="false"],
 .main-nowPlayingBar-right button,
 .main-nowPlayingBar-right button:focus:not(:focus-visible):not(:hover),
 .main-nowPlayingBar-center button,
@@ -475,6 +475,12 @@ option {
 .main-trackList-active {
     background-color: rgba(var(--spice-rgb-selected-row), 0.25) !important;
 }
+
+/* fix genre text color in recent search */
+#searchPage .main-heroCard-cardMetadata .main-cardHeader-link div {
+    color: var(--spice-text) !important;
+}
+
 /* fix green play buttons on hover */
 .main-topBar-topbarContent button:hover div,
 .main-card-PlayButtonContainer button:hover div,
