@@ -449,6 +449,23 @@ option {
 .main-trackInfo-release {
     font-size: 0.6875rem;
 }
+
+/* fix player bar buttons */
+.main-nowPlayingBar-left button,
+.main-nowPlayingBar-left button[aria-checked=false],
+.main-nowPlayingBar-right button,
+.main-nowPlayingBar-right button:focus:not(:focus-visible):not(:hover),
+.main-nowPlayingBar-center button,
+.main-nowPlayingBar-center button:focus:not(:focus-visible):not(:hover) {
+    color: var(--spice-subtext);
+}
+
+.main-nowPlayingBar-left button:active,
+.main-nowPlayingBar-right button:active,
+.main-nowPlayingBar-center button:active {
+    color: rgba(var(--spice-rgb-text), 0.7) !important;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
