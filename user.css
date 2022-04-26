@@ -488,6 +488,11 @@ option {
     background-color: var(--spice-text) !important;
 }
 
+/* light dark toggle background */
+#main-topBar-moon-button {
+    background-color: var(--spice-notification);
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
