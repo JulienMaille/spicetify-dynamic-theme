@@ -95,7 +95,7 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   spicetify config extensions dribbblish-dynamic.js- extensions dribbblish.js-
   spicetify config extensions default-dynamic.js extensions Vibrant.min.js
   spicetify config current_theme DefaultDynamic
-  spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
+  spicetify config inject_css 1 replace_colors 1
   Write-Done
 
   # Add patch

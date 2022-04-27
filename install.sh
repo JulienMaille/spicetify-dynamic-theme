@@ -39,14 +39,11 @@ theme_dir="$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
 ext_dir="$(dirname "$(spicetify -c)")/Extensions"
 
 # Make directories if needed
-mkdir -p "${theme_dir}/assets/glue-resources/fonts"
 mkdir -p "${ext_dir}"
 
 # Download latest tagged files into correct directories
 curl --progress-bar --output "${theme_dir}/color.ini" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/color.ini"
 curl --progress-bar --output "${theme_dir}/user.css" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/user.css"
-curl --progress-bar --output "${theme_dir}/assets/glue-resources/fonts/jost-v6-latin_cyrillic-500.woff2" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/assets/glue-resources/fonts/jost-v6-latin_cyrillic-500.woff2"
-curl --progress-bar --output "${theme_dir}/assets/glue-resources/fonts/jost-v6-latin_cyrillic-regular.woff2" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/assets/glue-resources/fonts/jost-v6-latin_cyrillic-regular.woff2"
 curl --progress-bar --output "${ext_dir}/default-dynamic.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/default-dynamic.js"
 curl --progress-bar --output "${ext_dir}/Vibrant.min.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/Vibrant.min.js"
 
@@ -54,7 +51,7 @@ echo "Applying theme (4/4)"
 spicetify config extensions dribbblish.js- extensions dribbblish-dynamic.js-
 spicetify config extensions default-dynamic.js extensions Vibrant.min.js
 spicetify config current_theme DefaultDynamic color_scheme base
-spicetify config inject_css 1 replace_colors 1 overwrite_assets 1
+spicetify config inject_css 1 replace_colors 1
 spicetify apply
 
 echo "All done!"

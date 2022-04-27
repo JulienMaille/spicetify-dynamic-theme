@@ -19,27 +19,6 @@ div.ReactModalPortal:last-of-type::before {
     }
 }
 
-/* jost-regular - latin_cyrillic */
-@font-face {
-    font-family: "Jost";
-    font-style: normal;
-    font-weight: 400;
-    src: url("./glue-resources/fonts/jost-v6-latin_cyrillic-regular.woff2") format("woff2");
-}
-/* jost-500 - latin_cyrillic */
-@font-face {
-    font-family: "Jost";
-    font-style: normal;
-    font-weight: 600;
-    src: url("./glue-resources/fonts/jost-v6-latin_cyrillic-500.woff2") format("woff2");
-}
-
-body,
-button,
-input {
-    font-family: "Jost", "spotify-circular", "spotify-circular-cyrillic", "spotify-circular-arabic", "spotify-circular-hebrew", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 .main-rootlist-rootlistDividerGradient {
     background: unset;
 }
