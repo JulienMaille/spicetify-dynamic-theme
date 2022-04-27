@@ -144,7 +144,7 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: calc(0.07 + 0.03 * var(--is_light, 0));
+    opacity: 0.17;
     z-index: +4;
 }
 
