@@ -434,15 +434,19 @@ option {
 .main-nowPlayingBar-left button[aria-checked="false"],
 .main-nowPlayingBar-right button,
 .main-nowPlayingBar-right button:focus:not(:focus-visible):not(:hover),
-.main-nowPlayingBar-center button,
+.main-nowPlayingBar-center button:not(.main-playPauseButton-button),
 .main-nowPlayingBar-center button:focus:not(:focus-visible):not(:hover) {
     color: var(--spice-subtext);
 }
 
 .main-nowPlayingBar-left button:active,
 .main-nowPlayingBar-right button:active,
-.main-nowPlayingBar-center button:active {
+.main-nowPlayingBar-center button:not(.main-playPauseButton-button):active {
     color: rgba(var(--spice-rgb-text), 0.7) !important;
+}
+
+.main-playPauseButton-button {
+    color: var(--spice-main) !important;
 }
 
 /* fix discography buttons */
@@ -467,9 +471,20 @@ option {
     background-color: var(--spice-text) !important;
 }
 
+.encore-dark-theme .encore-bright-accent-set {
+    --background-highlight: var(--spice-text);
+    --background-press: var(--spice-button-active);
+    --decorative-subdued: var(--spice-text);
+}
+
 /* light dark toggle background */
 #main-topBar-moon-button {
     background-color: var(--spice-notification);
+}
+
+/* hotfix 1.1.84 ugly gradient in left bar */
+.Y8edH1Yjo4xrW_58czQj {
+    background: none;
 }
 
 /* smooth color transitions */
