@@ -39,6 +39,7 @@ theme_dir="$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
 ext_dir="$(dirname "$(spicetify -c)")/Extensions"
 
 # Make directories if needed
+mkdir -p "${theme_dir}"
 mkdir -p "${ext_dir}"
 
 # Download latest tagged files into correct directories
