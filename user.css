@@ -487,6 +487,12 @@ option {
     background: none;
 }
 
+/* remove home top gradient */
+.n87ifzfQlmGX8vkeYGDL {
+    background-color: transparent !important;
+    background: none;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
