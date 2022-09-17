@@ -1,4 +1,4 @@
-let current = "3.9";
+let current = "4.0";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -239,13 +239,17 @@ function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
     if (img.complete) {
         textColor = "#509bf5";
-        var swatches = new Vibrant(img, 12).swatches();
-        cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
-        for (var col in cols)
-            if (swatches[cols[col]]) {
-                textColor = swatches[cols[col]].getHex();
-                break;
-            }
+        try {
+            var swatches = new Vibrant(img, 12).swatches();
+            cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
+            for (var col in cols)
+                if (swatches[cols[col]]) {
+                    textColor = swatches[cols[col]].getHex();
+                    break;
+                }
+        } catch (err) {
+            console.error(err);
+        }
     }
     updateColors(textColor);
 }
