@@ -53,11 +53,7 @@ xpui.js_repl_8008 = ,${1}28,
 ## Follow system dark/light theme (PowerShell)
 
 Automatic dark mode should work on MacOs and Linux out of the box.
-From Spotify > v1.1.70, dark mode is forced in Windows builds. You will need to patch Spotify.exe using this script:
-
-```powershell
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.ps1" | Invoke-Expression
-```
+From Spotify > v1.2.70, dark mode works again in Windows builds.
 
 ## Hide Window Controls:
 
