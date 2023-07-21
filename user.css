@@ -457,7 +457,7 @@ option {
 
 /* highlight current playing song */
 .main-trackList-active {
-    background-color: rgba(var(--spice-rgb-selected-row), 0.25) !important;
+    background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
 }
 
 /* fix genre text color in recent search */
@@ -492,6 +492,13 @@ option {
 .n87ifzfQlmGX8vkeYGDL {
     background-color: transparent !important;
     background: none;
+}
+
+/* bottom bar background */
+.main-nowPlayingBar-nowPlayingBar{
+    background: rgba(var(--spice-rgb-selected-row), 0.2);
+    border-radius: 12px;
+    margin: 6px 12px;
 }
 
 /* smooth color transitions */
