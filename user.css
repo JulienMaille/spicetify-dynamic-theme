@@ -18,7 +18,8 @@ div.ReactModalPortal:last-of-type::before {
         --system_is_dark: 0;
     }
 }
-
+.main-yourLibraryX-entryPoints,
+.Root__nav-bar,
 .main-rootlist-rootlistDividerGradient {
     background: unset;
 }
