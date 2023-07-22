@@ -170,7 +170,8 @@ function updateColors(textColHex) {
     setRootColor("selected-row", darkerColHex);
     setRootColor("tab-active", softHighlightHex);
     setRootColor("button-disabled", softHighlightHex);
-    setRootColor("highlight", softHighlightHex);
+    let softerHighlightHex = setLightness(textColHex, isLightBg ? 0.9 : 0.1);
+    setRootColor("highlight", softerHighlightHex);
 }
 
 let nearArtistSpanText = "";

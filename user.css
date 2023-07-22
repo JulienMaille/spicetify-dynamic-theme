@@ -158,12 +158,6 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     background-color: var(--spice-button);
 }
 
-.collection-collectionEntityHeroCard-likedSongs,
-.collection-collectionEntityHeroCard-likedSongs:focus-within,
-.collection-collectionEntityHeroCard-likedSongs:hover {
-    background: linear-gradient(149.46deg, var(--spice-button), var(--spice-text) 99.16%) !important;
-}
-
 /* spotify dynamic gradients */
 .main-home-homeHeader {
     opacity: 0.3;
@@ -201,23 +195,9 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     color: var(--spice-subtext) !important;
 }
 
-/* profile icon */
-.main-entityHeader-imagePlaceholder {
-    color: unset;
-}
-
 /* left menu active item background */
 .main-navBar-navBarLinkActive {
     color: var(--spice-subtext) !important;
-}
-
-/* connect */
-.connect-title {
-    color: var(--spice-subtext) !important;
-}
-
-.connect-header {
-    display: none;
 }
 
 /* big oval buttons */
@@ -248,20 +228,6 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     pointer-events: none;
     position: absolute;
     width: 0;
-}
-
-/* buddy shadow */
-.main-buddyFeed-buddyFeed {
-    -webkit-box-shadow: none;
-    box-shadow: none;
-}
-
-/* buddyFeed color fix */
-.main-buddyFeed-activityMetadata .main-buddyFeed-usernameAndTimestamp,
-.main-buddyFeed-activityMetadata .main-buddyFeed-username a,
-.main-buddyFeed-activityMetadata .main-buddyFeed-playbackContextLink,
-.main-buddyFeed-activityMetadata .main-buddyFeed-artistAndTrackName a {
-    color: unset;
 }
 
 /* drop down */
@@ -465,6 +431,12 @@ option {
 .encore-announcement-set,
 .encore-announcement-set button {
     color: white;
+}
+
+.tippy-box {
+    color: var(--spice-text);
+    border-color: var(--spice-text);
+    background-color: var(--spice-shadow) !important;
 }
 
 /* smooth color transitions */
