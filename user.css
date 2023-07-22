@@ -158,22 +158,6 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     background-color: var(--spice-button);
 }
 
-/* collection card shown in library */
-.main-heroCard-draggable,
-.main-heroCard-draggable a,
-.main-heroCard-draggable div,
-.collection-collectionEntityHeroCard-likedSongs,
-.collection-collectionEntityHeroCard-likedSongs .main-cardHeader-link,
-.collection-collectionEntityHeroCard-likedSongs .collection-collectionEntityHeroCard-descriptionContainer,
-.x-heroCategoryCard-heroTitle {
-    color: #eeeeee !important;
-}
-
-/* genre page card shown in search */
-#searchPage h3 {
-    color: #eeeeee !important;
-}
-
 .collection-collectionEntityHeroCard-likedSongs,
 .collection-collectionEntityHeroCard-likedSongs:focus-within,
 .collection-collectionEntityHeroCard-likedSongs:hover {
@@ -356,15 +340,6 @@ option {
     background-color: unset;
 }
 
-/* Hightlight selected playlist */
-.main-rootlist-rootlistItemLink.main-rootlist-rootlistItemLinkActive {
-    color: var(--spice-subtext);
-    background-color: rgba(var(--spice-rgb-button), 0.5);
-    border-radius: 4px;
-    padding: 0 16px;
-    margin: 0 -16px;
-}
-
 /* Menu item hover */
 .main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):focus,
 .main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):hover {
@@ -458,18 +433,6 @@ option {
     background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
 }
 
-/* fix genre text color in recent search */
-#searchPage .main-heroCard-cardMetadata .main-cardHeader-link div {
-    color: var(--spice-text) !important;
-}
-
-/* fix green play buttons on hover */
-.main-topBar-topbarContent button:hover div,
-.main-card-PlayButtonContainer button:hover div,
-.main-actionBar-ActionBarRow button:hover div {
-    background-color: var(--spice-text) !important;
-}
-
 .encore-dark-theme .encore-bright-accent-set {
     --background-highlight: var(--spice-text);
     --background-press: var(--spice-button-active);
@@ -481,22 +444,27 @@ option {
     background-color: var(--spice-shadow);
 }
 
-/* hotfix 1.1.84 ugly gradient in left bar */
-.Y8edH1Yjo4xrW_58czQj {
-    background: none;
-}
-
-/* remove home top gradient */
-.n87ifzfQlmGX8vkeYGDL {
-    background-color: transparent !important;
-    background: none;
-}
-
 /* bottom bar background */
 .main-nowPlayingBar-nowPlayingBar {
     background: rgba(var(--spice-rgb-selected-row), 0.2);
     border-radius: 12px;
     margin: 6px 12px;
+}
+
+/* Topbar text padding */
+.main-entityHeader-topbarTitle {
+    padding-left: 8px;
+}
+
+/* Search cards */
+.x-categoryCard-title {
+    color: white;
+}
+
+/* Tooltip cards */
+.encore-announcement-set,
+.encore-announcement-set button {
+    color: white;
 }
 
 /* smooth color transitions */
