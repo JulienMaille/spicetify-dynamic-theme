@@ -248,11 +248,6 @@ option {
     --lyrics-color-inactive: var(--spice-main) !important;
 }
 
-/* available update text */
-.main-topBarUpdateAvailable {
-    max-width: unset;
-}
-
 /* playlist header */
 .main-duration-container,
 .main-entityHeader-metaDataText,
@@ -407,7 +402,7 @@ option {
 
 /* light dark toggle background */
 #main-topBar-moon-button {
-    background-color: var(--spice-shadow);
+    background-color: var(--background-base);
 }
 
 /* bottom bar background */

@@ -141,7 +141,6 @@ waitForElement([".main-topBar-container"], (queries) => {
     // Add activator on top bar
     const div = document.createElement("div");
     div.id = "main-topBar-moon-div";
-    div.classList.add("main-topBarStatusIndicator-TopBarStatusIndicatorContainer");
     queries[0].insertBefore(div, queries[0].querySelector(".main-userWidget-box"));
 
     const button = document.createElement("button");
@@ -295,7 +294,8 @@ registerCoverListener();
         })
         .then((data) => {
             if (data.tag_name > current) {
-                document.querySelector("#main-topBar-moon-div").classList.add("main-topBarUpdateAvailable");
+                document.querySelector("#main-topBar-moon-button").classList.remove("main-topBar-buddyFeed");
+                document.querySelector("#main-topBar-moon-button").classList.add("main-noConnection-button");
                 let updateLink = document.createElement("a");
                 updateLink.setAttribute("title", `Changes: ${data.name}`);
                 updateLink.setAttribute("href", "https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest");
