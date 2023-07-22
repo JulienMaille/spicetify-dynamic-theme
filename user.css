@@ -439,6 +439,12 @@ option {
     background-color: var(--spice-shadow) !important;
 }
 
+/* fix podcast icon */
+.view-homeShortcutsGrid-imageWrapper > *,
+.main-yourEpisodes-coverContainer {
+    background-color: var(--spice-highlight);
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
