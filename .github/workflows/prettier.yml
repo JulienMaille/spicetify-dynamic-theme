@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Prettify code
-        uses: creyD/prettier_action@v4.0
+        uses: creyD/prettier_action@v4.3
         with:
           prettier_options: --write **/*.{js,css}
           same_commit: True

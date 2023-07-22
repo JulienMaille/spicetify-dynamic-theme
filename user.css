@@ -495,7 +495,7 @@ option {
 }
 
 /* bottom bar background */
-.main-nowPlayingBar-nowPlayingBar{
+.main-nowPlayingBar-nowPlayingBar {
     background: rgba(var(--spice-rgb-selected-row), 0.2);
     border-radius: 12px;
     margin: 6px 12px;
@@ -539,5 +539,11 @@ option {
 }
 
 html {
-    transition: --spice-sidebar 0.5s, --spice-main 0.5s, --spice-text 0.5s, --spice-subtext 0.5s, --spice-button 0.5s, --spice-player 0.5s;
+    transition:
+        --spice-sidebar 0.5s,
+        --spice-main 0.5s,
+        --spice-text 0.5s,
+        --spice-subtext 0.5s,
+        --spice-button 0.5s,
+        --spice-player 0.5s;
 }
