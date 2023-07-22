@@ -119,9 +119,13 @@ function toggleDark(setDark) {
     setRootColor("main", textColorBg);
     setRootColor("sidebar", textColorBg);
     setRootColor("player", textColorBg);
+    setRootColor("shadow", textColorBg);
     setRootColor("card", setDark ? "#040404" : "#ECECEC");
     setRootColor("subtext", setDark ? "#EAEAEA" : "#3D3D3D");
+    setRootColor("main-elevated", setDark ? "#303030" : "#DDDDDD");
     setRootColor("notification", setDark ? "#303030" : "#DDDDDD");
+    setRootColor("highlight", setDark ? "#303030" : "#DDDDDD");
+    setRootColor("highlight-elevated", setDark ? "#303030" : "#DDDDDD");
 
     updateColors(textColor);
 }
@@ -160,13 +164,13 @@ function updateColors(textColHex) {
 
     let darkColHex = lightenDarkenColor(textColHex, isLightBg ? 12 : -20);
     let darkerColHex = lightenDarkenColor(textColHex, isLightBg ? 30 : -40);
-    let buttonBgColHex = setLightness(textColHex, isLightBg ? 0.9 : 0.14);
+    let softHighlightHex = setLightness(textColHex, isLightBg ? 0.9 : 0.14);
     setRootColor("text", textColHex);
     setRootColor("button", darkerColHex);
     setRootColor("button-active", darkColHex);
     setRootColor("selected-row", darkerColHex);
-    setRootColor("tab-active", buttonBgColHex);
-    setRootColor("button-disabled", buttonBgColHex);
+    setRootColor("tab-active", softHighlightHex);
+    setRootColor("button-disabled", softHighlightHex);
 }
 
 let nearArtistSpanText = "";
