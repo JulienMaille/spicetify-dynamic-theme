@@ -124,7 +124,6 @@ function toggleDark(setDark) {
     setRootColor("subtext", setDark ? "#EAEAEA" : "#3D3D3D");
     setRootColor("main-elevated", setDark ? "#303030" : "#DDDDDD");
     setRootColor("notification", setDark ? "#303030" : "#DDDDDD");
-    setRootColor("highlight", setDark ? "#303030" : "#DDDDDD");
     setRootColor("highlight-elevated", setDark ? "#303030" : "#DDDDDD");
 
     updateColors(textColor);
@@ -147,7 +146,7 @@ waitForElement([".main-topBar-container"], (queries) => {
 
     const button = document.createElement("button");
     button.id = "main-topBar-moon-button";
-    button.classList.add("main-noConnection-button", "main-topBarStatusIndicator-hasTooltip");
+    button.classList.add("main-topBar-buddyFeed");
     button.setAttribute("title", "Light/Dark");
     button.onclick = () => {
         toggleDark();
@@ -171,6 +170,7 @@ function updateColors(textColHex) {
     setRootColor("selected-row", darkerColHex);
     setRootColor("tab-active", softHighlightHex);
     setRootColor("button-disabled", softHighlightHex);
+    setRootColor("highlight", softHighlightHex);
 }
 
 let nearArtistSpanText = "";

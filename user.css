@@ -37,9 +37,7 @@ input::placeholder {
 }
 
 input:focus {
-    border-top: none !important;
-    border-left: none !important;
-    border-right: none !important;
+    box-shadow: none !important;
 }
 
 .x-searchInput-searchInputSearchIcon,
