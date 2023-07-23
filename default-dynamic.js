@@ -1,4 +1,4 @@
-let current = "4.5";
+let current = "4.4";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -9,8 +9,12 @@ function waitForElement(els, func, timeout = 100) {
     }
 }
 
-function getAlbumInfo(uri) {
-    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/albums/${uri}`);
+function getAlbumInfo(id) {
+    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/albums/${id}`);
+}
+
+function getEpisodeInfo(id) {
+    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/episodes/${id}`);
 }
 
 function isLight(hex) {
@@ -207,8 +211,18 @@ async function songchange() {
         `;
     } else if (Spicetify.Player.data.track.uri.includes("spotify:episode")) {
         // podcast
+        const episodeInfo = await getEpisodeInfo(Spicetify.Player.data.track.uri.replace("spotify:episode:", ""));
+        let podcast_date = new Date(episodeInfo.release_date);
+        podcast_date = podcast_date.toLocaleString("default", { year: "numeric", month: "short" });
         bgImage = bgImage.replace("spotify:image:", "https://i.scdn.co/image/");
-        nearArtistSpanText = Spicetify.Player.data.track.metadata.album_title;
+        nearArtistSpanText = `
+            <span>
+                <span draggable="true">
+                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.track.metadata["show.publisher"]}</a>
+                </span>
+            </span>
+            <span> • ${podcast_date}</span>
+        `;
     } else if (Spicetify.Player.data.track.metadata.is_local == "true") {
         // local file
         nearArtistSpanText = Spicetify.Player.data.track.metadata.album_title;
