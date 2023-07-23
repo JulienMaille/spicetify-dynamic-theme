@@ -44,7 +44,7 @@ input:focus {
 .main-entityHeader-titleButton,
 .main-entityHeader-title,
 .main-shelf-title,
-.main-type-canon {
+.TypeElement-canon-textBase-type {
     color: var(--spice-subtext) !important;
 }
 
@@ -157,12 +157,6 @@ input:focus {
 .main-buttons-button:hover {
     color: var(--spice-main) !important;
     background-color: var(--spice-button-active);
-}
-
-/* top buttons */
-.main-userWidget-box,
-.main-topBar-historyButtons .main-topBar-button {
-    background-color: var(--spice-notification);
 }
 
 /* bubble arrow */
@@ -348,9 +342,17 @@ option {
     --decorative-subdued: var(--spice-text);
 }
 
-/* light dark toggle background */
+/* top buttons */
+.main-topBar-historyButtons .main-topBar-button {
+    background-color: var(--spice-main);
+}
+
 .main-topBar-buddyFeed {
     color: rgba(var(--spice-rgb-text), 0.5);
+}
+
+.search-searchCategory-carouselButton {
+    background-color: var(--background-tinted-highlight);
 }
 
 /* bottom bar background */
