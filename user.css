@@ -66,6 +66,9 @@ input:focus {
 .connect-device-list-container {
     box-shadow: 0 4px 20px #21212130;
 }
+
+/* animated equaliser icons */
+.main-devicePicker-nowPlayingActiveIcon,
 .main-trackList-playingIcon {
     filter: grayscale(1);
 }
@@ -411,6 +414,11 @@ option {
 .main-yourLibraryX-listItemGroup:hover .LineClamp,
 .main-yourLibraryX-listItemGroup:hover .main-yourLibraryX-listRowSubtitleLeadingWrapper {
     color: var(--spice-text);
+}
+
+/* lyrics */
+.lyrics-lyrics-background {
+    background-color: var(--spice-text);
 }
 
 /* smooth color transitions */
