@@ -45,10 +45,6 @@ input:focus {
     color: var(--spice-text) !important;
 }
 
-.main-playButton-PlayButton.main-playButton-primary {
-    color: white;
-}
-
 /* Remove Topbar background colour */
 .main-topBar-background {
     background-color: unset !important;
@@ -62,35 +58,8 @@ input:focus {
 .connect-device-list-container {
     box-shadow: 0 4px 20px #21212130;
 }
-
-.artist-artistVerifiedBadge-badge svg,
 .main-trackList-playingIcon {
     filter: grayscale(1);
-}
-
-span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
-    fill: black;
-}
-
-.main-navBar-navBarLinkActive {
-    background-color: rgba(var(--spice-rgb-button), 0.5);
-}
-
-.main-trackList-trackListRow:focus-within,
-.main-trackList-trackListRow:hover {
-    background-color: rgba(128, 128, 128, 0.1);
-}
-.main-trackList-trackListRow.main-trackList-selected,
-.main-trackList-trackListRow.main-trackList-selected:hover {
-    background-color: rgba(128, 128, 128, 0.3);
-}
-
-.main-entityHeader-subtitle.main-entityHeader-gray,
-.main-entityHeader-divider.main-type-mesto,
-.main-entityHeader-divider.main-type-mesto span,
-.main-type-mesto.main-type-mesto,
-.main-type-mesto.main-type-mesto span {
-    color: var(--spice-subtext) !important;
 }
 
 .contentSpacing hr {
@@ -169,30 +138,6 @@ span.artist-artistVerifiedBadge-badge svg:nth-child(1) {
     opacity: 0.15;
     background-color: var(--spice-text) !important;
     filter: grayscale(0.5);
-}
-
-/* play button in playlist table */
-.main-trackList-rowPlayPauseButton {
-    padding: 0px;
-}
-
-.main-trackList-rowPlayPauseButton:hover {
-    color: var(--spice-subtext);
-    transform: scale(1.15);
-    transition: transform 30ms linear;
-}
-
-.main-collectionLinkButton-collectionLinkButton,
-.main-createPlaylistButton-button {
-    color: var(--spice-subtext);
-}
-
-/* h2-like titles */
-.main-entityHeader-titleButton,
-.main-entityHeader-title,
-.main-shelf-title,
-.main-type-canon {
-    color: var(--spice-subtext) !important;
 }
 
 /* left menu active item background */
@@ -343,11 +288,6 @@ option {
     background-color: rgba(var(--spice-rgb-subtext), 0.3) !important;
 }
 
-/* same border radius on all 3 icons (playlist, liked, podcasts) */
-.main-yourEpisodesButton-yourEpisodesIcon {
-    border-radius: 4px;
-}
-
 /* explicit lyrics icon */
 .main-tag-container {
     color: var(--spice-subtext);
@@ -401,8 +341,8 @@ option {
 }
 
 /* light dark toggle background */
-#main-topBar-moon-button {
-    background-color: var(--background-base);
+.main-topBar-buddyFeed {
+    color: rgba(var(--spice-rgb-text), 0.5);
 }
 
 /* bottom bar background */
@@ -438,6 +378,29 @@ option {
 .view-homeShortcutsGrid-imageWrapper > *,
 .main-yourEpisodes-coverContainer {
     background-color: var(--spice-highlight);
+}
+
+/* verified badge */
+.artist-artistVerifiedBadge-fillColor {
+    background-color: var(--spice-main);
+}
+
+.artist-artistVerifiedBadge-badge {
+    fill: var(--spice-text);
+}
+
+/* left sidebar hover */
+.main-yourLibraryX-listItemGroup:hover::after {
+    background-color: rgba(var(--spice-rgb-selected-row), calc(var(--is_light) * (-0.13) + 0.2));
+}
+
+.main-yourLibraryX-listItemGroup div:hover {
+    background-color: unset;
+}
+
+.main-yourLibraryX-listItemGroup:hover .LineClamp,
+.main-yourLibraryX-listItemGroup:hover .main-yourLibraryX-listRowSubtitleLeadingWrapper {
+    color: var(--spice-text);
 }
 
 /* smooth color transitions */
