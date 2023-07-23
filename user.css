@@ -40,6 +40,14 @@ input:focus {
     box-shadow: none !important;
 }
 
+/* h2-like titles */
+.main-entityHeader-titleButton,
+.main-entityHeader-title,
+.main-shelf-title,
+.main-type-canon {
+    color: var(--spice-subtext) !important;
+}
+
 .x-searchInput-searchInputSearchIcon,
 .x-searchInput-searchInputClearButton {
     color: var(--spice-text) !important;
@@ -112,7 +120,7 @@ input:focus {
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: calc(var(--is_light) * 0.1 + 0.07);
+    opacity: 0.15;
     z-index: +4;
 }
 
@@ -347,7 +355,7 @@ option {
 
 /* bottom bar background */
 .main-nowPlayingBar-nowPlayingBar {
-    background: rgba(var(--spice-rgb-selected-row), 0.2);
+    background: linear-gradient(90deg, rgba(var(--spice-rgb-text), 0.2) 0%, var(--spice-main) 20%, var(--spice-main) 80%, rgba(var(--spice-rgb-text), 0.2) 100%);
     border-radius: 12px;
     margin: 6px 12px;
 }
