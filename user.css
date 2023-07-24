@@ -67,10 +67,11 @@ input:focus {
     box-shadow: 0 4px 20px #21212130;
 }
 
-/* animated equaliser icons */
-.main-devicePicker-nowPlayingActiveIcon,
-.main-trackList-playingIcon {
-    filter: grayscale(1);
+/* animated equaliser/heart icons */
+img.main-devicePicker-nowPlayingActiveIcon,
+.main-trackList-playingIcon,
+.main-trackList-rowHeartButton svg:not(.Svg-img-16-icon) {
+    filter: hue-rotate(var(--hue-from-green));
 }
 
 .contentSpacing hr {

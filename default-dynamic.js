@@ -175,6 +175,10 @@ function updateColors(textColHex) {
     setRootColor("button-disabled", softHighlightHex);
     let softerHighlightHex = setLightness(textColHex, isLightBg ? 0.9 : 0.1);
     setRootColor("highlight", softerHighlightHex);
+
+    // compute hue rotation to change spotify green to main color
+    let hue = 360 * rgbToHsl(hexToRgb(textColHex))[0];
+    document.documentElement.style.setProperty("--hue-from-green", (hue + 235).toFixed(0) + "deg");
 }
 
 let nearArtistSpanText = "";
