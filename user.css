@@ -18,12 +18,15 @@ div.ReactModalPortal:last-of-type::before {
         --system_is_dark: 0;
     }
 }
+
+/* remove left sidebar background */
 .main-yourLibraryX-entryPoints,
 .Root__nav-bar,
 .main-rootlist-rootlistDividerGradient {
     background: unset;
 }
 
+/* search boxes */
 input {
     background-color: unset !important;
     border-bottom: solid 1px var(--spice-text) !important;
@@ -58,6 +61,7 @@ h1,
 .main-topBar-background {
     background-color: unset !important;
 }
+
 .main-topBar-overlay {
     background-color: var(--spice-main);
 }
@@ -153,51 +157,24 @@ img.main-devicePicker-nowPlayingActiveIcon,
     filter: grayscale(0.5);
 }
 
-/* left menu active item background */
-.main-navBar-navBarLinkActive {
-    color: var(--spice-subtext) !important;
-}
-
-/* big oval buttons */
-.main-buttons-button:hover {
-    color: var(--spice-main) !important;
-    background-color: var(--spice-button-active);
-}
-
-/* bubble arrow */
-.main-notificationBubble-NotificationBubble {
-    border: 1px solid var(--spice-text);
-}
-
-.main-notificationBubble-withTopRightPointer:before {
-    right: 32px;
-    top: -17px;
-    border: 8px solid transparent;
-    border-bottom-color: var(--spice-text);
-    bottom: 100%;
-    content: "";
-    height: 0;
-    pointer-events: none;
-    position: absolute;
-    width: 0;
-}
-
 /* drop down */
 .main-dropDown-dropDown,
 select,
 option {
-    color: var(--modspotify_secondary_fg) !important;
+    color: var(--text-subdued) !important;
     background-color: var(--spice-notification) !important;
-    font-weight: 400 !important;
-    border-radius: 4px !important;
-    margin-left: 0 !important;
 }
 
 /* lyrics plus app */
-.lyrics-lyricsContainer-LyricsContainer {
+.lyrics-lyrics-background {
+    background-color: var(--spice-main);
+}
+
+.lyrics-lyrics-contentContainer {
     margin-top: unset;
-    --lyrics-color-active: var(--spice-subtext) !important;
-    --lyrics-color-inactive: var(--spice-main) !important;
+    --lyrics-color-active: var(--spice-text);
+    --lyrics-color-inactive: var(--spice-main-elevated);
+    --lyrics-color-passed: rgba(var(--spice-rgb-subtext), 0.8);
 }
 
 /* playlist header */
@@ -205,52 +182,6 @@ option {
 .main-entityHeader-metaDataText,
 .playlist-playlist-playlistDescription {
     color: var(--spice-text);
-}
-
-/* lyrics header */
-.lyrics-lyricsContainer-LyricsBackground {
-    background: linear-gradient(180deg, transparent 60px, var(--lyrics-color-background) 100%) !important;
-}
-
-/* cover collapsed button */
-.main-coverSlotCollapsed-expandButton,
-.x-removeButton-RemoveButton,
-.main-coverSlotExpandedCollapseButton-collapseButton {
-    color: var(--spice-main) !important;
-    background-color: rgba(var(--spice-rgb-subtext), 0.25) !important;
-}
-
-.main-coverSlotCollapsed-expandButton:hover,
-.x-removeButton-RemoveButton:hover,
-.main-coverSlotExpandedCollapseButton-collapseButton:hover {
-    background-color: rgba(var(--spice-rgb-subtext), 0.6) !important;
-}
-
-/* save vertical space in left menu */
-.spotify__container--is-desktop:not(.fullscreen) .main-navBar-entryPoints {
-    padding-top: 12px;
-}
-
-.main-navBar-navBarLink {
-    height: 34px; /* try 32px */
-}
-
-.main-rootlist-rootlist {
-    margin-top: 6px;
-}
-
-.main-createPlaylistButton-button,
-.main-collectionLinkButton-collectionLinkButton {
-    padding-top: 3px;
-    padding-bottom: 4px;
-}
-
-.main-rootlist-rootlist {
-    --left-sidebar-item-height: 28px; /* try 26px */
-}
-
-.main-rootlist-rootlistDivider {
-    background-color: unset;
 }
 
 /* Menu item hover */
@@ -261,38 +192,6 @@ option {
 
 .main-contextMenu-menuItemButton {
     color: var(--spice-subtext);
-}
-
-/* bookmark extension */
-.bookmark-menuitem {
-    padding: 5px !important;
-}
-
-.bookmark-menuitem:hover {
-    background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
-}
-
-.bookmark-controls {
-    color: var(--spice-main) !important;
-    background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
-}
-
-.bookmark-controls:hover {
-    background-color: rgba(var(--spice-rgb-subtext), 0.5) !important;
-}
-
-/* new-releases & lyrics-plus settings */
-.reddit-sort-container button.switch,
-.new-releases-header button.switch,
-.lyrics-tabBar-header button.switch {
-    background-color: rgba(var(--spice-rgb-subtext), 0.15) !important;
-    color: var(--spice-text);
-}
-
-.reddit-sort-container button.switch:hover,
-.new-releases-header button.switch:hover,
-.lyrics-tabBar-header button.switch:hover {
-    background-color: rgba(var(--spice-rgb-subtext), 0.3) !important;
 }
 
 /* explicit lyrics icon */
@@ -416,11 +315,6 @@ option {
 .main-yourLibraryX-listItemGroup:hover .LineClamp,
 .main-yourLibraryX-listItemGroup:hover .main-yourLibraryX-listRowSubtitleLeadingWrapper {
     color: var(--spice-text);
-}
-
-/* lyrics */
-.lyrics-lyrics-background {
-    background-color: var(--spice-text);
 }
 
 /* smooth color transitions */
