@@ -1,4 +1,4 @@
-let current = "4.4";
+let current = "4.5";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -177,8 +177,20 @@ function updateColors(textColHex) {
     setRootColor("highlight", softerHighlightHex);
 
     // compute hue rotation to change spotify green to main color
-    let hue = 360 * rgbToHsl(hexToRgb(textColHex))[0];
-    document.documentElement.style.setProperty("--hue-from-green", (hue + 235).toFixed(0) + "deg");
+    let rgb = hexToRgb(textColHex);
+    let m = `url('data:image/svg+xml;utf8,
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <filter id="recolor" color-interpolation-filters="sRGB">
+          <feColorMatrix type="matrix" values="
+            0 0 0 0 ${rgb[0] / 255}
+            0 0 0 0 ${rgb[1] / 255}
+            0 0 0 0 ${rgb[2] / 255}
+            0 0 0 1 0
+          "/>
+        </filter>
+      </svg>
+      #recolor')`;
+    document.documentElement.style.setProperty("--colormatrix", encodeURI(m));
 }
 
 let nearArtistSpanText = "";

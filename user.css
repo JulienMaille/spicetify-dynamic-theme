@@ -40,7 +40,8 @@ input:focus {
     box-shadow: none !important;
 }
 
-/* h2-like titles */
+/* h1-like titles */
+h1,
 .main-entityHeader-titleButton,
 .main-entityHeader-title,
 .main-shelf-title,
@@ -71,7 +72,7 @@ input:focus {
 img.main-devicePicker-nowPlayingActiveIcon,
 .main-trackList-playingIcon,
 .main-trackList-rowHeartButton svg:not(.Svg-img-16-icon) {
-    filter: hue-rotate(var(--hue-from-green));
+    filter: var(--colormatrix);
 }
 
 .contentSpacing hr {
