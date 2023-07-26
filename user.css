@@ -141,7 +141,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
 /* notification toaster */
 .main-notificationBubbleContainer-NotificationBubbleContainer .main-notificationBubble-NotificationBubble {
     color: #ffffff;
-    background-color: var(--spice-button);
+    background-color: var(--spice-text);
+}
+
+.TypeElement-balladBold-textBase-type {
+    color: #ffffff;
 }
 
 /* spotify dynamic gradients */
@@ -286,6 +290,10 @@ option {
     color: var(--spice-text);
     border-color: var(--spice-text);
     background-color: var(--spice-shadow) !important;
+}
+
+.tippy-arrow {
+    color: var(--spice-text);
 }
 
 /* fix podcast icon */
