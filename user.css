@@ -306,9 +306,10 @@ option {
 
 /* bottom bar background */
 .main-nowPlayingBar-nowPlayingBar {
-    background: linear-gradient(90deg, rgba(var(--spice-rgb-text), 0.2) 0%, var(--spice-main) 20%, var(--spice-main) 80%, rgba(var(--spice-rgb-text), 0.2) 100%);
-    border-radius: 12px;
-    margin: 6px 12px;
+    background-color: rgba(10,10,10,0.5);
+	border-left: solid 2px var(--spice-text) !important;
+	border-right: solid 2px var(--spice-text) !important;
+    border-radius: 6px;
 }
 
 /* Topbar text padding */
