@@ -58,8 +58,8 @@ h1,
 }
 
 /* Remove Topbar background colour */
-.main-topBar-background {
-    background-color: unset !important;
+.Root__top-bar {
+    z-index: 1;
 }
 
 .main-topBar-overlay {
@@ -113,6 +113,26 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 /* translucid background cover */
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes zoom {
+    0%,
+    100% {
+        scale: 1.8;
+    }
+    50% {
+        scale: 1.2;
+    }
+}
+
+#main::before,
 .Root__top-container::before {
     content: "";
     background-image: var(--image_url);
@@ -125,13 +145,29 @@ img.main-devicePicker-nowPlayingActiveIcon,
     left: 0;
     right: 0;
     bottom: 0;
-    filter: blur(15px);
+    filter: blur(40px) contrast(1.5) saturate(1.5);
     pointer-events: none;
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: 0.15;
-    z-index: +4;
+    opacity: 0.1;
+    z-index: 2;
+}
+
+#main::before {
+    translate: -100px;
+    animation:
+        rotate 25s linear infinite,
+        zoom 15s ease-in-out infinite;
+}
+
+.Root__top-container::before {
+    animation-delay: 10s;
+    translate: 100px;
+    animation:
+        rotate 20s linear infinite,
+        zoom 10s ease-in-out infinite;
+    animation-direction: reverse;
 }
 
 /* context menu */
