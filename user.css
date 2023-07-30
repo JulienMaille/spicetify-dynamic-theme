@@ -74,6 +74,7 @@ h1,
 
 /* animated equaliser/heart icons */
 img.main-devicePicker-nowPlayingActiveIcon,
+.main-addButton-button,
 .main-trackList-playingIcon,
 .main-trackList-rowHeartButton svg:not(.Svg-img-16-icon) {
     filter: var(--colormatrix);
@@ -144,7 +145,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background-color: var(--spice-text);
 }
 
-.TypeElement-balladBold-textBase-type {
+.main-notificationBubbleContainer-NotificationBubbleContainer .TypeElement-balladBold-textBase-type {
     color: #ffffff;
 }
 
@@ -169,16 +170,20 @@ option {
     background-color: var(--spice-notification) !important;
 }
 
-/* lyrics plus app */
-.lyrics-lyrics-background {
-    background-color: var(--spice-main);
+/* lyrics */
+.main-lyricsCinema-container,
+.lyrics-lyrics-container,
+.main-nowPlayingView-lyricsGradient {
+    margin-top: unset;
+    --lyrics-color-background: rgba(var(--spice-rgb-main), 0.5) !important;
+    --lyrics-color-active: var(--spice-text) !important;
+    --lyrics-color-inactive: var(--spice-main-elevated) !important;
+    --lyrics-color-passed: rgba(var(--spice-rgb-subtext), 0.8) !important;
 }
 
-.lyrics-lyrics-contentContainer {
-    margin-top: unset;
-    --lyrics-color-active: var(--spice-text);
-    --lyrics-color-inactive: var(--spice-main-elevated);
-    --lyrics-color-passed: rgba(var(--spice-rgb-subtext), 0.8);
+.main-nowPlayingView-sectionHeaderSpacing .main-nowPlayingView-lyricsTitle {
+    color: var(--spice-text);
+    min-height: 32px;
 }
 
 /* playlist header */
@@ -323,6 +328,11 @@ option {
 .main-yourLibraryX-listItemGroup:hover .LineClamp,
 .main-yourLibraryX-listItemGroup:hover .main-yourLibraryX-listRowSubtitleLeadingWrapper {
     color: var(--spice-text);
+}
+
+/* Remove blue outline in confirmation popup */
+.main-confirmDialog-buttonContainer button:focus {
+    outline: 5px auto white;
 }
 
 /* smooth color transitions */
