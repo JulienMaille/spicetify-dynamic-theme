@@ -122,16 +122,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
     }
 }
 
-@keyframes zoom {
-    0%,
-    100% {
-        scale: 1.8;
-    }
-    50% {
-        scale: 1.2;
-    }
-}
-
 #main::before,
 .Root__top-container::before {
     content: "";
@@ -156,17 +146,13 @@ img.main-devicePicker-nowPlayingActiveIcon,
 
 #main::before {
     translate: -100px;
-    animation:
-        rotate 25s linear infinite,
-        zoom 15s ease-in-out infinite;
+    animation: rotate 25s steps(250, end) infinite;
 }
 
 .Root__top-container::before {
     animation-delay: 10s;
     translate: 100px;
-    animation:
-        rotate 20s linear infinite,
-        zoom 10s ease-in-out infinite;
+    animation: rotate 20s steps(200, end) infinite;
     animation-direction: reverse;
 }
 
