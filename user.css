@@ -6,7 +6,6 @@
     --custom_darken: -5;
     --system_is_dark: 1;
     --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on the README page.";
-    --animate_bg: infinite; /* set to 0 to disable animation */
 }
 
 div.ReactModalPortal:last-of-type::before {
@@ -144,7 +143,10 @@ img.main-devicePicker-nowPlayingActiveIcon,
     z-index: 2;
     width: 150%;
     border-radius: 40%;
-    animation: rotate 60s steps(600, end) var(--animate_bg);
+    animation-duration: calc(60s * clamp(var(--spice-rgb-animation)));
+    animation-name: rotate;
+    animation-timing-function: steps(600);
+    animation-iteration-count: infinite;
 }
 
 #main::before {
