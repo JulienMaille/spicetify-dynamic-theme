@@ -6,6 +6,7 @@
     --custom_darken: -5;
     --system_is_dark: 1;
     --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on the README page.";
+    --animate_bg: infinite; /* set to 0 to disable animation */
 }
 
 div.ReactModalPortal:last-of-type::before {
@@ -126,34 +127,33 @@ img.main-devicePicker-nowPlayingActiveIcon,
 .Root__top-container::before {
     content: "";
     background-image: var(--image_url);
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-size: 100%;
     background-position: center center;
-    position: fixed;
+    position: absolute;
     display: block;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    filter: blur(40px) contrast(1.5) saturate(1.5);
+    filter: blur(80px) contrast(1.5) saturate(1.5);
     pointer-events: none;
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: 0.1;
+    opacity: calc(var(--is_light) * 0.1 + 0.07);
     z-index: 2;
+    width: 150%;
+    border-radius: 40%;
+    animation: rotate 60s steps(600, end) var(--animate_bg);
 }
 
 #main::before {
-    translate: -100px;
-    animation: rotate 25s steps(250, end) infinite;
+    translate: -30%;
 }
 
 .Root__top-container::before {
     animation-delay: 10s;
-    translate: 100px;
-    animation: rotate 20s steps(200, end) infinite;
-    animation-direction: reverse;
+    translate: 30%;
 }
 
 /* context menu */
