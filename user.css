@@ -191,6 +191,20 @@ img.main-devicePicker-nowPlayingActiveIcon,
 	background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
 }
 
+/* right sidebar */
+
+.Root__right-sidebar,
+.main-buddyFeed-content,
+.main-buddyFeed-friendsFeedContainer {
+	background: unset !important;
+	--background-base: rgba(var(--spice-rgb-shadow), 0.5) !important; 
+}
+
+.main-buddyFeed-friendActivity a, 
+.main-buddyFeed-timestamp {
+	color: var(--text-subdued,#6a6a6a) !important;
+}
+
 .main-actionBarBackground-background,
 .main-entityHeader-backgroundColor {
     opacity: 0.15;
