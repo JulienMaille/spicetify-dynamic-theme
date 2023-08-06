@@ -1,7 +1,6 @@
 :root {
     --image_url: "";
     --is_light: 0;
-    --transition: linear 0.35s;
     /* You can darken (eg. -20) or lighten (eg. +20) the main color*/
     --custom_darken: -5;
     --system_is_dark: 1;
@@ -137,16 +136,27 @@ img.main-devicePicker-nowPlayingActiveIcon,
     filter: blur(50px) contrast(1.5) saturate(1.5);
     pointer-events: none;
     backface-visibility: hidden;
-    will-change: transform;
-    transition: background-image var(--transition);
+    transition: background-image linear 0.35s;
     opacity: calc(var(--is_light) * 0.07 + 0.1);
     z-index: 2;
     width: 150%;
     border-radius: 40%;
-    animation-duration: calc(45s * clamp(var(--spice-rgb-animation)));
-    animation-name: rotate;
-    animation-timing-function: steps(450);
-    animation-iteration-count: infinite;
+}
+
+/* Animate background if option is on */
+@container style(--spice-animation: #010101) {
+    #main::before,
+    .Root__top-container::before {
+        will-change: transform;
+        animation-duration: 45s;
+        animation-name: rotate;
+        animation-timing-function: steps(450);
+        animation-iteration-count: infinite;
+    }
+
+    .Root__top-container::before {
+        animation-delay: 10s;
+    }
 }
 
 #main::before {
@@ -154,7 +164,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 .Root__top-container::before {
-    animation-delay: 10s;
     translate: 30%;
 }
 
