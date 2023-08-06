@@ -134,13 +134,13 @@ img.main-devicePicker-nowPlayingActiveIcon,
     left: 0;
     right: 0;
     bottom: 0;
-    filter: blur(50px) contrast(1.5) saturate(1.5);
+    filter: blur(80px);
     pointer-events: none;
     backface-visibility: hidden;
     will-change: transform;
     transition: background-image var(--transition);
-    opacity: calc(var(--is_light) * 0.07 + 0.1);
-    z-index: 2;
+    opacity: calc(0.7 - var(--is_light) * 0.1);
+    z-index: 0;
     width: 150%;
     border-radius: 40%;
     animation-duration: calc(45s * clamp(var(--spice-rgb-animation)));
@@ -173,10 +173,22 @@ img.main-devicePicker-nowPlayingActiveIcon,
     color: #ffffff;
 }
 
-/* spotify dynamic gradients */
+/* remove the backgrounds from home */
+
 .main-home-homeHeader {
-    opacity: 0.3;
-    background-color: var(--spice-text) !important;
+    background: unset !important
+}
+
+.Root__top-container,
+.Root__main-view {
+    background: unset !important
+}
+
+/* new home block backgrounds */
+
+.view-homeShortcutsGrid-shortcut,
+.main-card-card {
+	background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
 }
 
 .main-actionBarBackground-background,
