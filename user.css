@@ -121,6 +121,10 @@ img.main-devicePicker-nowPlayingActiveIcon,
     }
 }
 
+#main {
+    position: fixed;
+}
+
 #main::before,
 .Root__top-container::before {
     content: "";
