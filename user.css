@@ -373,6 +373,11 @@ option {
     outline: 5px auto white;
 }
 
+/* Playlist tips popup */
+.StyledPopover-dialog-popover {
+    --background-elevated-base: var(--spice-text) !important;
+}
+
 /* optional mode with emphasized background */
 @container style(--spice-contrast: #010101) {
     #main::before,
