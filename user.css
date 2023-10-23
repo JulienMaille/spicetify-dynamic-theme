@@ -378,6 +378,11 @@ option {
     --background-elevated-base: var(--spice-text) !important;
 }
 
+/* Playlist filter pills */
+.ChipInnerComponent-selected-secondary {
+    background: var(--essential-subdued) !important;
+}
+
 /* optional mode with emphasized background */
 @container style(--spice-contrast: #010101) {
     #main::before,
