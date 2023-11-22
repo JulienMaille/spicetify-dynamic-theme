@@ -203,15 +203,15 @@ async function songchange() {
         console.error(err);
     }
 
-    let album_uri = Spicetify.Player.data.track.metadata.album_uri;
-    let bgImage = Spicetify.Player.data.track.metadata.image_url;
-    if (bgImage === undefined) {
+    let album_uri = Spicetify.Player.data.item.metadata.album_uri;
+    let bgImage = Spicetify.Player.data.item.metadata.image_url;
+    if (!bgImage) {
         bgImage = "/images/tracklist-row-song-fallback.svg";
         textColor = "#509bf5";
         updateColors(textColor);
     }
 
-    if (album_uri !== undefined && !album_uri.includes("spotify:show")) {
+    if (album_uri && !album_uri.includes("spotify:show")) {
         const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""));
         let album_date = new Date(albumInfo.release_date);
         let recent_date = new Date();
@@ -220,29 +220,29 @@ async function songchange() {
         nearArtistSpanText = `
             <span>
                 <span draggable="true">
-                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.track.metadata.album_title}</a>
+                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.item.metadata.album_title}</a>
                 </span>
             </span>
             <span> • ${album_date}</span>
         `;
-    } else if (Spicetify.Player.data.track.uri.includes("spotify:episode")) {
+    } else if (Spicetify.Player.data.item.type === "episode") {
         // podcast
-        const episodeInfo = await getEpisodeInfo(Spicetify.Player.data.track.uri.replace("spotify:episode:", ""));
+        const episodeInfo = await getEpisodeInfo(Spicetify.Player.data.item.uri.replace("spotify:episode:", ""));
         let podcast_date = new Date(episodeInfo.release_date);
         podcast_date = podcast_date.toLocaleString("default", { year: "numeric", month: "short" });
         bgImage = bgImage.replace("spotify:image:", "https://i.scdn.co/image/");
         nearArtistSpanText = `
             <span>
                 <span draggable="true">
-                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.track.metadata["show.publisher"]}</a>
+                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.item.metadata["show.publisher"]}</a>
                 </span>
             </span>
             <span> • ${podcast_date}</span>
         `;
-    } else if (Spicetify.Player.data.track.metadata.is_local == "true") {
+    } else if (Spicetify.Player.data.item.isLocal) {
         // local file
-        nearArtistSpanText = Spicetify.Player.data.track.metadata.album_title;
-    } else if (Spicetify.Player.data.track.provider == "ad") {
+        nearArtistSpanText = Spicetify.Player.data.item.metadata.album_title;
+    } else if (Spicetify.Player.data.item.provider == "ad") {
         // ad
         nearArtistSpanText.innerHTML = "Advertisement";
         return;
