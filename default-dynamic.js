@@ -207,7 +207,7 @@ async function songchange() {
     let bgImage = Spicetify.Player.data.item.metadata.image_url;
     if (!bgImage) {
         bgImage = "/images/tracklist-row-song-fallback.svg";
-        textColor = "#509bf5";
+        textColor = "#1db954";
         updateColors(textColor);
     }
 
@@ -272,7 +272,7 @@ Spicetify.Player.addEventListener("songchange", songchange);
 function pickCoverColor(img) {
     if (!img.currentSrc.startsWith("spotify:")) return;
     if (img.complete) {
-        textColor = "#509bf5";
+        textColor = "#1db954";
         try {
             var swatches = new Vibrant(img, 12).swatches();
             cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];

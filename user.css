@@ -308,9 +308,6 @@ option {
 /* bottom bar background */
 .main-nowPlayingBar-nowPlayingBar {
     background-color: rgba(var(--spice-rgb-shadow), 0.5);
-    border-left: solid 2px var(--spice-text) !important;
-    border-right: solid 2px var(--spice-text) !important;
-    border-radius: 6px;
 }
 
 /* Topbar text padding */
