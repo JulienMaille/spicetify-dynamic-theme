@@ -316,6 +316,7 @@ option {
 }
 
 /* Search cards */
+.search-searchBrowse-SearchBrowse span.TypeElement-canon-type,
 .x-categoryCard-title {
     color: white;
 }
