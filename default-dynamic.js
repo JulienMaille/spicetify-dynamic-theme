@@ -253,7 +253,7 @@ async function songchange() {
     }
 
     if (!document.querySelector("#main-trackInfo-year")) {
-        waitForElement([".main-trackInfo-container"], (queries) => {
+        waitForElement([".main-trackInfo-container:not(#upcomingSongDiv)"], (queries) => {
             nearArtistSpan = document.createElement("div");
             nearArtistSpan.id = "main-trackInfo-year";
             nearArtistSpan.classList.add("main-trackInfo-release", "standalone-ellipsis-one-line", "main-type-finale");
