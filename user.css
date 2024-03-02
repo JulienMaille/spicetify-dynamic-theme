@@ -386,9 +386,13 @@ option {
     background: var(--essential-subdued) !important;
 }
 
-/* Navbar/topbar Container */
+/* Adding border Radius to Navbar/topbar Container */
 .main-topBar-container.main-topBar-withBackgroundBlur .main-topBar-background {
     border-radius: 8px;
+}
+
+.main-topBar-container {
+    border-radius: 8px !important;
 }
 
 /* optional mode with emphasized background */
