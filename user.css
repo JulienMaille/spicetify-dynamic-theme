@@ -310,6 +310,10 @@ option {
     background-color: rgba(var(--spice-rgb-shadow), 0.5);
 }
 
+.main-nowPlayingBar-nowPlayingBar, .main-nowPlayingBar-isAnonymous {
+    border-radius: 8px;
+}
+
 /* Topbar text padding */
 .main-entityHeader-topbarTitle {
     padding-left: 8px;
@@ -331,6 +335,7 @@ option {
     color: var(--spice-text);
     border-color: var(--spice-text);
     background-color: var(--spice-shadow) !important;
+    display: none;
 }
 
 .tippy-arrow {
@@ -379,6 +384,11 @@ option {
 /* Playlist filter pills */
 .ChipInnerComponent-selected-secondary {
     background: var(--essential-subdued) !important;
+}
+
+/* Navbar/topbar Container */
+.main-topBar-container.main-topBar-withBackgroundBlur .main-topBar-background {
+    border-radius: 8px;
 }
 
 /* optional mode with emphasized background */
