@@ -310,6 +310,11 @@ option {
     background-color: rgba(var(--spice-rgb-shadow), 0.5);
 }
 
+.main-nowPlayingBar-nowPlayingBar,
+.main-nowPlayingBar-isAnonymous {
+    border-radius: 8px;
+}
+
 /* Topbar text padding */
 .main-entityHeader-topbarTitle {
     padding-left: 8px;
@@ -379,6 +384,15 @@ option {
 /* Playlist filter pills */
 .ChipInnerComponent-selected-secondary {
     background: var(--essential-subdued) !important;
+}
+
+/* Adding border Radius to Navbar/topbar Container */
+.main-topBar-container.main-topBar-withBackgroundBlur .main-topBar-background {
+    border-radius: 8px;
+}
+
+.main-topBar-container {
+    border-radius: 8px !important;
 }
 
 /* optional mode with emphasized background */
