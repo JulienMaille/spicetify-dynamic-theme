@@ -335,7 +335,6 @@ option {
     color: var(--spice-text);
     border-color: var(--spice-text);
     background-color: var(--spice-shadow) !important;
-    display: none;
 }
 
 .tippy-arrow {
