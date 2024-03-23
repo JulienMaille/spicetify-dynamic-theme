@@ -63,7 +63,7 @@ To patch the Spotify config file follow these steps:
 
 ## Follow system dark/light theme (PowerShell)
 
-Automatic dark mode should work on MacOs and Linux out of the box.
+Automatic dark mode is broken on MacOs and Linux.
 From Spotify > v1.2.17, dark mode is forced in Windows builds. You will need to patch Spotify.exe using this script:
 
 ```powershell
