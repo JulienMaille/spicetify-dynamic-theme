@@ -395,48 +395,6 @@ option {
     border-radius: 8px !important;
 }
 
-/* optional mode with emphasized background */
-@container style(--spice-contrast: #010101) {
-    #main::before,
-    .Root__top-container::before {
-        filter: blur(80px) contrast(1.2) saturate(1);
-        opacity: calc(0.5 - var(--is_light) * 0.1);
-        z-index: 0;
-    }
-
-    .main-actionBarBackground-background,
-    .main-entityHeader-backgroundColor,
-    .main-home-homeHeader {
-        opacity: 0 !important;
-    }
-
-    /* remove the backgrounds from home */
-    .main-home-homeHeader,
-    .Root__top-container,
-    .Root__main-view {
-        background: unset !important;
-    }
-
-    /* new home block backgrounds */
-    .view-homeShortcutsGrid-shortcut,
-    .main-card-card {
-        background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
-    }
-
-    /* right sidebar */
-    .Root__right-sidebar,
-    .main-buddyFeed-content,
-    .main-buddyFeed-friendsFeedContainer {
-        background: unset !important;
-        --background-base: rgba(var(--spice-rgb-shadow), 0.5) !important;
-    }
-
-    .main-buddyFeed-friendActivity a,
-    .main-buddyFeed-timestamp {
-        color: var(--text-subdued, #6a6a6a) !important;
-    }
-}
-
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
