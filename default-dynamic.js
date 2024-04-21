@@ -126,6 +126,7 @@ function toggleDark(setDark) {
     setRootColor("shadow", textColorBg);
     setRootColor("card", setDark ? "#040404" : "#ECECEC");
     setRootColor("subtext", setDark ? "#EAEAEA" : "#3D3D3D");
+    setRootColor("selected-row", setDark ? "#EAEAEA" : "#3D3D3D");
     setRootColor("main-elevated", setDark ? "#303030" : "#DDDDDD");
     setRootColor("notification", setDark ? "#303030" : "#DDDDDD");
     setRootColor("highlight-elevated", setDark ? "#303030" : "#DDDDDD");
@@ -170,7 +171,6 @@ function updateColors(textColHex) {
     setRootColor("text", textColHex);
     setRootColor("button", darkerColHex);
     setRootColor("button-active", darkColHex);
-    setRootColor("selected-row", darkerColHex);
     setRootColor("tab-active", softHighlightHex);
     setRootColor("button-disabled", softHighlightHex);
     let softerHighlightHex = setLightness(textColHex, isLightBg ? 0.9 : 0.1);
