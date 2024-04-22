@@ -46,7 +46,7 @@ From Spotify > v1.1.62, in sidebar, they use an adaptive render mechanic to acti
 
 To patch the Spotify config file follow these steps:
 
-- Run Spicetify and make sure the config file is created successfully. You can find the config file in `\spicetify` or in the installation folder.
+- Run Spicetify and make sure the config file is created successfully. You can find the config file in `\spicetify` or in the installation folder returned by `spicetify -c`.
 - Open the config file with a text editor and find the `[Patch]` section. Add these two lines at the end of the section:
   ```ini
    [Patch]
