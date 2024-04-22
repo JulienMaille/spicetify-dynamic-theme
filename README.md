@@ -48,17 +48,16 @@ To patch the Spotify config file follow these steps:
 
 - Run Spicetify and make sure the config file is created successfully. You can find the config file in `\spicetify` or in the installation folder.
 - Open the config file with a text editor and find the `[Patch]` section. Add these two lines at the end of the section:
-
-```ini
+  ```ini
    [Patch]
    xpui.js_find_8008 = ,(\w+=)32,
    xpui.js_repl_8008 = ,${1}28,
-```
+  ```
 - Save the config file and run `spicetify backup apply` in the terminal or command prompt. This will back up and patch the Spotify files with your changes. If Everything is successful, youll see
-```
+  ```
   Patching:
   success "xpui.js_find_8008" is patched
-```
+  ```
 - Restart Spotify and enjoy your Spicetify theme without the sidebar issue.
 
 ## Follow system dark/light theme (PowerShell)
@@ -69,13 +68,6 @@ From Spotify > v1.2.17, dark mode is forced in Windows builds. You will need to 
 ```powershell
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.ps1" | Invoke-Expression
 ```
-
-## Hide Window Controls:
-
-Windows user, please edit your Spotify shortcut and add flag `--transparent-window-controls` after the Spotify.exe
-
-![hide-controls](./windows-shortcut-instruction.png)
-
 ## Uninstall
 
 ### Windows (PowerShell)
