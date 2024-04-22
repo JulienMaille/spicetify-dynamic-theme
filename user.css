@@ -75,7 +75,10 @@ h1,
 img.main-devicePicker-nowPlayingActiveIcon,
 .main-addButton-button,
 .main-trackList-playingIcon,
-.main-trackList-rowHeartButton svg:not(.Svg-img-16-icon) {
+.main-trackList-rowHeartButton svg:not(.Svg-img-16-icon),
+.main-actionBar-ActionBarRow > button:hover,
+.main-nowPlayingView-contextItemInfo > button:hover,
+.main-trackCreditsModal-closeBtn > svg {
     filter: var(--colormatrix);
 }
 
