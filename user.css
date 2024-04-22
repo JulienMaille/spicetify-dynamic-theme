@@ -78,7 +78,9 @@ img.main-devicePicker-nowPlayingActiveIcon,
 .main-trackList-rowHeartButton svg:not(.Svg-img-16-icon),
 .main-actionBar-ActionBarRow > button:hover,
 .main-nowPlayingView-contextItemInfo > button:hover,
-.main-trackCreditsModal-closeBtn > svg {
+.main-whatsNewFeed-actions > button:hover,
+.main-trackCreditsModal-closeBtn > svg,
+.x-settings-equalizerPanelCanvas {
     filter: var(--colormatrix);
 }
 
