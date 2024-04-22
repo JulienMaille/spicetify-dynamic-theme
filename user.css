@@ -83,32 +83,13 @@ img.main-devicePicker-nowPlayingActiveIcon,
     border-color: rgba(128, 128, 128, 0.2);
 }
 
-/* Full window artist background */
+/* translucid artist background */
 .main-entityHeader-background.main-entityHeader-gradient {
     opacity: 0.3;
 }
 
-.main-entityHeader-container.main-entityHeader-withBackgroundImage,
-.main-entityHeader-background,
-.main-entityHeader-background.main-entityHeader-overlay:after {
-    height: 100vh;
-}
-
-.main-entityHeader-withBackgroundImage .main-entityHeader-headerText {
-    justify-content: center;
-}
-
-.main-entityHeader-container.main-entityHeader-nonWrapped.main-entityHeader-withBackgroundImage {
-    padding-left: 9%;
-}
-
 .main-entityHeader-background.main-entityHeader-overlay:after {
     background-image: linear-gradient(transparent, transparent), linear-gradient(var(--spice-main), var(--spice-main));
-}
-
-.artist-artistOverview-overview .main-entityHeader-withBackgroundImage h1 {
-    font-size: 175px !important;
-    line-height: 175px !important;
 }
 
 /* translucid background cover */
