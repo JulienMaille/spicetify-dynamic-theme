@@ -40,7 +40,7 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
     # Determine latest release via GitHub API.
     $latest_release_uri =
     "https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
-    Write-Part "DOWNLOADING    "; Write-Emphasized $latest_release_uri
+    Write-Part "DOWNLOADING    "; Write-Emphasized $latest_release_uri;
     $latest_release_json = Invoke-WebRequest -Uri $latest_release_uri -UseBasicParsing
     Write-Done
 
@@ -58,18 +58,18 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   # Download release.
   $zip_file = "${sp_dir}\${version}.zip"
   $download_uri = "https://github.com/JulienMaille/spicetify-dynamic-theme/archive/refs/tags/${version}.zip"
-  Write-Part "DOWNLOADING    "; Write-Emphasized $download_uri
+  Write-Part "DOWNLOADING    "; Write-Emphasized $download_uri;
   Invoke-WebRequest -Uri $download_uri -UseBasicParsing -OutFile $zip_file
   Write-Done
 
   # Extract theme from .zip file.
-  Write-Part "EXTRACTING     "; Write-Emphasized $zip_file
+  Write-Part "EXTRACTING     "; Write-Emphasized $zip_file;
   Write-Part " into "; Write-Emphasized ${sp_dir};
   Expand-Archive -Path $zip_file -DestinationPath $sp_dir -Force
   Write-Done
 
   # Remove .zip file.
-  Write-Part "REMOVING       "; Write-Emphasized $zip_file
+  Write-Part "REMOVING       "; Write-Emphasized $zip_file;
   Remove-Item -Path $zip_file
   Write-Done
 
@@ -83,12 +83,12 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   }
 
   # Copy to .spicetify.
-  Write-Part "COPYING        "; Write-Emphasized $sp_dot_dir
+  Write-Part "COPYING        "; Write-Emphasized $sp_dot_dir;
   Copy-Item -Path "${sp_dir}\spicetify-dynamic-theme-${version}\*" -Destination $sp_dot_dir -Recurse -Force
   Write-Done
 
   # Installing.
-  Write-Part "INSTALLING";
+  Write-Host "INSTALLING     ";
   cd $sp_dot_dir
   Copy-Item default-dynamic.js ..\..\Extensions
   Copy-Item Vibrant.min.js ..\..\Extensions
@@ -99,7 +99,7 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   Write-Done
 
   # Add patch
-  Write-Part "PATCHING       "; Write-Emphasized "config-xpui.ini"
+  Write-Part "PATCHING       "; Write-Emphasized "$spicePath\config-xpui.ini";
   $configFile = Get-Content "$spicePath\config-xpui.ini"
   if (-not ($configFile -match "xpui.js_find_8008")) {
     $rep = @"
@@ -116,14 +116,17 @@ xpui.js_repl_8008=,`${1}28,
   }
   Write-Done
 
-  Write-Part "APPLYING";
+  Write-Part "APPLYING     ";
   $backupVer = $configFile -match "^version"
-  $version = ConvertFrom-StringData $backupVer[0]
-  if ($version.version.Length -gt 0) {
+  $parts = $backupVer.Split("=")
+  if ($parts.Length -lt 2 -and $version.version.Length -gt 0) {
+    Write-Emphasized "apply";
     spicetify apply
   } else {
-    spicetify backup apply
+    Write-Emphasized "restore backup apply";
+    spicetify restore backup apply
   }
+  Write-Done
 }
 else {
   Write-Part "`nYour Powershell version is less than "; Write-Emphasized "$PSMinVersion";
