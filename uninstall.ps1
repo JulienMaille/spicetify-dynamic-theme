@@ -1,4 +1,4 @@
-spicetify config current_theme "SpicetifyDefault" extensions default-dynamic.js-
+spicetify config current_theme "SpicetifyDefault" extensions default-dynamic.js- Vibrant.min.js-
 
 $spicePath = spicetify -c | Split-Path
 $configFile = Get-Content "$spicePath\config-xpui.ini"
