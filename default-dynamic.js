@@ -325,7 +325,7 @@ registerCoverListener();
         .then((data) => {
             if (data.tag_name > current) {
                 document.querySelector("#main-topBar-moon-button").classList.remove("main-topBar-buddyFeed");
-                document.querySelector("#main-topBar-moon-button").classList.add("main-noConnection-button", "main-noConnection-isNotice");
+                document.querySelector("#main-topBar-moon-button").classList.add("main-actionButtons-button", "main-noConnection-isNotice");
                 let updateLink = document.createElement("a");
                 updateLink.setAttribute("title", `Changes: ${data.name}`);
                 updateLink.setAttribute("href", "https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest");
