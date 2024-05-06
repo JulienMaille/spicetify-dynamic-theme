@@ -124,7 +124,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
     left: 0;
     right: 0;
     bottom: 0;
-    filter: blur(50px) contrast(1.5) saturate(1.5);
+    filter: blur(50px) contrast(3) saturate(1.5);
     pointer-events: none;
     backface-visibility: hidden;
     transition: background-image linear 0.35s;
@@ -151,11 +151,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 #main::before {
-    translate: -30%;
+    translate: -35%;
 }
 
 .Root__top-container::before {
-    translate: 30%;
+    translate: 15%;
 }
 
 /* context menu */
