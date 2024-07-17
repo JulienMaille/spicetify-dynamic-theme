@@ -1,4 +1,4 @@
-let current = "4.9";
+let current = "5.0";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -142,11 +142,11 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e)
     toggleDark(e.matches);
 });
 
-waitForElement([".main-topBar-container"], (queries) => {
+waitForElement([".main-topBar-topbarContentRight"], (queries) => {
     // Add activator on top bar
     const div = document.createElement("div");
     div.id = "main-topBar-moon-div";
-    queries[0].insertBefore(div, queries[0].querySelector(".main-userWidget-box"));
+    queries[0].insertBefore(div, queries[0].querySelector(".main-actionButtons"));
 
     const button = document.createElement("button");
     button.id = "main-topBar-moon-button";
@@ -163,7 +163,9 @@ function updateColors(textColHex) {
     if (textColHex == undefined) return registerCoverListener();
 
     let isLightBg = isLight(textColorBg);
-    if (isLightBg) textColHex = lightenDarkenColor(textColHex, -15); // vibrant color is always too bright for white bg mode
+    if (isLightBg)
+        textColHex = lightenDarkenColor(textColHex, -15); // vibrant color is always too bright for white bg mode
+    else textColHex = setLightness(textColHex, 0.45);
 
     let darkColHex = lightenDarkenColor(textColHex, isLightBg ? 12 : -20);
     let darkerColHex = lightenDarkenColor(textColHex, isLightBg ? 30 : -40);
