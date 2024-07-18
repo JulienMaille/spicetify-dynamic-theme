@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
 
 1. Download the latest [Source code (zip)](https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest)
 2. Extract the files to your [Spicetify/Themes folder](https://spicetify.app/docs/development/customization#themes) (rename the zipped folder to `DefaultDynamic`)
-3. Copy `default-dynamic.js` to your [Spicetify/Extensions folder](https://spicetify.app/docs/advanced-usage/extensions#installing)
+3. Copy `default-dynamic.js` and `Vibrant.min.js` to your [Spicetify/Extensions folder](https://spicetify.app/docs/advanced-usage/extensions#installing)
 4. Add the 2 lines in `[Patch]` section of the config file (see details below)
 5. Run:
     ```
