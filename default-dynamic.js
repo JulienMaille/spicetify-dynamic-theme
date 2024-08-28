@@ -134,6 +134,15 @@ function toggleDark(setDark) {
     updateColors(textColor);
 }
 
+function toggleBg() {
+    backgroundEnabled = !backgroundEnabled;
+    songchange();
+    Spicetify.showNotification("Background " + (backgroundEnabled ? "Enabled" : "Disabled"));
+}
+
+/* Init with current system background enabled mode */
+let backgroundEnabled = true;
+
 /* Init with current system light/dark mode */
 let systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 toggleDark(systemDark);
@@ -157,6 +166,20 @@ waitForElement([".main-topBar-topbarContentRight"], (queries) => {
     };
     button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`;
     div.append(button);
+
+    const divBg = document.createElement("div");
+    divBg.id = "main-topBar-bg-div";
+    queries[0].insertBefore(divBg, queries[0].querySelector(".main-actionButtons"));
+
+    const buttonBg = document.createElement("button");
+    buttonBg.id = "main-topBar-bg-button";
+    buttonBg.classList.add("main-topBar-buddyFeed");
+    buttonBg.setAttribute("title", "Bacground On/Off");
+    buttonBg.onclick = () => {
+        toggleBg();
+    };
+    buttonBg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16"> <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/></svg>`;
+    divBg.append(buttonBg);
 });
 
 function updateColors(textColHex) {
@@ -197,6 +220,11 @@ function updateColors(textColHex) {
 
 let nearArtistSpanText = "";
 async function songchange() {
+    if(!backgroundEnabled){
+        document.documentElement.style.setProperty("--image_url", `url("")`);
+        return
+    }
+
     if (!document.querySelector(".main-trackInfo-container")) return setTimeout(songchange, 300);
     try {
         // warning popup
@@ -332,7 +360,7 @@ registerCoverListener();
                 updateLink.setAttribute("title", `Changes: ${data.name}`);
                 updateLink.setAttribute("href", "https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest");
                 updateLink.innerHTML = `v${data.tag_name} available`;
-                document.querySelector("#main-topBar-moon-button").append(updateLink);
+                document.querySelector("#main-topBar-bg-button").append(updateLink);
             }
         })
         .catch((err) => {
