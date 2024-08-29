@@ -40,6 +40,22 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
     spicetify apply
     ```
 
+## Follow system dark/light theme
+
+From Spotify > v1.2.17, dark mode is forced. You will need to patch Spotify binary:
+
+### Windows (PowerShell)
+
+```powershell
+Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.ps1" | Invoke-Expression
+```
+
+### Linux/MacOS (Bash)
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.sh" | sh
+```
+
 ## IMPORTANT!
 
 From Spotify > v1.1.62, in sidebar, they use an adaptive render mechanic to actively show and hide items on scroll. It helps reducing number of items to render, hence there is significant performance boost if you have a large playlists collection. But the drawbacks is that item height is hard-coded, it messes up user interaction when we explicitly change, in CSS, playlist item height bigger than original value. So you need to add these 2 lines in Patch section in config file:
@@ -60,14 +76,6 @@ To patch the Spotify config file follow these steps:
   ```
 - Restart Spotify and enjoy your Spicetify theme without the sidebar issue.
 
-## Follow system dark/light theme (PowerShell)
-
-Automatic dark mode is broken on MacOs and Linux.
-From Spotify > v1.2.17, dark mode is forced in Windows builds. You will need to patch Spotify.exe using this script:
-
-```powershell
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.ps1" | Invoke-Expression
-```
 ## Uninstall
 
 ### Windows (PowerShell)
