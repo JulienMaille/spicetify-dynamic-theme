@@ -1,14 +1,10 @@
 #!/bin/bash
 
-check_exists() { # Check if required tools are installed/accessible
-    if ! command -v "$1" &> /dev/null; then
-        echo "Error: $1 not found. Ensure it is installed and available in your PATH."
-        exit 1
-    fi
-}
-
-check_exists spicetify
-check_exists sed
+# Ensure Spicetify is in PATH
+if ! command -v spicetify &> /dev/null; then
+    echo "Error: spicetify not found. Ensure it is installed and available in your PATH."
+    exit 1
+fi
 
 # Find where the Spotify binary is located
 spotify_path=$(spicetify config spotify_path)
@@ -19,11 +15,21 @@ if [[ $spotify_path == error* ]]; then
     exit 1
 fi
 
-path="${spotify_path}/spotify"
+# Assemble the binary's path
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    _spotify_path=$(dirname "$spotify_path")
+    path="${_spotify_path}/MacOS/Spotify"
+else
+    path="${spotify_path}/spotify"
+fi
 
-# Backup the original binary
-cp "$path" "${path}.bak"
+# Validate the path to ensure it exists and is a file
+if [[ ! -f "$path" ]]; then
+    echo "Error: The Spotify binary was not found at the expected path: $path"
+    exit 1
+fi
 
-# Patch binary
-sed -i 's/force-dark-mode/\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/' "$path"
+# Patch the binary
+sed -i.bak 's/force-dark-mode/\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/' "$path"
+
 echo "The patch is complete. You may now restart Spotify."
