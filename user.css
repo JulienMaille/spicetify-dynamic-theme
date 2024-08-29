@@ -287,6 +287,16 @@ option {
     color: rgba(var(--spice-rgb-text), 0.5);
 }
 
+/* new navbar interface */
+.Root__globalNav .main-topBar-buddyFeed {
+    color: var(--spice-selected-row);
+}
+
+.main-userWidget-box,
+.main-globalNav-link-icon {
+    background-color: transparent !important;
+}
+
 .search-searchCategory-carouselButton {
     background-color: var(--background-tinted-highlight);
 }
