@@ -127,7 +127,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
     pointer-events: none;
     backface-visibility: hidden;
     transition: background-image linear 0.35s;
-    opacity: calc(var(--is_light) * 0.07 + 0.1);
+    opacity: calc(var(--is_light) * 0.05 + 0.12);
     z-index: 2;
     width: 150%;
     border-radius: 40%;
