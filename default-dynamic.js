@@ -1,4 +1,4 @@
-let current = "5.0";
+let current = "5.1";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -150,7 +150,7 @@ waitForElement([".main-topBar-topbarContentRight"], (queries) => {
 
     const button = document.createElement("button");
     button.id = "main-topBar-moon-button";
-    button.classList.add("main-topBar-buddyFeed");
+    button.classList.add("main-topBar-buddyFeed", "Button-small-small-buttonTertiary-condensedAll-useBrowserDefaultFocusStyle");
     button.setAttribute("title", "Light/Dark");
     button.onclick = () => {
         toggleDark();
