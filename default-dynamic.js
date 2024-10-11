@@ -1,4 +1,4 @@
-let current = "5.1";
+let current = "5.2";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -150,7 +150,7 @@ waitForElement([".main-topBar-topbarContentRight"], (queries) => {
 
     const button = document.createElement("button");
     button.id = "main-topBar-moon-button";
-    button.classList.add("main-topBar-buddyFeed", "Button-buttonTertiary-small-small-useBrowserDefaultFocusStyle-condensedAll");
+    button.classList.add("main-topBar-buddyFeed", "Button-small-small-buttonTertiary-condensedAll-useBrowserDefaultFocusStyle");
     button.setAttribute("title", "Light/Dark");
     button.onclick = () => {
         toggleDark();
@@ -272,7 +272,12 @@ async function songchange() {
 Spicetify.Player.addEventListener("songchange", songchange);
 
 function pickCoverColor(img) {
-    if (!img.currentSrc.startsWith("spotify:")) return;
+    if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48") {
+        if (!img.currentSrc.startsWith("https://i.scdn.co/image")) return;
+    } else {
+        if (!img.currentSrc.startsWith("spotify:")) return;
+    }
+    img.crossOrigin = "Anonymous";
     if (img.complete) {
         textColor = "#1db954";
         try {
