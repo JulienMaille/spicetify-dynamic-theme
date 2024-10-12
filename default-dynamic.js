@@ -142,21 +142,27 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e)
     toggleDark(e.matches);
 });
 
-waitForElement([".main-topBar-topbarContentRight"], (queries) => {
+waitForElement([".main-actionButtons"], (queries) => {
     // Add activator on top bar
-    const div = document.createElement("div");
-    div.id = "main-topBar-moon-div";
-    queries[0].insertBefore(div, queries[0].querySelector(".main-actionButtons"));
+    const buttonContainer = queries[0];
 
     const button = document.createElement("button");
+    Array.from(buttonContainer.firstChild.attributes).forEach((attr) => {
+        button.setAttribute(attr.name, attr.value);
+    });
     button.id = "main-topBar-moon-button";
-    button.classList.add("main-topBar-buddyFeed", "Button-small-small-buttonTertiary-condensedAll-useBrowserDefaultFocusStyle");
-    button.setAttribute("title", "Light/Dark");
+    button.className = buttonContainer.firstChild.className;
     button.onclick = () => {
         toggleDark();
     };
     button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`;
-    div.append(button);
+
+    const tooltip = Spicetify.Tippy(button, {
+        ...Spicetify.TippyProps,
+        content: "Light/Dark"
+    });
+
+    buttonContainer.insertBefore(button, buttonContainer.firstChild);
 });
 
 function updateColors(textColHex) {
