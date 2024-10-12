@@ -274,10 +274,10 @@ Spicetify.Player.addEventListener("songchange", songchange);
 function pickCoverColor(img) {
     if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48") {
         if (!img.currentSrc.startsWith("https://i.scdn.co/image")) return;
+        img.crossOrigin = "Anonymous";
     } else {
         if (!img.currentSrc.startsWith("spotify:")) return;
     }
-    img.crossOrigin = "Anonymous";
     if (img.complete) {
         textColor = "#1db954";
         try {
