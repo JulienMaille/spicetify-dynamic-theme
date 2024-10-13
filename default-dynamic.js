@@ -305,7 +305,7 @@ var coverListener;
 function registerCoverListener() {
     const img = document.querySelector(".main-image-image.cover-art-image");
     if (!img) return setTimeout(registerCoverListener, 250); // Check if image exists
-    if (!img.complete) return img.addEventListener("load", registerCoverListener); // Check if image is loaded
+    if (!img.complete) return setTimeout(registerCoverListener, 250); // Check if image is loaded
     pickCoverColor(img);
 
     if (coverListener != null) {
@@ -337,13 +337,17 @@ registerCoverListener();
         })
         .then((data) => {
             if (data.tag_name > current) {
-                document.querySelector("#main-topBar-moon-button").classList.remove("main-topBar-buddyFeed");
-                document.querySelector("#main-topBar-moon-button").classList.add("main-actionButtons-button", "main-noConnection-isNotice");
+                const button = document.querySelector("#main-topBar-moon-button");
+                button.classList.remove("main-topBar-buddyFeed");
+                button.classList.add("main-actionButtons-button", "main-noConnection-isNotice");
                 let updateLink = document.createElement("a");
-                updateLink.setAttribute("title", `Changes: ${data.name}`);
                 updateLink.setAttribute("href", "https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest");
                 updateLink.innerHTML = `v${data.tag_name} available`;
-                document.querySelector("#main-topBar-moon-button").append(updateLink);
+                button.append(updateLink);
+                button._tippy.setProps({
+                    allowHTML: true,
+                    content: `Changes: ${data.name}`
+                });
             }
         })
         .catch((err) => {
