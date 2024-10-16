@@ -1,4 +1,4 @@
-let current = "5.2";
+let current = "5.3";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -272,18 +272,22 @@ async function songchange() {
         nearArtistSpan.innerHTML = nearArtistSpanText;
     }
     document.documentElement.style.setProperty("--image_url", `url("${bgImage}")`);
-    registerCoverListener();
+    pickCoverColor();
 }
 
-Spicetify.Player.addEventListener("songchange", songchange);
+function pickCoverColor() {
+    const img = document.querySelector(".main-image-image.cover-art-image");
+    if (!img) return setTimeout(pickCoverColor, 250); // Check if image exists
 
-function pickCoverColor(img) {
     if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48") {
         if (!img.currentSrc.startsWith("https://i.scdn.co/image")) return;
         img.crossOrigin = "Anonymous";
     } else {
         if (!img.currentSrc.startsWith("spotify:")) return;
     }
+
+    if (!img.complete) return setTimeout(pickCoverColor, 250); // Check if image is loaded
+
     if (img.complete) {
         textColor = "#1db954";
         try {
@@ -301,29 +305,8 @@ function pickCoverColor(img) {
     updateColors(textColor);
 }
 
-var coverListener;
-function registerCoverListener() {
-    const img = document.querySelector(".main-image-image.cover-art-image");
-    if (!img) return setTimeout(registerCoverListener, 250); // Check if image exists
-    if (!img.complete) return setTimeout(registerCoverListener, 250); // Check if image is loaded
-    pickCoverColor(img);
-
-    if (coverListener != null) {
-        coverListener.disconnect();
-        coverListener = null;
-    }
-
-    coverListener = new MutationObserver((muts) => {
-        const img = document.querySelector(".main-image-image.cover-art-image");
-        if (!img) return registerCoverListener();
-        pickCoverColor(img);
-    });
-    coverListener.observe(img, {
-        attributes: true,
-        attributeFilter: ["src"]
-    });
-}
-registerCoverListener();
+Spicetify.Player.addEventListener("songchange", songchange);
+songchange();
 
 (function Startup() {
     if (!Spicetify.showNotification) {
