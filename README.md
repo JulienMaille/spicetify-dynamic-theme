@@ -1,4 +1,4 @@
-# DefaultDynamic for [Spicetify](https://github.com/khanhas/spicetify-cli)
+# DefaultDynamic for [Spicetify](https://github.com/spicetify/cli)
 
 <a href="https://github.com/JulienMaille/spicetify-dynamic-theme/releases/latest"><img src="https://img.shields.io/github/release/JulienMaille/spicetify-dynamic-theme/all.svg"></a>
 
@@ -11,7 +11,7 @@ The main differences are the light/dark toggle, the background cover and the dyn
 
 ## Install / Update
 
-Make sure you are using latest releases of Spicetify and Spotify
+Make sure you are using latest releases of <a href="https://github.com/spicetify/cli/releases/latest"><img src="https://img.shields.io/github/release/spicetify/cli/all.svg?label=Spicetify"></a> and [Spotify](https://www.spotify.com/us/download/other/)
 
 ### Windows (PowerShell)
 
