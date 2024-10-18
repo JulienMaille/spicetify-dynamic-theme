@@ -1,4 +1,4 @@
-let current = "5.3";
+let current = "5.4";
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -276,14 +276,29 @@ async function songchange() {
 }
 
 function pickCoverColor() {
-    const img = document.querySelector(".main-image-image.cover-art-image");
+    img = document.querySelector(".main-image-image.cover-art-image");
     if (!img) return setTimeout(pickCoverColor, 250); // Check if image exists
 
-    if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48") {
-        if (!img.currentSrc.startsWith("https://i.scdn.co/image")) return;
-        img.crossOrigin = "Anonymous";
+    // Force src for local files, otherwise we will pick color from previous cover
+    if (Spicetify.Player.data.item.isLocal) img.src = Spicetify.Player.data.item.metadata.image_url;
+
+    var tmp_img = false;
+    if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48" && img.src.startsWith("https://i.scdn.co/image")) {
+        tmp_img = true;
+        const tmp_src = img.src;
+        img = new Image();
+        img.crossOrigin = "anonymous"; // Enable CORS
+        img.src = tmp_src;
+
+        img.onload = function () {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            // Now you can use getImageData without issues
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        };
     } else {
-        if (!img.currentSrc.startsWith("spotify:")) return;
+        if (!img.src.startsWith("spotify:")) return;
     }
 
     if (!img.complete) return setTimeout(pickCoverColor, 250); // Check if image is loaded
@@ -301,6 +316,7 @@ function pickCoverColor() {
         } catch (err) {
             console.error(err);
         }
+        if (tmp_img) img = null;
     }
     updateColors(textColor);
 }
