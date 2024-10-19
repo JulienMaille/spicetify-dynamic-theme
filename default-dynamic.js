@@ -104,7 +104,7 @@ function setLightness(hex, lightness) {
     return rgbToHex(hslToRgb(hsl));
 }
 
-let textColor = getComputedStyle(document.documentElement).getPropertyValue("--spice-text");
+let textColor = "#1db954";
 let textColorBg = getComputedStyle(document.documentElement).getPropertyValue("--spice-main");
 
 function setRootColor(name, colHex) {
@@ -275,8 +275,22 @@ async function songchange() {
     pickCoverColor();
 }
 
+function getVibrant(image) {
+    try {
+        var swatches = new Vibrant(img, 12).swatches();
+        cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
+        for (var col in cols)
+            if (swatches[cols[col]]) {
+                textColor = swatches[cols[col]].getHex();
+                break;
+            }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 function pickCoverColor() {
-    img = document.querySelector(".main-image-image.cover-art-image");
+    const img = document.querySelector(".main-image-image.cover-art-image");
     if (!img) return setTimeout(pickCoverColor, 250); // Check if image exists
 
     // Force src for local files, otherwise we will pick color from previous cover
@@ -284,38 +298,26 @@ function pickCoverColor() {
 
     if (!img.complete) return setTimeout(pickCoverColor, 250); // Check if image is loaded
 
-    var tmp_img = false;
+    textColor = "#1db954";
     if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48" && img.src.startsWith("https://i.scdn.co/image")) {
-        tmp_img = true;
-        const tmp_src = img.src;
-        img = new Image();
-        img.crossOrigin = "anonymous"; // Enable CORS
-        img.src = tmp_src;
+        var imgCORS = new Image();
+        imgCORS.crossOrigin = "anonymous"; // Enable CORS
+        imgCORS.src = img.src;
 
-        img.onload = function () {
+        imgCORS.onload = function () {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(imgCORS, 0, 0);
+
+            getVibrant(imgCORS);
+            imgCORS = null;
         };
+        return;
     } else {
         if (!img.src.startsWith("spotify:")) return;
     }
 
-    if (img.complete) {
-        textColor = "#1db954";
-        try {
-            var swatches = new Vibrant(img, 12).swatches();
-            cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
-            for (var col in cols)
-                if (swatches[cols[col]]) {
-                    textColor = swatches[cols[col]].getHex();
-                    break;
-                }
-        } catch (err) {
-            console.error(err);
-        }
-        if (tmp_img) img = null;
-    }
+    if (img.complete) getVibrant(img);
     updateColors(textColor);
 }
 
