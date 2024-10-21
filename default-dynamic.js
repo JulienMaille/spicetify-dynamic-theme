@@ -302,7 +302,7 @@ function pickCoverColor() {
     if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48" && img.src.startsWith("https://i.scdn.co/image")) {
         var imgCORS = new Image();
         imgCORS.crossOrigin = "anonymous"; // Enable CORS
-        imgCORS.src = img.src;
+        imgCORS.src = Spicetify.Player.data.item.metadata.image_url.replace("spotify:image:", "https://i.scdn.co/image/");
 
         imgCORS.onload = function () {
             var canvas = document.createElement("canvas");
