@@ -272,6 +272,7 @@ option {
     background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
 }
 
+/* playlist play 
 .encore-dark-theme .encore-bright-accent-set {
     --background-highlight: var(--spice-text);
     --background-press: var(--spice-button-active);
@@ -350,7 +351,7 @@ option {
 }
 
 .artist-artistVerifiedBadge-badge {
-    fill: var(--spice-text);
+    fill: var(--spice-button);
 }
 
 /* left sidebar hover */
