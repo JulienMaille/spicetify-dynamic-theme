@@ -392,6 +392,11 @@ option {
     border-radius: 8px !important;
 }
 
+/* Remove weird gradient in right sidebar */
+.main-nowPlayingView-contextItemInfo:before {
+    background: none !important;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
