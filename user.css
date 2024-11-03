@@ -397,6 +397,12 @@ option {
     background: none !important;
 }
 
+/* Tone done gradients */
+.under-main-view,
+[style*="background-color"] {
+    opacity: 0.35;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
