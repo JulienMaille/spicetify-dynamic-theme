@@ -399,8 +399,23 @@ option {
 
 /* Tone done gradients */
 .under-main-view,
-[style*="background-color"] {
-    opacity: 0.35;
+[style*="background-color"]:not(.main-shelf-shelfGrid [style*="background-color"]) {
+    opacity: calc(var(--is_light) * -0.15 + 0.3);
+}
+
+/* Fix forced subdue */
+[style*="--text-subdued"] {
+    --text-subdued: var(--spice-subtext) !important;
+}
+
+/* Fix search cards text color */
+.main-shelf-shelfGrid [style*="background-color"] {
+    color: var(--spice-main);
+}
+
+/* Fix play button hover color */
+.encore-dark-theme .encore-bright-accent-set {
+    --background-highlight: var(--spice-button) !important;
 }
 
 /* smooth color transitions */
