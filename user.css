@@ -49,11 +49,6 @@ h1,
     color: var(--spice-subtext) !important;
 }
 
-.x-searchInput-searchInputSearchIcon,
-.x-searchInput-searchInputClearButton {
-    color: var(--spice-text) !important;
-}
-
 /* Remove Topbar background colour */
 .Root__top-bar {
     z-index: 1;
@@ -82,19 +77,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
 .main-trackCreditsModal-closeBtn > svg,
 .x-settings-equalizerPanelCanvas {
     filter: var(--colormatrix);
-}
-
-.contentSpacing hr {
-    border-color: rgba(128, 128, 128, 0.2);
-}
-
-/* translucid artist background */
-.main-entityHeader-background.main-entityHeader-gradient {
-    opacity: 0.3;
-}
-
-.main-entityHeader-background.main-entityHeader-overlay:after {
-    background-image: linear-gradient(transparent, transparent), linear-gradient(var(--spice-main), var(--spice-main));
 }
 
 /* translucid background cover */
@@ -172,27 +154,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
     color: #ffffff;
 }
 
-/* spotify dynamic gradients */
-.main-home-homeHeader {
-    opacity: 0.3;
-    background-color: var(--spice-text) !important;
-}
-
-.main-actionBarBackground-background,
-.main-entityHeader-backgroundColor {
-    opacity: 0.15;
-    background-color: var(--spice-text) !important;
-    filter: grayscale(0.5);
-}
-
-/* drop down */
-.main-dropDown-dropDown,
-select,
-option {
-    color: var(--text-subdued) !important;
-    background-color: var(--spice-notification) !important;
-}
-
 /* lyrics */
 .main-lyricsCinema-container,
 .lyrics-lyrics-container,
@@ -209,57 +170,15 @@ option {
     min-height: 32px;
 }
 
-/* playlist header */
-.main-duration-container,
-.main-entityHeader-metaDataText,
-.playlist-playlist-playlistDescription {
-    color: var(--spice-text);
-}
-
-/* Menu item hover */
-.main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):focus,
-.main-contextMenu-menuItemButton:not(.main-contextMenu-disabled):hover {
-    background-color: rgba(var(--spice-rgb-selected-row), 0.2);
-}
-
-.main-contextMenu-menuItemButton {
-    color: var(--spice-subtext);
-}
-
 /* explicit lyrics icon */
 .main-tag-container {
     color: var(--spice-subtext);
     background-color: rgba(var(--spice-rgb-subtext), 0.2) !important;
 }
 
-/* playlist top buttons */
-.os-viewport button:not(.main-playButton-primary):not(:hover) {
-    color: var(--spice-subtext) !important;
-}
-
 /* album year info */
 .main-trackInfo-release {
     font-size: 0.6875rem;
-}
-
-/* fix player bar buttons */
-.main-nowPlayingBar-left button,
-.main-nowPlayingBar-left button[aria-checked="false"],
-.main-nowPlayingBar-right button,
-.main-nowPlayingBar-right button:focus:not(:focus-visible):not(:hover),
-.main-nowPlayingBar-center button:not(.main-playPauseButton-button),
-.main-nowPlayingBar-center button:focus:not(:focus-visible):not(:hover) {
-    color: var(--spice-subtext);
-}
-
-.main-nowPlayingBar-left button:active,
-.main-nowPlayingBar-right button:active,
-.main-nowPlayingBar-center button:not(.main-playPauseButton-button):active {
-    color: rgba(var(--spice-rgb-text), 0.7) !important;
-}
-
-.main-playPauseButton-button {
-    color: var(--spice-main) !important;
 }
 
 /* fix discography buttons */
@@ -270,22 +189,6 @@ option {
 /* highlight current playing song */
 .main-trackList-active {
     background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
-}
-
-/* playlist play 
-.encore-dark-theme .encore-bright-accent-set {
-    --background-highlight: var(--spice-text);
-    --background-press: var(--spice-button-active);
-    --decorative-subdued: var(--spice-text);
-}
-
-/* top buttons */
-.main-topBar-historyButtons .main-topBar-button {
-    background-color: var(--spice-main);
-}
-
-.main-topBar-buddyFeed {
-    color: rgba(var(--spice-rgb-text), 0.5);
 }
 
 /* new navbar interface */
@@ -317,12 +220,6 @@ option {
     padding-left: 8px;
 }
 
-/* Search cards */
-.search-searchBrowse-SearchBrowse span.TypeElement-canon-type,
-.x-categoryCard-title {
-    color: white;
-}
-
 /* Tooltip cards */
 .encore-announcement-set,
 .encore-announcement-set button {
@@ -339,12 +236,6 @@ option {
     color: var(--spice-text);
 }
 
-/* fix podcast icon */
-.view-homeShortcutsGrid-imageWrapper > *,
-.main-yourEpisodes-coverContainer {
-    background-color: var(--spice-highlight);
-}
-
 /* verified badge */
 .artist-artistVerifiedBadge-fillColor {
     background-color: var(--spice-main);
@@ -352,20 +243,6 @@ option {
 
 .artist-artistVerifiedBadge-badge {
     fill: var(--spice-button);
-}
-
-/* left sidebar hover */
-.main-yourLibraryX-listItemGroup:hover::after {
-    background-color: rgba(var(--spice-rgb-selected-row), calc(var(--is_light) * (-0.13) + 0.2));
-}
-
-.main-yourLibraryX-listItemGroup div:hover {
-    background-color: unset;
-}
-
-.main-yourLibraryX-listItemGroup:hover .LineClamp,
-.main-yourLibraryX-listItemGroup:hover .main-yourLibraryX-listRowSubtitleLeadingWrapper {
-    color: var(--spice-text);
 }
 
 /* Remove blue outline in confirmation popup */
@@ -400,7 +277,7 @@ option {
 /* Tone done gradients */
 .under-main-view,
 [style*="background-color"]:not(.main-shelf-shelfGrid [style*="background-color"]) {
-    opacity: calc(var(--is_light) * -0.15 + 0.3);
+    opacity: 0.2;
 }
 
 /* Fix forced subdue */
@@ -415,7 +292,8 @@ option {
 
 /* Fix play button hover color */
 .encore-dark-theme .encore-bright-accent-set {
-    --background-highlight: var(--spice-button) !important;
+    --background-highlight: var(--background-press);
+    --background-press: var(--background-press);
 }
 
 /* smooth color transitions */
