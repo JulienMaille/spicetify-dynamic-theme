@@ -270,9 +270,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 /* Fix play button hover color */
+.encore-dark-theme .encore-inverted-light-set,
 .encore-dark-theme .encore-bright-accent-set {
-    --background-highlight: var(--background-press);
-    --background-press: var(--background-press);
+    --background-highlight: var(--background-press) !important;
+    --background-press: var(--spice-subtext) !important;
+    --decorative-subdued: var(--spice-subtext) !important;
 }
 
 /* smooth color transitions */
