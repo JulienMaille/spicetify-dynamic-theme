@@ -30,6 +30,6 @@ if [[ ! -f "$path" ]]; then
 fi
 
 # Patch the binary
-sed -i.bak 's/force-dark-mode/xxxxx-xxxx-xxxx/' "$path"
+sed -i.bak 's/force-dark-mode/donot-dark-mode/' "$path"
 
 echo "The patch is complete. You may now restart Spotify."
