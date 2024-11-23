@@ -286,6 +286,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
     --decorative-subdued: var(--spice-subtext) !important;
 }
 
+/* Fix avatar icon */
+.main-userWidget-box {
+    opacity: 1 !important;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
