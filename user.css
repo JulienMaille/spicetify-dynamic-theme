@@ -167,6 +167,8 @@ img.main-devicePicker-nowPlayingActiveIcon,
 /* album year info */
 .main-trackInfo-release {
     font-size: 0.6875rem;
+    grid-row: 4;
+    grid-column: 1 / 3;
 }
 
 /* fix discography buttons */
