@@ -33,8 +33,11 @@ h1,
 }
 
 /* Remove Topbar background colour */
+.main-topBar-background {
+    --background-base: transparent !important;
+}
 .main-topBar-overlay {
-    background-color: var(--spice-main);
+    background-color: rgba(var(--spice-rgb-main), 0.9);
 }
 
 .main-entityHeader-shadow,
