@@ -297,11 +297,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
     opacity: 1 !important;
 }
 
-/* Fix now playing artist color */
-.main-nowPlayingView-trackInfo.main-trackInfo-container .main-trackInfo-artists {
-    --text-subdued: #ccc;
-}
-
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
