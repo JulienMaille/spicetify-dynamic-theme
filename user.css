@@ -297,6 +297,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
     opacity: 1 !important;
 }
 
+/* Fix artist page gradient */
+.main-entityHeader-container.main-entityHeader-withBackgroundImage + div > div {
+    --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
