@@ -297,8 +297,10 @@ img.main-devicePicker-nowPlayingActiveIcon,
     opacity: 1 !important;
 }
 
-/* Fix artist page gradient */
-.main-entityHeader-container.main-entityHeader-withBackgroundImage + div > div {
+/* Fix artist & album page gradient */
+.main-view-container div[style*="background-base"] {
+    --background-base: rgba(var(--spice-rgb-text), 0.1) !important;
+    --background-base-min-contrast: rgba(var(--spice-rgb-text), 0.2) !important;
     --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
 }
 
