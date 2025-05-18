@@ -30,6 +30,21 @@ if [[ ! -f "$path" ]]; then
 fi
 
 # Patch the binary
-sed -i.bak 's/force-dark-mode/xxxxx-xxxx-xxxx/' "$path"
+if LC_CTYPE=C sed -i.bak 's/force-dark-mode/xxxxx-xxxx-xxxx/' "$path"; then
+    echo "Patch applied successfully."
+else
+    echo "Unable to apply patch!"
+    exit 1
+fi
+
+# Resign for macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if codesign --force --deep --sign - /Applications/Spotify.app; then
+       echo "Resigned app successfully."
+    else
+       echo "Unable to resign app!"
+       exit 1
+    fi
+fi 
 
 echo "The patch is complete. You may now restart Spotify."
