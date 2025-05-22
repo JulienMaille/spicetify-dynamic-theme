@@ -270,7 +270,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
 
 /* Tone done gradients */
 .under-main-view,
-[style*="background-color"]:not(.main-shelf-shelfGrid [style*="background-color"]) {
+[style*="background-color"]:not(.e-9911-box):not(.main-shelf-shelfGrid [style*="background-color"]) {
     opacity: 0;
 }
 
