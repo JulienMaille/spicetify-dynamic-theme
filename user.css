@@ -268,9 +268,9 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background: none !important;
 }
 
-/* Tone done gradients */
-.under-main-view,
-[style*="background-color"]:not(ul [style*="background-color"]):not(.main-shelf-shelfGrid [style*="background-color"]) {
+/* Hide banners and gradients */
+.main-entityHeader-background.main-entityHeader-overlay,
+.main-entityHeader-background.main-entityHeader-gradient {
     opacity: 0;
 }
 
