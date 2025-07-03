@@ -274,6 +274,12 @@ img.main-devicePicker-nowPlayingActiveIcon,
     opacity: 0;
 }
 
+.before-scroll-node,
+.main-entityHeader-backgroundColor,
+.main-actionBarBackground-background {
+    display: none;
+}
+
 /* Fix forced subdue */
 [style*="--text-subdued"] {
     --text-subdued: var(--spice-subtext) !important;
