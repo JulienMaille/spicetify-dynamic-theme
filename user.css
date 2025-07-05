@@ -32,12 +32,9 @@ h1,
     color: var(--spice-subtext) !important;
 }
 
-/* Remove Topbar background colour */
+/* Improve Topbar background colour */
 .main-topBar-background {
-    --background-base: transparent !important;
-}
-.main-topBar-overlay {
-    background-color: rgba(var(--spice-rgb-main), 0.9);
+    --background-base: var(--spice-button-disabled) !important;
 }
 
 .main-entityHeader-shadow,
