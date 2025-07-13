@@ -307,6 +307,12 @@ img.main-devicePicker-nowPlayingActiveIcon,
     --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
 }
 
+/* Fix canvas overlay in light mode */
+.main-nowPlayingView-coverArtContainer > div:has(.canvasVideoContainerNPV)::before,
+.main-nowPlayingView-coverArtContainer > div:has(.canvasVideoContainerNPV)::after {
+    background: linear-gradient(180deg, rgba(var(--spice-rgb-main), 63%), rgba(var(--spice-rgb-main), 53%) 30%, rgba(var(--spice-rgb-main), 53%) 70%, var(--spice-main) 95%);
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
