@@ -106,6 +106,7 @@ function setLightness(hex, lightness) {
 
 let textColor = "#1db954";
 let textColorBg = getComputedStyle(document.documentElement).getPropertyValue("--spice-main");
+let settingsDark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark");
 
 function setRootColor(name, colHex) {
     let root = document.documentElement;
@@ -134,13 +135,8 @@ function toggleDark(setDark) {
     updateColors(textColor);
 }
 
-/* Init with current system light/dark mode */
-let systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-toggleDark(systemDark);
-
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-    toggleDark(e.matches);
-});
+/* Init with light/dark mode from settings */
+toggleDark(settingsDark);
 
 waitForElement([".main-actionButtons"], (queries) => {
     // Add activator on top bar
@@ -353,7 +349,7 @@ songchange();
         .catch((err) => {
             // Do something for an error here
         });
-    Spicetify.showNotification("Applied system " + (systemDark ? "dark" : "light") + " theme.");
+    Spicetify.showNotification("Applied " + (settingsDark ? "dark" : "light") + " theme.");
 })();
 
 document.documentElement.style.setProperty("--warning_message", " ");

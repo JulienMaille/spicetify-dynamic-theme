@@ -33,26 +33,14 @@ curl -fsSL https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-them
     ```
     spicetify config extensions default-dynamic.js extensions Vibrant.min.js
     spicetify config current_theme DefaultDynamic
-    spicetify config color_scheme base
+    spicetify config color_scheme Dark-Base
     spicetify config inject_css 1 replace_colors 1
     spicetify apply
     ```
 
-## Follow system dark/light theme
-> [!IMPORTANT]
-> From Spotify v1.2.17, dark mode is forced. You will need to patch Spotify binary:
-
-#### Windows (PowerShell)
-
-```powershell
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.ps1" | Invoke-Expression
-```
-
-#### Linux/MacOS (Bash)
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/master/patch-dark-mode.sh" | sh
-```
+## Settings
+-   **Theme**: You can choose between `dark` and `light` theme in the Spicetify settings menu.
+-   **Animation**: You can toggle the animation on or off by changing the color scheme in the Spicetify settings menu.
 
 ## Uninstall
 
