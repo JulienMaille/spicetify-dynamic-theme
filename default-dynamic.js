@@ -138,6 +138,21 @@ function toggleDark(setDark) {
 /* Init with light/dark mode from settings */
 toggleDark(settingsDark);
 
+/* Hook user changes to toggle using a proxy for Spicetify.Config */
+Spicetify.Config = new Proxy(Spicetify.Config, {
+    set(target, property, value) {
+        if (property === "color_scheme") {
+            // Wait 100ms for CSS variables to update
+            setTimeout(() => {
+                let dark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark").trim() === "#010101";
+                toggleDark(dark);
+            }, 100);
+        }
+        target[property] = value;
+        return true;
+    }
+});
+
 waitForElement([".main-actionButtons"], (queries) => {
     // Add activator on top bar
     const buttonContainer = queries[0];
