@@ -106,7 +106,7 @@ function setLightness(hex, lightness) {
 
 let textColor = "#1db954";
 let textColorBg = getComputedStyle(document.documentElement).getPropertyValue("--spice-main");
-let settingsDark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark");
+let settingsDark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark") == "#010101";
 
 function setRootColor(name, colHex) {
     let root = document.documentElement;
