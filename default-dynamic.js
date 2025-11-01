@@ -9,6 +9,77 @@ function waitForElement(els, func, timeout = 100) {
     }
 }
 
+(function keepHomeHeaderHidden() {
+  const STYLE_ID = "spicetify-hide-main-home-header-v2";
+  const CSS = `
+    div.main-home-homeHeader,
+    div.main-home-homeHeader[style*="background-color"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+    }
+  `;
+
+  function ensureStyle() {
+    if (!document.head) return;
+    if (!document.getElementById(STYLE_ID)) {
+      const s = document.createElement("style");
+      s.id = STYLE_ID;
+      s.textContent = CSS;
+      document.head.appendChild(s);
+    }
+  }
+
+  function forceHideFrom(root = document) {
+    try {
+      const els = root.querySelectorAll("div.main-home-homeHeader");
+      els.forEach((el) => {
+        el.style.setProperty("display", "none", "important");
+        el.style.setProperty("visibility", "hidden", "important");
+        el.style.setProperty("opacity", "0", "important");
+        el.style.setProperty("height", "0", "important");
+        el.style.setProperty("margin", "0", "important");
+        el.style.setProperty("padding", "0", "important");
+        el.style.setProperty("pointer-events", "none", "important");
+      });
+    } catch (e) {}
+  }
+
+  function observeRoot(root) {
+    try {
+      const observer = new MutationObserver((mutations) => {
+        ensureStyle();
+        for (const m of mutations) {
+          m.addedNodes.forEach((node) => {
+            if (node.querySelectorAll) {
+              node.querySelectorAll("div.main-home-homeHeader").forEach((el) => {
+                el.style.setProperty("display", "none", "important");
+              });
+            }
+          });
+        }
+        forceHideFrom(root);
+      });
+      observer.observe(root, { childList: true, subtree: true });
+    } catch (e) {}
+  }
+
+  function init() {
+    ensureStyle();
+    forceHideFrom(document);
+    observeRoot(document);
+    setTimeout(() => { ensureStyle(); forceHideFrom(document); }, 800);
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") init();
+  else document.addEventListener("DOMContentLoaded", init);
+})();
+
+
 function getAlbumInfo(id) {
     return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/albums/${id}`);
 }
