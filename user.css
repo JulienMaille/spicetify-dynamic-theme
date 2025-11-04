@@ -313,6 +313,11 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background: linear-gradient(180deg, rgba(var(--spice-rgb-main), 63%), rgba(var(--spice-rgb-main), 53%) 30%, rgba(var(--spice-rgb-main), 53%) 70%, var(--spice-main) 95%);
 }
 
+/* Hide Spotify home header */
+div.main-home-homeHeader {
+    display: none !important;
+}
+
 /* smooth color transitions */
 @property --spice-sidebar {
     syntax: "<color>";
