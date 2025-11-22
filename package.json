@@ -1,0 +1,62 @@
+{
+  "name": "spicetify-dynamic-theme",
+  "version": "5.7.0",
+  "description": "A dynamic theme for Spicetify with light/dark mode support and album art-based colors",
+  "main": "default-dynamic.js",
+  "scripts": {
+    "lint": "eslint *.js",
+    "lint:fix": "eslint *.js --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "npm run lint && npm run format:check"
+  },
+  "keywords": [
+    "spicetify",
+    "theme",
+    "dynamic",
+    "colors",
+    "light",
+    "dark",
+    "album-art"
+  ],
+  "author": "JulienMaille",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "globals": {
+      "Spicetify": "readonly",
+      "Vibrant": "readonly"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "warn",
+      "prefer-const": "error",
+      "prefer-arrow-callback": "error",
+      "arrow-spacing": "error",
+      "prefer-template": "error",
+      "template-curly-spacing": "error",
+      "object-shorthand": "error",
+      "prefer-destructuring": "error"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JulienMaille/spicetify-dynamic-theme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JulienMaille/spicetify-dynamic-theme/issues"
+  },
+  "homepage": "https://github.com/JulienMaille/spicetify-dynamic-theme#readme"
+}

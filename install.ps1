@@ -1,16 +1,56 @@
 # Copyright 2019 khanhas. GPL license.
 # Edited from project Denoland install script (https://github.com/denoland/deno_install)
+# Modernized with improved error handling and logging
+
 param (
-  [string] $version
+  [Parameter(Mandatory=$false)]
+  [string] $Version,
+  
+  [Parameter(Mandatory=$false)]
+  [string] $v
 )
 
+# Configuration
 $PSMinVersion = 3
+$RepoOwner = "JulienMaille"
+$RepoName = "spicetify-dynamic-theme"
+$ThemeName = "DefaultDynamic"
 
+# Handle version parameter alias
 if ($v) {
-  $version = $v
+  $Version = $v
 }
 
-# Helper functions for pretty terminal output.
+# Enhanced logging functions
+function Write-Log {
+  param(
+    [Parameter(Mandatory=$true)]
+    [string] $Message,
+    
+    [Parameter(Mandatory=$false)]
+    [ValidateSet("Info", "Success", "Warning", "Error")]
+    [string] $Level = "Info"
+  )
+  
+  $timestamp = Get-Date -Format "HH:mm:ss"
+  $prefix = switch ($Level) {
+    "Info"    { "[INFO]" }
+    "Success" { "[OK]" }
+    "Warning" { "[WARN]" }
+    "Error"   { "[ERROR]" }
+  }
+  
+  $color = switch ($Level) {
+    "Info"    { "White" }
+    "Success" { "Green" }
+    "Warning" { "Yellow" }
+    "Error"   { "Red" }
+  }
+  
+  Write-Host "${timestamp} ${prefix} " -NoNewline -ForegroundColor Gray
+  Write-Host $Message -ForegroundColor $color
+}
+
 function Write-Part ([string] $Text) {
   Write-Host $Text -NoNewline
 }
@@ -24,111 +64,233 @@ function Write-Done {
   Write-Host "OK" -ForegroundColor "Green"
 }
 
-if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
-  $ErrorActionPreference = "Stop"
-
-  # Enable TLS 1.2 since it is required for connections to GitHub.
-  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-  $checkSpice = Get-Command spicetify -ErrorAction Silent
-  if ($null -eq $checkSpice) {
-    Write-Host -ForegroundColor Red "Spicetify not found"
-    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
+# Error handling
+function Test-Prerequisites {
+  try {
+    if ($PSVersionTable.PSVersion.Major -lt $PSMinVersion) {
+      throw "PowerShell version $PSMinVersion or higher is required. Current version: $($PSVersionTable.PSVersion.Major)"
+    }
+    
+    # Check if spicetify is available
+    $spicetifyCommand = Get-Command spicetify -ErrorAction Stop
+    Write-Log "Found spicetify at: $($spicetifyCommand.Source)" "Success"
+    
+    # Enable TLS 1.2 for GitHub connections
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Write-Log "TLS 1.2 enabled for secure connections" "Success"
+    
   }
+  catch {
+    Write-Log $_.Exception.Message "Error"
+    
+    if ($_.Exception.Message -like "*spicetify*") {
+      Write-Log "Attempting to install spicetify-cli..." "Warning"
+      try {
+        Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
+        Write-Log "Spicetify-cli installed successfully" "Success"
+      }
+      catch {
+        Write-Log "Failed to install spicetify-cli. Please install it manually." "Error"
+        exit 1
+      }
+    }
+    else {
+      exit 1
+    }
+  }
+}
 
-  if (-not $version) {
-    # Determine latest release via GitHub API.
-    $latest_release_uri =
-    "https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
-    Write-Part "DOWNLOADING    "; Write-Emphasized $latest_release_uri;
-    $latest_release_json = Invoke-WebRequest -Uri $latest_release_uri -UseBasicParsing
+# Main installation logic
+function Install-DynamicTheme {
+  try {
+    Write-Log "Starting Spicetify Dynamic Theme installation..." "Info"
+    
+    # Test prerequisites
+    Test-Prerequisites
+    
+    # Determine version to install
+    $targetVersion = $Version
+    if (-not $targetVersion) {
+      Write-Log "Fetching latest release information..." "Info"
+      $latestReleaseUri = "https://api.github.com/repos/${RepoOwner}/${RepoName}/releases/latest"
+      Write-Part "DOWNLOADING    "; Write-Emphasized $latestReleaseUri;
+      
+      try {
+        $latestReleaseJson = Invoke-WebRequest -Uri $latestReleaseUri -UseBasicParsing -ErrorAction Stop
+        $releaseData = $latestReleaseJson | ConvertFrom-Json
+        $targetVersion = $releaseData.tag_name -replace "v", ""
+        Write-Log "Latest version found: $targetVersion" "Success"
+        Write-Done
+      }
+      catch {
+        Write-Log "Failed to fetch latest version from GitHub API" "Error"
+        throw $_
+      }
+    } else {
+      Write-Log "Installing specified version: $targetVersion" "Info"
+    }
+    
+    # Download and extract theme
+    $tempDir = "${env:TEMP}\spicetify-theme-${targetVersion}"
+    $zipFile = "${tempDir}.zip"
+    $downloadUri = "https://github.com/${RepoOwner}/${RepoName}/archive/refs/tags/${targetVersion}.zip"
+    
+    try {
+      Write-Part "DOWNLOADING    "; Write-Emphasized $downloadUri;
+      Invoke-WebRequest -Uri $downloadUri -UseBasicParsing -OutFile $zipFile -ErrorAction Stop
+      Write-Done
+      
+      Write-Part "EXTRACTING     "; Write-Emphasized $zipFile;
+      if (Test-Path $tempDir) {
+        Remove-Item -Path $tempDir -Recurse -Force
+      }
+      Expand-Archive -Path $zipFile -DestinationPath $env:TEMP -Force
+      Write-Done
+      
+      # Remove zip file
+      Remove-Item -Path $zipFile -Force
+    }
+    catch {
+      Write-Log "Failed to download or extract theme files" "Error"
+      throw $_
+    }
+    
+    # Get spicetify config directory
+    $spicetifyConfig = spicetify -c | Split-Path
+    $themeDir = Join-Path $spicetifyConfig "Themes" $ThemeName
+    $extensionsDir = Join-Path $spicetifyConfig "Extensions"
+    
+    # Create directories if they don't exist
+    if (-not (Test-Path $themeDir)) {
+      Write-Part "MAKING FOLDER  "; Write-Emphasized $themeDir
+      New-Item -Path $themeDir -ItemType Directory -Force | Out-Null
+      Write-Done
+    }
+    
+    if (-not (Test-Path $extensionsDir)) {
+      Write-Part "MAKING FOLDER  "; Write-Emphasized $extensionsDir
+      New-Item -Path $extensionsDir -ItemType Directory -Force | Out-Null
+      Write-Done
+    }
+    
+    # Copy theme files
+    Write-Part "COPYING        "; Write-Emphasized $themeDir;
+    $sourceDir = "${env:TEMP}\${RepoName}-${targetVersion}"
+    Copy-Item -Path (Join-Path $sourceDir "*.css") -Destination $themeDir -Force
+    Copy-Item -Path (Join-Path $sourceDir "*.ini") -Destination $themeDir -Force
+    Copy-Item -Path (Join-Path $sourceDir "*.js") -Destination $extensionsDir -Force
     Write-Done
-
-    $version = ($latest_release_json | ConvertFrom-Json).tag_name -replace "v", ""
+    
+    # Configure spicetify
+    Write-Log "Configuring spicetify..." "Info"
+    try {
+      # Remove conflicting extensions
+      spicetify config extensions dribbblish-dynamic.js- extensions dribbblish.js- 2>$null
+      
+      # Add new extensions
+      spicetify config extensions default-dynamic.js extensions Vibrant.min.js
+      
+      # Set theme
+      spicetify config current_theme $ThemeName color_scheme base
+      spicetify config inject_css 1 replace_colors 1
+      
+      Write-Log "Spicetify configuration updated" "Success"
+    }
+    catch {
+      Write-Log "Failed to configure spicetify" "Error"
+      throw $_
+    }
+    
+    # Apply patches
+    Apply-Patches $spicetifyConfig
+    
+    # Apply theme
+    Apply-ThemeChanges $spicetifyConfig
+    
+    # Cleanup
+    if (Test-Path $sourceDir) {
+      Remove-Item -Path $sourceDir -Recurse -Force
+    }
+    
+    Write-Log "Installation completed successfully!" "Success"
+    Write-Log "Theme installed: $ThemeName v$targetVersion" "Success"
   }
-
-  # Check ~\spicetify-cli\Themes directory already exists
-  $sp_dir = "${HOME}\spicetify-cli\Themes"
-  if (-not (Test-Path $sp_dir)) {
-    Write-Part "MAKING FOLDER  "; Write-Emphasized $sp_dir
-    New-Item -Path $sp_dir -ItemType Directory | Out-Null
-    Write-Done
+  catch {
+    Write-Log "Installation failed: $($_.Exception.Message)" "Error"
+    exit 1
   }
+}
 
-  # Download release.
-  $zip_file = "${sp_dir}\${version}.zip"
-  $download_uri = "https://github.com/JulienMaille/spicetify-dynamic-theme/archive/refs/tags/${version}.zip"
-  Write-Part "DOWNLOADING    "; Write-Emphasized $download_uri;
-  Invoke-WebRequest -Uri $download_uri -UseBasicParsing -OutFile $zip_file
-  Write-Done
-
-  # Extract theme from .zip file.
-  Write-Part "EXTRACTING     "; Write-Emphasized $zip_file;
-  Write-Part " into "; Write-Emphasized ${sp_dir};
-  Expand-Archive -Path $zip_file -DestinationPath $sp_dir -Force
-  Write-Done
-
-  # Remove .zip file.
-  Write-Part "REMOVING       "; Write-Emphasized $zip_file;
-  Remove-Item -Path $zip_file
-  Write-Done
-
-  # Check ~\.spicetify.\Themes directory already exists
-  $spicePath = spicetify -c | Split-Path
-  $sp_dot_dir = "$spicePath\Themes\DefaultDynamic"
-  if (-not (Test-Path $sp_dot_dir)) {
-    Write-Part "MAKING FOLDER  "; Write-Emphasized $sp_dot_dir
-    New-Item -Path $sp_dot_dir -ItemType Directory | Out-Null
-    Write-Done
-  }
-
-  # Copy to .spicetify.
-  Write-Part "COPYING        "; Write-Emphasized $sp_dot_dir;
-  Copy-Item -Path "${sp_dir}\spicetify-dynamic-theme-${version}\*" -Destination $sp_dot_dir -Recurse -Force
-  Write-Done
-
-  # Installing.
-  Write-Host "INSTALLING     ";
-  cd $sp_dot_dir
-  Copy-Item default-dynamic.js ..\..\Extensions
-  Copy-Item Vibrant.min.js ..\..\Extensions
-  spicetify config extensions dribbblish-dynamic.js- extensions dribbblish.js-
-  spicetify config extensions default-dynamic.js extensions Vibrant.min.js
-  spicetify config current_theme DefaultDynamic
-  spicetify config inject_css 1 replace_colors 1
-  Write-Done
-
-  # Add patch
-  Write-Part "PATCHING       "; Write-Emphasized "$spicePath\config-xpui.ini";
-  $configFile = Get-Content "$spicePath\config-xpui.ini"
-  if (-not ($configFile -match "xpui.js_find_8008")) {
-    $rep = @"
+function Apply-Patches {
+  param([string] $ConfigPath)
+  
+  Write-Part "PATCHING       "; Write-Emphasized "$ConfigPath\config-xpui.ini";
+  
+  try {
+    $configFile = Get-Content "$ConfigPath\config-xpui.ini" -Raw
+    
+    if ($configFile -notmatch "xpui.js_find_8008") {
+      $patchContent = @"
 [Patch]
 xpui.js_find_8008=,(\w+=)32,
 xpui.js_repl_8008=,`${1}28,
 "@
-    # In case missing Patch section
-    if (-not ($configFile -match "\[Patch\]")) {
-      $configFile += "`n[Patch]`n"
+      
+      # Ensure Patch section exists
+      if ($configFile -notmatch "\[Patch\]") {
+        $configFile += "`n[Patch]`n"
+      }
+      
+      # Replace existing Patch section
+      $configFile = $configFile -replace "\[Patch\].*", $patchContent
+      Set-Content "$ConfigPath\config-xpui.ini" $configFile -NoNewline
+      
+      Write-Log "Patches applied successfully" "Success"
+    } else {
+      Write-Log "Patches already exist, skipping" "Warning"
     }
-    $configFile = $configFile -replace "\[Patch\]",$rep
-    Set-Content "$spicePath\config-xpui.ini" $configFile
+    
+    Write-Done
   }
-  Write-Done
+  catch {
+    Write-Log "Failed to apply patches" "Error"
+    throw $_
+  }
+}
 
+function Apply-ThemeChanges {
+  param([string] $ConfigPath)
+  
   Write-Part "APPLYING     ";
-  $backupVer = $configFile -match "^version"
-  $parts = $backupVer.Split("=")
-  if ($parts.Length -lt 2 -and $version.version.Length -gt 0) {
-    Write-Emphasized "apply";
-    spicetify apply
-  } else {
-    Write-Emphasized "restore backup apply";
-    spicetify restore backup apply
+  
+  try {
+    $configFile = Get-Content "$ConfigPath\config-xpui.ini" -Raw
+    $hasBackup = $configFile -match "^version"
+    
+    if ($hasBackup) {
+      Write-Emphasized "restore backup apply";
+      spicetify restore backup apply
+    } else {
+      Write-Emphasized "apply";
+      spicetify apply
+    }
+    
+    Write-Done
+    Write-Log "Theme applied successfully" "Success"
   }
-  Write-Done
+  catch {
+    Write-Log "Failed to apply theme changes" "Error"
+    throw $_
+  }
+}
+
+# Main execution
+if ($PSVersionTable.PSVersion.Major -ge $PSMinVersion) {
+  $ErrorActionPreference = "Stop"
+  Install-DynamicTheme
 }
 else {
-  Write-Part "`nYour Powershell version is less than "; Write-Emphasized "$PSMinVersion";
-  Write-Part "`nPlease, update your Powershell downloading the "; Write-Emphasized "'Windows Management Framework'"; Write-Part " greater than "; Write-Emphasized "$PSMinVersion"
+  Write-Log "PowerShell version $PSMinVersion or higher is required. Current version: $($PSVersionTable.PSVersion.Major)" "Error"
+  Write-Part "`nPlease update your PowerShell by downloading the "; Write-Emphasized "'Windows Management Framework'"; Write-Part " greater than "; Write-Emphasized "$PSMinVersion"
+  exit 1
 }

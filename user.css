@@ -1,5 +1,5 @@
 :root {
-    --image_url: "";
+    --image_url: '';
     --is_light: 0;
     --system_is_dark: 1;
     --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on the README page.";
@@ -84,7 +84,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
 
 #main::before,
 .Root__top-container::before {
-    content: "";
+    content: '';
     background-image: var(--image_url);
     background-size: 100%;
     background-position: center center;
@@ -133,12 +133,14 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 /* notification toaster */
-.main-notificationBubbleContainer-NotificationBubbleContainer .main-notificationBubble-NotificationBubble {
+.main-notificationBubbleContainer-NotificationBubbleContainer
+    .main-notificationBubble-NotificationBubble {
     color: #ffffff;
     background-color: var(--spice-text);
 }
 
-.main-notificationBubbleContainer-NotificationBubbleContainer .TypeElement-balladBold-textBase-type {
+.main-notificationBubbleContainer-NotificationBubbleContainer
+    .TypeElement-balladBold-textBase-type {
     color: #ffffff;
 }
 
@@ -278,12 +280,12 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 /* Fix forced subdue */
-[style*="--text-subdued"] {
+[style*='--text-subdued'] {
     --text-subdued: var(--spice-subtext) !important;
 }
 
 /* Fix search cards text color */
-.main-shelf-shelfGrid [style*="background-color"] {
+.main-shelf-shelfGrid [style*='background-color'] {
     color: var(--spice-main);
 }
 
@@ -301,7 +303,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
 }
 
 /* Fix artist & album page gradient */
-.main-view-container div[style*="background-base"] {
+.main-view-container div[style*='background-base'] {
     --background-base: rgba(var(--spice-rgb-text), 0.1) !important;
     --background-base-min-contrast: rgba(var(--spice-rgb-text), 0.2) !important;
     --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
@@ -310,7 +312,13 @@ img.main-devicePicker-nowPlayingActiveIcon,
 /* Fix canvas overlay in light mode */
 .main-nowPlayingView-coverArtContainer > div:has(.canvasVideoContainerNPV)::before,
 .main-nowPlayingView-coverArtContainer > div:has(.canvasVideoContainerNPV)::after {
-    background: linear-gradient(180deg, rgba(var(--spice-rgb-main), 63%), rgba(var(--spice-rgb-main), 53%) 30%, rgba(var(--spice-rgb-main), 53%) 70%, var(--spice-main) 95%);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--spice-rgb-main), 63%),
+        rgba(var(--spice-rgb-main), 53%) 30%,
+        rgba(var(--spice-rgb-main), 53%) 70%,
+        var(--spice-main) 95%
+    );
 }
 
 /* Hide Spotify home header */
@@ -320,37 +328,37 @@ div.main-home-homeHeader {
 
 /* smooth color transitions */
 @property --spice-sidebar {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }
 
 @property --spice-main {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }
 
 @property --spice-text {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }
 
 @property --spice-subtext {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }
 
 @property --spice-button {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }
 
 @property --spice-player {
-    syntax: "<color>";
+    syntax: '<color>';
     initial-value: magenta;
     inherits: true;
 }

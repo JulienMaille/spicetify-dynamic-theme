@@ -1,0 +1,118 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "webextensions": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "globals": {
+    "Spicetify": "readonly",
+    "Vibrant": "readonly",
+    "CONFIG": "readonly",
+    "COLOR_SCHEMES": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_" 
+    }],
+    "no-console": ["warn", { 
+      "allow": ["warn", "error"] 
+    }],
+    "prefer-const": "error",
+    "prefer-arrow-callback": "error",
+    "arrow-spacing": "error",
+    "prefer-template": "error",
+    "template-curly-spacing": "error",
+    "object-shorthand": "error",
+    "prefer-destructuring": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-duplicate-imports": "error",
+    "no-useless-concat": "error",
+    "prefer-exponentiation-operator": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "prefer-promise-reject-errors": "error",
+    "require-await": "error",
+    "no-return-await": "error",
+    "no-async-promise-executor": "error",
+    "no-await-in-loop": "warn",
+    "no-promise-executor-return": "error",
+    "consistent-this": ["error", "self"],
+    "no-implicit-globals": "error",
+    "no-undef": "error",
+    "no-unused-expressions": "error",
+    "no-useless-escape": "error",
+    "no-useless-return": "error",
+    "no-void": "error",
+    "quotes": ["error", "single", { 
+      "avoidEscape": true 
+    }],
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", "never"],
+    "indent": ["error", 4, { 
+      "SwitchCase": 1 
+    }],
+    "max-len": ["warn", { 
+      "code": 100, 
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true,
+      "ignoreRegExpLiterals": true
+    }],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "computed-property-spacing": ["error", "never"],
+    "key-spacing": "error",
+    "keyword-spacing": "error",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "space-in-parens": ["error", "never"],
+    "space-infix-ops": "error",
+    "space-unary-ops": ["error", { 
+      "words": true, 
+      "nonwords": false 
+    }],
+    "spaced-comment": ["error", "always"],
+    "brace-style": ["error", "1tbs", { 
+      "allowSingleLine": true 
+    }],
+    "camelcase": ["error", { 
+      "properties": "never" 
+    }],
+    "new-cap": "error",
+    "no-array-constructor": "error",
+    "no-new-object": "error",
+    "no-ternary": "off",
+    "no-nested-ternary": "error",
+    "no-mixed-operators": "error",
+    "no-mixed-spaces-and-tabs": "error",
+    "no-trailing-spaces": "error",
+    "eol-last": "error",
+    "padded-blocks": ["error", "never"],
+    "block-spacing": "error",
+    "comma-spacing": "error",
+    "func-call-spacing": "error",
+    "no-multi-spaces": "error",
+    "no-whitespace-before-property": "error"
+  },
+  "overrides": [
+    {
+      "files": ["*.config.js", "*.config.cjs"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
+}
