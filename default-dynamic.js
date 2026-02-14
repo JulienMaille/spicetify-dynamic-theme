@@ -9,12 +9,32 @@ function waitForElement(els, func, timeout = 100) {
     }
 }
 
-function getAlbumInfo(id) {
-    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/albums/${id}`);
-}
-
-function getEpisodeInfo(id) {
-    return Spicetify.CosmosAsync.get(`https://api.spotify.com/v1/episodes/${id}`);
+function getAlbumInfo(uri) {
+    const Authorization = `Bearer ${Spicetify.Platform.AuthorizationAPI.getState().token.accessToken}`;
+    const Headers = {
+        Authorization,
+        "Spotify-App-Version": Spicetify.Platform.version,
+        "App-Platform": Spicetify.Platform.PlatformData.app_platform,
+        "Content-Type": "application/json"
+    };
+    const Body = JSON.stringify({
+        operationName: "getAlbum",
+        variables: {
+            uri: uri,
+            locale: "",
+            offset: 0,
+            limit: 50
+        },
+        extensions: {
+            persistedQuery: {
+                version: 1,
+                sha256Hash: "b9bfabef66ed756e5e13f68a942deb60bd4125ec1f1be8cc42769dc0259b4b10"
+            }
+        }
+    });
+    return fetch(`https://api-partner.spotify.com/pathfinder/v2/query`, { headers: Headers, method: "POST", body: Body })
+        .then((res) => res.json())
+        .then((d) => d.data.albumUnion);
 }
 
 function isLight(hex) {
@@ -222,7 +242,7 @@ async function songchange() {
         console.error(err);
     }
 
-    let album_uri = Spicetify.Player.data.item.metadata.album_uri;
+    const album_uri = Spicetify.Player.data.item.metadata.album_uri;
     let bgImage = Spicetify.Player.data.item.metadata.image_url;
     if (!bgImage) {
         bgImage = "https://cdn.jsdelivr.net/gh/JulienMaille/spicetify-dynamic-theme@main/images/tracklist-row-song-fallback.svg";
@@ -231,8 +251,8 @@ async function songchange() {
     }
 
     if (album_uri && !album_uri.includes("spotify:show")) {
-        const albumInfo = await getAlbumInfo(album_uri.replace("spotify:album:", ""));
-        let album_date = new Date(albumInfo.release_date);
+        const albumInfo = await getAlbumInfo(album_uri);
+        let album_date = new Date(albumInfo.date.isoString);
         let recent_date = new Date();
         recent_date.setMonth(recent_date.getMonth() - 6);
         album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
@@ -246,8 +266,10 @@ async function songchange() {
         `;
     } else if (Spicetify.Player.data.item.type === "episode") {
         // podcast
-        const episodeInfo = await getEpisodeInfo(Spicetify.Player.data.item.uri.replace("spotify:episode:", ""));
-        let podcast_date = new Date(episodeInfo.release_date);
+        let added_at = Number(Spicetify.Player.data.item.metadata.added_at); // Sometimes added_at is in seconds, sometimes in milliseconds
+        if (added_at < 1e10) added_at *= 1000;
+
+        let podcast_date = new Date(added_at);
         podcast_date = podcast_date.toLocaleString("default", { year: "numeric", month: "short" });
         bgImage = bgImage.replace("spotify:image:", "https://i.scdn.co/image/");
         nearArtistSpanText = `
