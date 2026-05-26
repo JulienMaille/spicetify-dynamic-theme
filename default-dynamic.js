@@ -324,35 +324,41 @@ function getVibrant(image) {
 
 function pickCoverColor() {
     const img = document.querySelector(".main-image-image.cover-art-image");
-    if (!img) return setTimeout(pickCoverColor, 250); // Check if image exists
+    if (!img) return setTimeout(pickCoverColor, 250);
 
-    // Force src for local files, otherwise we will pick color from previous cover
     if (Spicetify.Player.data.item.isLocal) img.src = Spicetify.Player.data.item.metadata.image_url;
 
-    if (!img.complete) return setTimeout(pickCoverColor, 250); // Check if image is loaded
+    if (!img.complete) return setTimeout(pickCoverColor, 250);
 
     textColor = "#1db954";
-    if (Spicetify.Platform.PlatformData.client_version_triple >= "1.2.48" && img.src.startsWith("https://i.scdn.co/image")) {
-        var imgCORS = new Image();
-        imgCORS.crossOrigin = "anonymous"; // Enable CORS
-        imgCORS.src = Spicetify.Player.data.item.metadata.image_url.replace("spotify:image:", "https://i.scdn.co/image/");
 
-        imgCORS.onload = function () {
-            var canvas = document.createElement("canvas");
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(imgCORS, 0, 0);
-
-            getVibrant(imgCORS);
-            imgCORS = null;
-            updateColors(textColor);
-        };
+    let imageUrl = Spicetify.Player.data.item.metadata.image_url;
+    if (!imageUrl) {
+        updateColors(textColor);
         return;
-    } else {
-        if (!img.src.startsWith("spotify:")) return;
     }
 
-    if (img.complete) getVibrant(img);
-    updateColors(textColor);
+    if (imageUrl.startsWith("spotify:image:")) {
+        imageUrl = imageUrl.replace("spotify:image:", "https://i.scdn.co/image/");
+    }
+
+    var imgCORS = new Image();
+    imgCORS.crossOrigin = "anonymous";
+    imgCORS.src = imageUrl;
+
+    imgCORS.onload = function () {
+        getVibrant(imgCORS);
+        imgCORS = null;
+        updateColors(textColor);
+    };
+
+    imgCORS.onerror = function () {
+        imgCORS = null;
+        if (img.src && !img.src.startsWith("spotify:")) {
+            getVibrant(img);
+        }
+        updateColors(textColor);
+    };
 }
 
 Spicetify.Player.addEventListener("songchange", songchange);
