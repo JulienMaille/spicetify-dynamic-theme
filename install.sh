@@ -2,11 +2,22 @@
 
 set -e
 
-echo "Patching (1/4)"
-PATCH='[Patch]
-xpui.js_find_8008 = ,(\\w+=)32,
-xpui.js_repl_8008 = ,\${1}28,'
-cd "$(dirname "$(spicetify -c)")"
+echo "Patching (1/3)"
+
+# Determine correct patch target based on available xpui files
+spicetify_config_dir="$(dirname "$(spicetify -c)")"
+spotify_path=$(grep "^spotify_path\s*=" "$spicetify_config_dir/config-xpui.ini" | sed 's/^spotify_path\s*=\s*//' | xargs)
+patch_target="xpui.js"
+if [ -n "$spotify_path" ] && [ -f "$spotify_path/Apps/xpui/xpui-modules.js" ]; then
+    patch_target="xpui-modules.js"
+elif [ -n "$spotify_path" ] && [ -f "$spotify_path/Apps/xpui/xpui-snapshot.js" ]; then
+    patch_target="xpui-snapshot.js"
+fi
+
+PATCH="[Patch]
+${patch_target}_find_8008 = ,(\\\\w+=)32,
+${patch_target}_repl_8008 = ,\\\${1}28,"
+cd "$spicetify_config_dir"
 if cat config-xpui.ini | grep -o '\[Patch\]'; then
     while true; do
         read -p "Existing Spicetify patches will be overwritten. Do you wish to continue? [y/n] " yn </dev/tty
@@ -22,18 +33,7 @@ else
     echo "\n${PATCH}" >>config-xpui.ini
 fi
 
-echo "Finding lastest version (2/4)"
-if [ $# -eq 0 ]; then
-    latest_release_uri="https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
-    version=$(command curl -sSf "$latest_release_uri" |
-        command grep -Eo "tag_name\": .*" |
-        command grep -Eo "[0-9.]+")
-    if [ ! "${version}" ]; then exit 1; fi
-else
-    version="${1}"
-fi
-
-echo "Downloading v${version} (3/4)"
+echo "Downloading (2/3)"
 # Setup directories to download to
 theme_dir="$(dirname "$(spicetify -c)")/Themes/DefaultDynamic"
 ext_dir="$(dirname "$(spicetify -c)")/Extensions"
@@ -42,13 +42,13 @@ ext_dir="$(dirname "$(spicetify -c)")/Extensions"
 mkdir -p "${theme_dir}"
 mkdir -p "${ext_dir}"
 
-# Download latest tagged files into correct directories
-curl --progress-bar --output "${theme_dir}/color.ini" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/color.ini"
-curl --progress-bar --output "${theme_dir}/user.css" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/user.css"
-curl --progress-bar --output "${ext_dir}/default-dynamic.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/default-dynamic.js"
-curl --progress-bar --output "${ext_dir}/Vibrant.min.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/${version}/Vibrant.min.js"
+# Download latest files from main branch
+curl --progress-bar --output "${theme_dir}/color.ini" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/refs/heads/main/color.ini"
+curl --progress-bar --output "${theme_dir}/user.css" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/refs/heads/main/user.css"
+curl --progress-bar --output "${ext_dir}/default-dynamic.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/refs/heads/main/default-dynamic.js"
+curl --progress-bar --output "${ext_dir}/Vibrant.min.js" "https://raw.githubusercontent.com/JulienMaille/spicetify-dynamic-theme/refs/heads/main/Vibrant.min.js"
 
-echo "Applying theme (4/4)"
+echo "Applying theme (3/3)"
 spicetify config extensions dribbblish.js- extensions dribbblish-dynamic.js-
 spicetify config extensions default-dynamic.js extensions Vibrant.min.js
 spicetify config current_theme DefaultDynamic color_scheme base

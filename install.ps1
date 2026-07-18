@@ -1,14 +1,6 @@
 # Copyright 2019 khanhas. GPL license.
 # Edited from project Denoland install script (https://github.com/denoland/deno_install)
-param (
-  [string] $version
-)
-
 $PSMinVersion = 3
-
-if ($v) {
-  $version = $v
-}
 
 # Helper functions for pretty terminal output.
 function Write-Part ([string] $Text) {
@@ -36,17 +28,6 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
     Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/khanhas/spicetify-cli/master/install.ps1" | Invoke-Expression
   }
 
-  if (-not $version) {
-    # Determine latest release via GitHub API.
-    $latest_release_uri =
-    "https://api.github.com/repos/JulienMaille/spicetify-dynamic-theme/releases/latest"
-    Write-Part "DOWNLOADING    "; Write-Emphasized $latest_release_uri;
-    $latest_release_json = Invoke-WebRequest -Uri $latest_release_uri -UseBasicParsing
-    Write-Done
-
-    $version = ($latest_release_json | ConvertFrom-Json).tag_name -replace "v", ""
-  }
-
   # Check ~\spicetify-cli\Themes directory already exists
   $sp_dir = "${HOME}\spicetify-cli\Themes"
   if (-not (Test-Path $sp_dir)) {
@@ -55,9 +36,9 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
     Write-Done
   }
 
-  # Download release.
-  $zip_file = "${sp_dir}\${version}.zip"
-  $download_uri = "https://github.com/JulienMaille/spicetify-dynamic-theme/archive/refs/tags/${version}.zip"
+  # Download latest code from main branch.
+  $zip_file = "${sp_dir}\main.zip"
+  $download_uri = "https://github.com/JulienMaille/spicetify-dynamic-theme/archive/refs/heads/main.zip"
   Write-Part "DOWNLOADING    "; Write-Emphasized $download_uri;
   Invoke-WebRequest -Uri $download_uri -UseBasicParsing -OutFile $zip_file
   Write-Done
@@ -84,7 +65,7 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
 
   # Copy to .spicetify.
   Write-Part "COPYING        "; Write-Emphasized $sp_dot_dir;
-  Copy-Item -Path "${sp_dir}\spicetify-dynamic-theme-${version}\*" -Destination $sp_dot_dir -Recurse -Force
+  Copy-Item -Path "${sp_dir}\spicetify-dynamic-theme-main\*" -Destination $sp_dot_dir -Recurse -Force
   Write-Done
 
   # Installing.
@@ -101,25 +82,60 @@ if ($PSVersionTable.PSVersion.Major -gt $PSMinVersion) {
   # Add patch
   Write-Part "PATCHING       "; Write-Emphasized "$spicePath\config-xpui.ini";
   $configFile = Get-Content "$spicePath\config-xpui.ini"
-  if (-not ($configFile -match "xpui.js_find_8008")) {
+  $modified = $false
+
+  # Determine the correct patch target file
+  # xpui.js exists on older Spotify (<1.2.64), xpui-modules.js/xpui-snapshot.js on newer
+  $patchTarget = "xpui.js"
+  $spotCfg = Get-Content "$spicePath\config-xpui.ini" -Raw
+  if ($spotCfg -match "(?m)^spotify_path\s*=\s*(.+?)$") {
+    $xpuiDir = "$($Matches[1].Trim())\Apps\xpui"
+    if (Test-Path "$xpuiDir\xpui-modules.js") {
+      $patchTarget = "xpui-modules.js"
+    } elseif (Test-Path "$xpuiDir\xpui-snapshot.js") {
+      $patchTarget = "xpui-snapshot.js"
+    }
+  }
+
+  # Remove stale patches for other target files
+  $staleTargets = @("xpui.js", "xpui-snapshot.js", "xpui-modules.js") | Where-Object { $_ -ne $patchTarget }
+  foreach ($stale in $staleTargets) {
+    $staleFind = $configFile -match "${stale}_find_8008"
+    if ($staleFind) {
+      $configFile = $configFile -replace [regex]::escape($staleFind), ""
+      $modified = $true
+    }
+    $staleRepl = $configFile -match "${stale}_repl_8008"
+    if ($staleRepl) {
+      $configFile = $configFile -replace [regex]::escape($staleRepl), ""
+      $modified = $true
+    }
+  }
+
+  # Add new patch if missing
+  $findKey = "${patchTarget}_find_8008"
+  if (-not ($configFile -match $findKey)) {
     $rep = @"
 [Patch]
-xpui.js_find_8008=,(\w+=)32,
-xpui.js_repl_8008=,`${1}28,
+${patchTarget}_find_8008=,(\w+=)32,
+${patchTarget}_repl_8008=,`${1}28,
 "@
     # In case missing Patch section
     if (-not ($configFile -match "\[Patch\]")) {
       $configFile += "`n[Patch]`n"
     }
     $configFile = $configFile -replace "\[Patch\]",$rep
+    $modified = $true
+  }
+
+  if ($modified) {
     Set-Content "$spicePath\config-xpui.ini" $configFile
   }
   Write-Done
 
   Write-Part "APPLYING     ";
   $backupVer = $configFile -match "^version"
-  $parts = $backupVer.Split("=")
-  if ($parts.Length -lt 2 -and $version.version.Length -gt 0) {
+  if ($backupVer -and $backupVer -match "version\s*=\s*(.+)") {
     Write-Emphasized "apply";
     spicetify apply
   } else {

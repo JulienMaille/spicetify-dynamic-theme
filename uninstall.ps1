@@ -23,13 +23,17 @@ Write-Done
 # Add patch
 Write-Part "UNPATCHING      "; Write-Emphasized "$spicePath\config-xpui.ini";
 $configFile = Get-Content "$spicePath\config-xpui.ini"
-$find = $configFile -match "xpui.js_find_8008"
-if ($find) {
-    $configFile = $configFile -replace [regex]::escape($find),""
-}
-$repl = $configFile -match "xpui.js_repl_8008"
-if ($repl) {
-    $configFile = $configFile -replace [regex]::escape($repl),""
+# Remove patches for all possible target files (xpui.js, xpui-snapshot.js, xpui-modules.js)
+$patchTargets = @("xpui.js", "xpui-snapshot.js", "xpui-modules.js")
+foreach ($target in $patchTargets) {
+    $find = $configFile -match "${target}_find_8008"
+    if ($find) {
+        $configFile = $configFile -replace [regex]::escape($find),""
+    }
+    $repl = $configFile -match "${target}_repl_8008"
+    if ($repl) {
+        $configFile = $configFile -replace [regex]::escape($repl),""
+    }
 }
 Set-Content "$spicePath\config-xpui.ini" $configFile
 Write-Done
