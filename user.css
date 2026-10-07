@@ -192,6 +192,42 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background-color: transparent !important;
 }
 
+/* Light/Dark toggle — match bell / buddy-feed icon buttons, not the dark nav pill */
+#main-topBar-moon-button:not(.main-noConnection-isNotice) {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--spice-selected-row) !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+#main-topBar-moon-button:not(.main-noConnection-isNotice) svg {
+    width: 16px !important;
+    height: 16px !important;
+    fill: currentColor !important;
+    display: block !important;
+}
+
+#main-topBar-moon-button:not(.main-noConnection-isNotice):hover {
+    background-color: rgba(var(--spice-rgb-selected-row), 0.15) !important;
+    color: var(--spice-text) !important;
+    transform: none !important;
+}
+
 .search-searchCategory-carouselButton {
     background-color: var(--background-tinted-highlight);
 }
@@ -267,14 +303,81 @@ img.main-devicePicker-nowPlayingActiveIcon,
 
 /* Hide banners and gradients */
 .main-entityHeader-background.main-entityHeader-overlay,
-.main-entityHeader-background.main-entityHeader-gradient {
-    opacity: 0;
+.main-entityHeader-background.main-entityHeader-gradient,
+.main-entityHeader-background,
+.main-entityHeader-overlay {
+    opacity: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
 }
 
 .before-scroll-node,
 .main-entityHeader-backgroundColor,
-.main-actionBarBackground-background {
-    display: none;
+.main-actionBarBackground-background,
+.main-actionBarBackground,
+.main-entityHeader-topbarTitleBackground {
+    display: none !important;
+}
+
+/* Kill enclosed playlist header tint — header/action-bar scoped only */
+.main-entityHeader-container,
+.main-entityHeader-header,
+.main-entityHeader-content,
+div[data-testid="entity-header"],
+.main-actionBar-ActionBarRow,
+div[data-testid="action-bar-row"],
+.contentSpacing:has(div[data-testid="entity-header"]),
+.contentSpacing:has(.main-entityHeader-container),
+.main-view-container div[data-testid="entity-header"][style*="background-base"],
+.main-view-container .main-entityHeader-container[style*="background-base"],
+.main-view-container div[data-testid="action-bar-row"],
+.main-view-container .main-actionBar-ActionBarRow {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    --background-base: transparent !important;
+    --background-base-min-contrast: transparent !important;
+    --background-base-70: transparent !important;
+    --background-color: transparent !important;
+    --background-highlight: transparent !important;
+    --background-press: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-tinted-highlight: transparent !important;
+    --background-tinted-press: transparent !important;
+}
+
+/* Neutralize inline cover-art colors, narrowly scoped to header/action-bar (play button excluded) */
+.main-entityHeader-container [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
+div[data-testid="entity-header"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
+.main-actionBar-ActionBarRow [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
+div[data-testid="action-bar-row"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set) {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-highlight: transparent !important;
+    --background-press: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-tinted-highlight: transparent !important;
+    --background-tinted-press: transparent !important;
+}
+
+/* Kill tint painted via ::before/::after on header wrappers only */
+.main-entityHeader-container::before,
+.main-entityHeader-container::after,
+div[data-testid="entity-header"]::before,
+div[data-testid="entity-header"]::after,
+.main-actionBar-ActionBarRow::before,
+.main-actionBar-ActionBarRow::after,
+div[data-testid="action-bar-row"]::before,
+div[data-testid="action-bar-row"]::after {
+    background: transparent !important;
+    background-image: none !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
 }
 
 /* Fix forced subdue */
@@ -363,4 +466,60 @@ html {
         --spice-subtext 0.5s,
         --spice-button 0.5s,
         --spice-player 0.5s;
+}
+
+/* Sticky scrolled playlist header — clean frosted bar, no opaque cover tint.
+   Scoped to entity-title context only so the search topbar is untouched. */
+.main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-background,
+.main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-overlay {
+    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-image: none !important;
+    opacity: 1 !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Kill inline cover-art color on the scrolled topBar (entity header only, play button excluded) */
+.main-topBar-container:has(.main-entityHeader-topbarTitle)[style*="background"],
+.main-topBar-container:has(.main-entityHeader-topbarTitle) [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set) {
+    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-highlight: transparent !important;
+    --background-elevated-base: transparent !important;
+}
+
+/* Scrolled entity title text — readable, no tinted pill behind it */
+.main-topBar-container:has(.main-entityHeader-topbarTitle) .main-entityHeader-topbarTitle {
+    background: transparent !important;
+    background-image: none !important;
+    padding-left: 8px;
+}
+
+/* Sticky tracklist column header (# / Titre / Album) — no green tint, no double shadow */
+.main-trackList-trackListHeader,
+.main-view-container__scroll-node .main-trackList-trackListHeader,
+div[data-testid="tracklist-header"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-highlight: transparent !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(var(--spice-rgb-subtext), 0.12) !important;
+}
+
+/* Stuck state floats under the topBar on the same frost so rows stay readable
+   without painting a second opaque bar over the column titles (delta over base rule above) */
+.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+.main-trackList-trackListHeaderStuck {
+    z-index: 5 !important;
+    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
 }

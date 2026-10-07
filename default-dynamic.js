@@ -1,4 +1,52 @@
 let current = "5.7";
+const colorCache = new Map();
+const HEX_RE = /^#[0-9a-f]{6}$/i;
+const EXTRACTOR_KEYS = ["VIBRANT", "VIBRANT_NON_ALARMING", "PROMINENT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
+const isValidHex = (h) => typeof h === "string" && HEX_RE.test(h.trim());
+function isSkippedUri(uri) {
+    if (!uri || uri.startsWith("spotify:local") || uri.startsWith("spotify:ad")) return true;
+    try {
+        const item = Spicetify.Player?.data?.item;
+        if (item?.isLocal || item?.provider === "ad") return true;
+    } catch {
+        /* ignore */
+    }
+    return false;
+}
+function setCachedColor(uri, hex) {
+    try {
+        if (colorCache.size >= 200) {
+            const oldest = colorCache.keys().next().value;
+            if (oldest !== undefined) colorCache.delete(oldest);
+        }
+        colorCache.set(uri, hex);
+    } catch {
+        /* ignore */
+    }
+}
+function pickFromPalette(pal) {
+    if (!pal) return null;
+    const upper = {};
+    for (const k of Object.keys(pal)) upper[k.toUpperCase()] = pal[k];
+    for (const k of EXTRACTOR_KEYS) {
+        const v = upper[k];
+        if (typeof v === "string" && isValidHex(v.trim())) return v.trim();
+    }
+    return null;
+}
+async function tryExtractor(uri) {
+    if (!uri || isSkippedUri(uri)) return null;
+    if (colorCache.has(uri)) {
+        const cached = colorCache.get(uri);
+        if (isValidHex(cached)) return cached;
+        colorCache.delete(uri);
+    }
+    if (!Spicetify.colorExtractor) return null;
+    const pal = await Spicetify.colorExtractor(uri);
+    const hex = pickFromPalette(pal);
+    if (hex) setCachedColor(uri, hex);
+    return hex;
+}
 
 function waitForElement(els, func, timeout = 100) {
     const queries = els.map((el) => document.querySelector(el));
@@ -7,6 +55,17 @@ function waitForElement(els, func, timeout = 100) {
     } else if (timeout > 0) {
         setTimeout(waitForElement, 300, els, func, --timeout);
     }
+}
+
+function toHttpCover(u) {
+    if (!u) return u;
+    if (/^spotify:image:/i.test(u)) return u.replace(/^spotify:image:/i, "https://i.scdn.co/image/");
+    return u;
+}
+function getCoverUrls() {
+    const d = Spicetify.Player?.data;
+    const md = d?.item?.metadata ?? d?.track?.metadata ?? {};
+    return { uri: d?.item?.uri ?? d?.track?.uri ?? md.album_uri, urls: [md.image_xlarge_url, md.image_large_url, md.image_url].filter(Boolean), meta: md };
 }
 
 function getAlbumInfo(uri) {
@@ -178,11 +237,12 @@ waitForElement([".main-actionButtons"], (queries) => {
     const buttonContainer = queries[0];
 
     const button = document.createElement("button");
-    Array.from(buttonContainer.firstChild.attributes).forEach((attr) => {
-        button.setAttribute(attr.name, attr.value);
-    });
     button.id = "main-topBar-moon-button";
-    button.className = buttonContainer.firstChild.className;
+    button.type = "button";
+    // Use the transparent topbar icon-button style (bell / buddy-feed),
+    // not the dark nav pill from .main-actionButtons-button.
+    button.className = "main-topBar-buddyFeed";
+    button.setAttribute("aria-label", "Light/Dark");
     button.onclick = () => {
         toggleDark();
     };
@@ -233,8 +293,14 @@ function updateColors(textColHex) {
 }
 
 let nearArtistSpanText = "";
-async function songchange() {
-    if (!document.querySelector(".main-trackInfo-container")) return setTimeout(songchange, 300);
+let nearArtistSpan = null;
+async function songchange(event, retries = 0) {
+    const dataItem = event?.data?.item ?? Spicetify.Player?.data?.item ?? Spicetify.Player?.data?.track;
+    const meta = dataItem?.metadata;
+    if (!dataItem || !meta) {
+        if (retries >= 20) return;
+        return setTimeout(() => songchange(event, retries + 1), 300);
+    }
     try {
         // warning popup
         if (Spicetify.Platform.PlatformData.client_version_triple < "1.1.68") Spicetify.showNotification(`Your version of Spotify ${Spicetify.Platform.PlatformData.client_version_triple}) is un-supported`);
@@ -242,55 +308,72 @@ async function songchange() {
         console.error(err);
     }
 
-    const album_uri = Spicetify.Player.data.item.metadata.album_uri;
-    let bgImage = Spicetify.Player.data.item.metadata.image_url;
+    const album_uri = meta.album_uri;
+    const trackUri = dataItem.uri ?? meta.album_uri;
+    const FALLBACK_IMAGE = "https://cdn.jsdelivr.net/gh/JulienMaille/spicetify-dynamic-theme@main/images/tracklist-row-song-fallback.svg";
+    let bgImageRaw = meta.image_xlarge_url || meta.image_large_url || meta.image_url;
+    let bgImage = toHttpCover(bgImageRaw);
     if (!bgImage) {
-        bgImage = "https://cdn.jsdelivr.net/gh/JulienMaille/spicetify-dynamic-theme@main/images/tracklist-row-song-fallback.svg";
+        bgImage = FALLBACK_IMAGE;
         textColor = "#1db954";
         updateColors(textColor);
     }
 
     if (album_uri && !album_uri.includes("spotify:show")) {
-        const albumInfo = await getAlbumInfo(album_uri);
-        let album_date = new Date(albumInfo.date.isoString);
-        let recent_date = new Date();
-        recent_date.setMonth(recent_date.getMonth() - 6);
-        album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
-        nearArtistSpanText = `
+        try {
+            const albumInfo = await getAlbumInfo(album_uri);
+            let album_date = new Date(albumInfo?.date?.isoString);
+            if (isNaN(album_date)) throw new Error("Invalid album date");
+            let recent_date = new Date();
+            recent_date.setMonth(recent_date.getMonth() - 6);
+            album_date = album_date.toLocaleString("default", album_date > recent_date ? { year: "numeric", month: "short" } : { year: "numeric" });
+            nearArtistSpanText = `
             <span>
                 <span draggable="true">
-                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.item.metadata.album_title}</a>
+                    <a draggable="false" dir="auto" href="${album_uri}">${meta.album_title}</a>
                 </span>
             </span>
             <span> • ${album_date}</span>
         `;
-    } else if (Spicetify.Player.data.item.type === "episode") {
+        } catch (err) {
+            console.error(err);
+            nearArtistSpanText = `
+            <span>
+                <span draggable="true">
+                    <a draggable="false" dir="auto" href="${album_uri}">${meta.album_title}</a>
+                </span>
+            </span>
+        `;
+        }
+    } else if (dataItem.type === "episode") {
         // podcast
-        let added_at = Number(Spicetify.Player.data.item.metadata.added_at); // Sometimes added_at is in seconds, sometimes in milliseconds
+        let added_at = Number(meta.added_at); // Sometimes added_at is in seconds, sometimes in milliseconds
         if (added_at < 1e10) added_at *= 1000;
 
         let podcast_date = new Date(added_at);
         podcast_date = podcast_date.toLocaleString("default", { year: "numeric", month: "short" });
-        bgImage = bgImage.replace("spotify:image:", "https://i.scdn.co/image/");
+        bgImage = toHttpCover(bgImageRaw) || FALLBACK_IMAGE;
         nearArtistSpanText = `
             <span>
                 <span draggable="true">
-                    <a draggable="false" dir="auto" href="${album_uri}">${Spicetify.Player.data.item.metadata["show.publisher"]}</a>
+                    <a draggable="false" dir="auto" href="${album_uri}">${meta["show.publisher"]}</a>
                 </span>
             </span>
             <span> • ${podcast_date}</span>
         `;
-    } else if (Spicetify.Player.data.item.isLocal) {
+    } else if (dataItem.isLocal) {
         // local file
-        nearArtistSpanText = Spicetify.Player.data.item.metadata.album_title;
-    } else if (Spicetify.Player.data.item.provider == "ad") {
+        nearArtistSpanText = meta.album_title;
+    } else if (dataItem.provider == "ad") {
         // ad
-        nearArtistSpanText.innerHTML = "Advertisement";
+        nearArtistSpanText = "Advertisement";
+        document.documentElement.style.setProperty("--image_url", `url("${FALLBACK_IMAGE}")`);
+        textColor = "#1db954";
+        updateColors(textColor);
         return;
     } else {
         // When clicking a song from the homepage, songChange is fired with half empty metadata
-        // todo: retry only once?
-        setTimeout(songchange, 200);
+        if (retries < 5) setTimeout(() => songchange(event, retries + 1), 200);
     }
 
     if (!document.querySelector("#main-trackInfo-year")) {
@@ -301,20 +384,23 @@ async function songchange() {
             nearArtistSpan.innerHTML = nearArtistSpanText;
             queries[0].append(nearArtistSpan);
         });
-    } else {
+    } else if (nearArtistSpan) {
         nearArtistSpan.innerHTML = nearArtistSpanText;
+    } else {
+        const existingYear = document.querySelector("#main-trackInfo-year");
+        if (existingYear) existingYear.innerHTML = nearArtistSpanText;
     }
     document.documentElement.style.setProperty("--image_url", `url("${bgImage}")`);
-    pickCoverColor();
+    pickCoverColor(bgImage, trackUri, 0, album_uri);
 }
 
 function getVibrant(image) {
     try {
         var swatches = new Vibrant(image, 12).swatches();
-        cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
-        for (var col in cols)
-            if (swatches[cols[col]]) {
-                textColor = swatches[cols[col]].getHex();
+        const cols = isLight(textColorBg) ? ["Vibrant", "DarkVibrant", "Muted", "LightVibrant"] : ["Vibrant", "LightVibrant", "Muted", "DarkVibrant"];
+        for (const col of cols)
+            if (swatches[col]) {
+                textColor = swatches[col].getHex();
                 break;
             }
     } catch (err) {
@@ -322,25 +408,94 @@ function getVibrant(image) {
     }
 }
 
-function pickCoverColor() {
-    const img = document.querySelector(".main-image-image.cover-art-image");
-    if (!img) return setTimeout(pickCoverColor, 250);
+async function pickCoverColor(httpCoverUrl, trackUri, retryCount = 0, albumUri) {
+    if (!httpCoverUrl || !trackUri) {
+        const cover = getCoverUrls();
+        if (!httpCoverUrl) httpCoverUrl = toHttpCover(cover.urls[0]);
+        if (!trackUri) trackUri = cover.uri;
+        if (!albumUri) albumUri = cover.meta.album_uri;
+    }
 
-    if (Spicetify.Player.data.item.isLocal) img.src = Spicetify.Player.data.item.metadata.image_url;
+    const prevColor = textColor;
 
-    if (!img.complete) return setTimeout(pickCoverColor, 250);
-
-    textColor = "#1db954";
-
-    let imageUrl = Spicetify.Player.data.item.metadata.image_url;
-    if (!imageUrl) {
+    if (!httpCoverUrl && !trackUri) {
         updateColors(textColor);
         return;
     }
 
-    if (imageUrl.startsWith("spotify:image:")) {
-        imageUrl = imageUrl.replace("spotify:image:", "https://i.scdn.co/image/");
+    if (trackUri && isSkippedUri(trackUri)) {
+        updateColors(textColor || "#1db954");
+        return;
     }
+
+    // Primary: CORS-free extractor via spclient (trackUri, then album_uri fallback)
+    try {
+        if (Spicetify.colorExtractor && trackUri && !isSkippedUri(trackUri)) {
+            const hex = await tryExtractor(trackUri);
+            if (hex) {
+                textColor = hex;
+                updateColors(textColor);
+                return;
+            }
+            // album_uri fallback before giving up (closure value from songchange)
+            try {
+                if (albumUri && albumUri !== trackUri && !isSkippedUri(albumUri)) {
+                    const albumHex = await tryExtractor(albumUri);
+                    if (albumHex) {
+                        textColor = albumHex;
+                        updateColors(textColor);
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // Secondary: GraphQL extracted color for track entity
+    try {
+        if (trackUri && !isSkippedUri(trackUri) && Spicetify.GraphQL?.Request && Spicetify.GraphQL?.Definitions?.fetchExtractedColorForTrackEntity) {
+            const res = await Spicetify.GraphQL.Request(Spicetify.GraphQL.Definitions.fetchExtractedColorForTrackEntity, { uri: trackUri });
+            const hex = res?.data?.trackUnion?.albumOfTrack?.coverArt?.extractedColors?.colorDark?.hex;
+            if (isValidHex(hex)) {
+                textColor = hex.trim();
+                setCachedColor(trackUri, textColor);
+                updateColors(textColor);
+                return;
+            }
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // Tertiary: Vibrant from cover URL (bounded DOM-img wait, then proceed regardless)
+    if (typeof Vibrant === "undefined") {
+        if (!isValidHex(textColor)) textColor = "#1db954";
+        updateColors(textColor);
+        return;
+    }
+
+    if (!httpCoverUrl) {
+        if (!isValidHex(textColor)) textColor = "#1db954";
+        updateColors(textColor);
+        return;
+    }
+
+    const img = document.querySelector(".main-image-image.cover-art-image") || document.querySelector("img.cover-art-image") || document.querySelector(".main-nowPlayingWidget-coverArt img");
+    if ((!img || !img.complete) && retryCount < 10) return setTimeout(() => pickCoverColor(httpCoverUrl, trackUri, retryCount + 1, albumUri), 250);
+
+    if (img && Spicetify.Player?.data?.item?.isLocal) {
+        try {
+            img.src = toHttpCover(Spicetify.Player.data.item.metadata.image_url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    let imageUrl = httpCoverUrl;
 
     var imgCORS = new Image();
     imgCORS.crossOrigin = "anonymous";
@@ -349,14 +504,16 @@ function pickCoverColor() {
     imgCORS.onload = function () {
         getVibrant(imgCORS);
         imgCORS = null;
+        if (!isValidHex(textColor)) textColor = isValidHex(prevColor) ? prevColor : "#1db954";
         updateColors(textColor);
     };
 
     imgCORS.onerror = function () {
         imgCORS = null;
-        if (img.src && !img.src.startsWith("spotify:")) {
+        if (img && img.src && !img.src.startsWith("spotify:")) {
             getVibrant(img);
         }
+        if (!isValidHex(textColor)) textColor = isValidHex(prevColor) ? prevColor : "#1db954";
         updateColors(textColor);
     };
 }
