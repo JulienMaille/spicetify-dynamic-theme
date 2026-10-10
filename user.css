@@ -1,19 +1,12 @@
 :root {
-    --image_url: "";
-    --is_light: 0;
-    --system_is_dark: 1;
+    --image_url: none;
+    --is_light: 0; /* numeric mirror of html[data-theme] — drives the body::before opacity calc; mode gating uses the data-theme attribute (cheap equality match) */
     --warning_message: "You haven't installed 'default-dynamic.js' extension. Please follow instructions on the README page.";
 }
 
 div.ReactModalPortal:last-of-type::before {
     font-size: 30px;
     content: var(--warning_message);
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --system_is_dark: 0;
-    }
 }
 
 /* remove left sidebar background */
@@ -34,7 +27,7 @@ h1,
 
 /* Improve Topbar background colour */
 .main-topBar-background {
-    --background-base: var(--spice-button-disabled) !important;
+    --background-base: transparent !important;
 }
 
 .main-entityHeader-shadow,
@@ -58,19 +51,10 @@ img.main-devicePicker-nowPlayingActiveIcon,
     filter: var(--colormatrix);
 }
 
-/* translucid background cover */
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
+/* background cover */
 .main-entityHeader-overlay,
 .Root__globalNav {
-    background-color: transparent;
+    background-color: transparent !important;
 }
 
 .encore-dark-theme,
@@ -78,53 +62,112 @@ img.main-devicePicker-nowPlayingActiveIcon,
     --background-base: transparent;
 }
 
+/* `#main` and `.Root__top-container` are both 0 hits in Spotify 1.3.x bundle
+ * (xpui-snapshot.css), so their ::before cover layers are dead. `#main` guard
+ * kept for legacy builds. The fullscreen background is now the animated warp
+ * canvas below (default-dynamic.js `initDynamicBgCanvas`), not a CSS layer. */
 #main {
     position: fixed;
 }
 
-#main::before,
-.Root__top-container::before {
+/* Animated cover warp (pure canvas 2D, no libs). The bitmap is 240px wide and
+ * upscaled by CSS, so it is already soft.
+ * CRITICAL: no blur() here. A fullscreen CSS blur on an element whose bitmap
+ * repaints every frame forces the compositor to re-raster the whole viewport
+ * ~30x/s — that is exactly the hover/switch lag the static-bleed fix removed.
+ * brightness/saturate are one-pass and stay cheap. */
+#dynamic-bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    /* Fallback before __kawarpApplyTint() sets inline opacity/filter from
+     * cover luminance (dark: 0.35-0.55 + brightness 0.55-1.0; light: 0.3).
+     * Inline style wins at runtime; these are the pre-import paint only. */
+    opacity: 0.5;
+    /* Real @kawarp/core renders its own blur passes (blurPasses: 8) in WebGL,
+       so no CSS blur here — it would only double-blur and cost frames. */
+    backface-visibility: hidden;
+}
+
+/* light mode fallback: quiet enough that hue survives on white UI instead
+ * of flooding it (white tintIntensity is 0.3 for the same reason). */
+html[data-theme="light"] #dynamic-bg-canvas {
+    opacity: 0.3;
+    filter: saturate(1.15) brightness(0.92);
+}
+
+/* Switch blackout: drop the canvas tint (and the frosted-bar backdrop layers
+ * below) for the ~350ms mode crossfade so frames repaint flat colors only. */
+html[data-switching="1"] #dynamic-bg-canvas {
+    filter: none !important;
+}
+
+/* body::before no longer paints the cover — the canvas is the sole animated
+ * background. The element is kept (harmless, no background/filter/opacity)
+ * because the light-mode and data-switching rules below target it. */
+body::before {
     content: "";
-    background-image: var(--image_url);
-    background-size: 100%;
-    background-position: center center;
-    position: absolute;
-    display: block;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    filter: blur(50px) contrast(3) saturate(1.5);
     pointer-events: none;
-    backface-visibility: hidden;
-    transition: background-image linear 0.35s;
-    opacity: calc(var(--is_light) * 0.05 + 0.12);
-    width: 150%;
-    border-radius: 40%;
+    z-index: 0;
 }
 
-/* Animate background if option is on */
-@container style(--spice-animation: #010101) {
-    #main::before,
-    .Root__top-container::before {
-        will-change: transform;
-        animation-duration: 45s;
-        animation-name: rotate;
-        animation-timing-function: steps(450);
-        animation-iteration-count: infinite;
-    }
-
-    .Root__top-container::before {
-        animation-delay: 10s;
-    }
+.Root {
+    position: relative;
+    z-index: 1;
+    background: transparent !important;
+    background-image: none !important;
 }
 
-#main::before {
-    translate: -35%;
+.main-view-container,
+.main-yourLibraryX-library,
+.main-topBar-background,
+.main-topBar-overlay {
+    background: transparent !important;
+    background-image: none !important;
 }
 
-.Root__top-container::before {
-    translate: 15%;
+/* hashed 1.3.x shells rotate on Spotify update (xpui-snapshot.css:1, dwp-top-bar.css:1) */
+/* library inners (xpui-routes-your-library-x.css:1): scroll container + list header, children of .bQsutxbyIOatthweRHfK left-sidebar shell */
+.bQsutxbyIOatthweRHfK,
+.bTgBWvuzt0s_dQWLj2OL,
+.AOAgML4d2nmdGZhmu3QM,
+.AOAgML4d2nmdGZhmu3QM > *,
+.z0qdvwslOFVOAihShLIq,
+.NG0KBybUCTo8_SxXHF3N,
+.Root__globalNav,
+#Desktop_LeftSidebar_Id,
+#Desktop_PanelContainer_Id,
+.WBFaUw_oOfN2m4aTxggt,
+.main-yourLibraryX-libraryContainer,
+.WWTxshVPO07BZLrdUL3h, /* xpui-routes-your-library-x.css:1 — library scroll container */
+.kSHT28CgP3pGzXbPHsC5, /* xpui-routes-your-library-x.css:1 — library list header */
+/* outer/panel shells over body::before (xpui-snapshot.css:1) */
+.V7i6WQ_5d6Zj2iWbD_Aq,
+.O2GuKxMq7fOerhmjo0iA,
+.D0qWErHdvHknfXqr6zOl,
+.oA2xvck_WSZn6mRFcZ2J,
+.jpHQLr33ZT5pJGBVFmjJ,
+.sLu5YjGhZIYg5idlIhjE,
+.bokji1jrN2MBe7RA0384, /* live grid root 1.3.4 (opaque rgb 10,10,10, verified via CDP) */
+.rLb4jRJmAjuDMN1b9Atw, /* live top-banner 1.3.4 (opaque, verified via CDP) */
+.L5dM7nzQpMJtRkvZZBZL {
+    /* live now-playing-bar 1.3.4 (opaque, verified via CDP) */
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-tinted-base: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
 }
 
 /* context menu */
@@ -192,7 +235,9 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background-color: transparent !important;
 }
 
-/* Light/Dark toggle — match bell / buddy-feed icon buttons, not the dark nav pill */
+/* Light/Dark toggle — match bell / buddy-feed icon buttons, not the dark nav pill.
+   Host ([data-testid="topbar-content-wrapper"]) is pointer-events:none in
+   dwp-top-bar.css, so re-enable interaction on the button itself. */
 #main-topBar-moon-button:not(.main-noConnection-isNotice) {
     background: transparent !important;
     background-color: transparent !important;
@@ -213,6 +258,8 @@ img.main-devicePicker-nowPlayingActiveIcon,
     flex-shrink: 0 !important;
     cursor: pointer !important;
     opacity: 1 !important;
+    pointer-events: auto !important;
+    -webkit-app-region: no-drag !important;
 }
 
 #main-topBar-moon-button:not(.main-noConnection-isNotice) svg {
@@ -301,22 +348,48 @@ img.main-devicePicker-nowPlayingActiveIcon,
     background: none !important;
 }
 
-/* Hide banners and gradients */
-.main-entityHeader-background.main-entityHeader-overlay,
-.main-entityHeader-background.main-entityHeader-gradient,
-.main-entityHeader-background,
-.main-entityHeader-overlay {
-    opacity: 0 !important;
+/* Spotify 1.3.4 native entity-header cover art layers. The legacy
+ * .main-entityHeader-* banner/gradient classes that used to sit here are
+ * REMOVED (0 live matches in 1.3.4), and the cover-art wash on the collection
+ * pages is neutralised by the rotation-proof section[data-testid$="-page"]
+ * rule below. These three remain because they are LIVE and verified painting
+ * cover-derived colour over the content:
+ *   [data-testid="overscroll-background"]  flat cover tint, ~1234x981 absolute
+ *                                          (measured rgba(98,15,40,0.7) on a
+ *                                          playlist page — deleted once in the
+ *                                          dead-CSS prune on the mistaken
+ *                                          belief it never rendered; it does,
+ *                                          on playlist pages, and its return
+ *                                          was the reported "central colour")
+ *   div[data-seamless-gradient]           0 matches as a *standalone* case, but
+ *                                          the same div ALSO carries a hashed
+ *                                          class and paints an oklch gradient
+ *                                          band under the action bar — so it is
+ *                                          caught by the inline-var rules below
+ * Only art layers are targeted: title, subtitle and play button live in a
+ * different branch of the same portal and are untouched. */
+[data-testid="overscroll-background"],
+[data-testid="background-image"] {
     background: transparent !important;
+    background-color: transparent !important;
     background-image: none !important;
+    box-shadow: none !important;
 }
 
-.before-scroll-node,
-.main-entityHeader-backgroundColor,
-.main-actionBarBackground-background,
-.main-actionBarBackground,
-.main-entityHeader-topbarTitleBackground {
-    display: none !important;
+/* The action-bar cover wash: spotify rspack module 59763 renders an absolute
+ * band (measured 1234x173 at y=517) whose colour arrives inline — either as
+ * --background-base-70/--background-base-20, or as a plain background-color.
+ * Kill it structurally, with no hashed class. */
+div:has([data-testid="action-bar"]) > div[style*="background-color"]:not(:has(*)):not(button),
+div[data-seamless-gradient]:not(:has(*)),
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*)):not(button):not([role="button"]),
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*))::before,
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*))::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    filter: none !important;
 }
 
 /* Kill enclosed playlist header tint — header/action-bar scoped only */
@@ -349,11 +422,28 @@ div[data-testid="action-bar-row"],
     --background-tinted-press: transparent !important;
 }
 
-/* Neutralize inline cover-art colors, narrowly scoped to header/action-bar (play button excluded) */
-.main-entityHeader-container [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
-div[data-testid="entity-header"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
-.main-actionBar-ActionBarRow [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set),
-div[data-testid="action-bar-row"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set) {
+/* Cover-derived wash on the collection pages ("Vos épisodes" /
+ * "Titres likés"). The hook below is rotation-proof and was CDP-verified live
+ * in 1.3.4 on BOTH pages (elementsFromPoint + attribute walk): it selects the
+ * empty leaf art layers that carry the cover-derived inline background-color
+ * and the gradient overlay, and :not(:has(*)) excludes the content wrapper
+ * (title/subtitle/play button), so nothing real is ever hidden. Earlier hooks
+ * for this same wash were removed after CDP verified 0 live matches. */
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*)):not(button):not([role="button"]),
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*))::before,
+section[data-testid$="-page"] div[style*="background-color"]:not(:has(*))::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Neutralize inline cover-art colors, narrowly scoped to header/action-bar (play button AND filter/chip pills excluded — chip fills live on inner spans, not just the <button>) */
+.main-entityHeader-container [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set):not([class*="Chip"]):not([class*="chip"]),
+div[data-testid="entity-header"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set):not([class*="Chip"]):not([class*="chip"]),
+.main-actionBar-ActionBarRow [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set):not([class*="Chip"]):not([class*="chip"]),
+div[data-testid="action-bar-row"] [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set):not([class*="Chip"]):not([class*="chip"]) {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -403,8 +493,8 @@ div[data-testid="action-bar-row"]::after {
     opacity: 1 !important;
 }
 
-/* Fix artist & album page gradient */
-.main-view-container div[style*="background-base"] {
+/* Fix artist & album page gradient (filter/chip pills excluded — never re-tint pill fills) */
+.main-view-container div[style*="background-base"]:not([class*="Chip"]):not([class*="chip"]):not(button[class*="chip"]):not(button[class*="Chip"]) {
     --background-base: rgba(var(--spice-rgb-text), 0.1) !important;
     --background-base-min-contrast: rgba(var(--spice-rgb-text), 0.2) !important;
     --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
@@ -419,6 +509,72 @@ div[data-testid="action-bar-row"]::after {
 /* Hide Spotify home header */
 div.main-home-homeHeader {
     display: none !important;
+}
+
+/* Home top promo banner (e.g. "Vendredi = nouveautés" brown box) — kill the
+ * opaque background only; shelf cards below stay visible. Scoped to
+ * hero/header/banner/promo containers (stable data-testid / main-home-*
+ * names, no hashed classes), never to .main-shelf-* / .main-card-*. */
+div[data-testid="home-hero-card"],
+section[data-testid="home-hero-card"],
+div[data-testid^="home-hero"],
+section[data-testid^="home-hero"],
+div[data-testid="home-header"],
+section[data-testid="home-header"],
+div[data-testid="home-banner"],
+section[data-testid="home-banner"],
+div[data-testid="home-promo-card"],
+section[data-testid="home-promo-card"],
+.main-home-heroCard,
+.main-home-promoCard,
+.main-home-heroContainer,
+.main-home-bannerContainer,
+/* live home hero box 1.3.4 (opaque rgb 83,83,83, verified via CDP) */
+._ddPhxHdxmpT13IbjTmr {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    --background-base: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-elevated-base: transparent !important;
+}
+
+/* Same banner when Spotify paints the brown tint via inline style or ::before */
+div[data-testid="home-hero-card"][style*="background"],
+section[data-testid="home-hero-card"][style*="background"],
+div[data-testid^="home-hero"][style*="background"],
+section[data-testid^="home-hero"][style*="background"],
+div[data-testid="home-header"][style*="background"],
+section[data-testid="home-header"][style*="background"],
+div[data-testid="home-banner"][style*="background"],
+section[data-testid="home-banner"][style*="background"],
+.main-home-heroCard[style*="background"],
+.main-home-promoCard[style*="background"],
+.main-home-heroContainer[style*="background"],
+.main-home-bannerContainer[style*="background"],
+div[data-testid="home-hero-card"]::before,
+section[data-testid="home-hero-card"]::before,
+div[data-testid^="home-hero"]::before,
+section[data-testid^="home-hero"]::before,
+div[data-testid="home-header"]::before,
+div[data-testid="home-banner"]::before,
+.main-home-heroCard::before,
+.main-home-promoCard::before,
+div[data-testid="home-hero-card"]::after,
+section[data-testid="home-hero-card"]::after,
+div[data-testid^="home-hero"]::after,
+section[data-testid^="home-hero"]::after,
+div[data-testid="home-header"]::after,
+div[data-testid="home-banner"]::after,
+.main-home-heroCard::after,
+.main-home-promoCard::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
 }
 
 /* smooth color transitions */
@@ -458,14 +614,29 @@ div.main-home-homeHeader {
     inherits: true;
 }
 
-html {
-    transition:
-        --spice-sidebar 0.5s,
-        --spice-main 0.5s,
-        --spice-text 0.5s,
-        --spice-subtext 0.5s,
-        --spice-button 0.5s,
-        --spice-player 0.5s;
+/* registered as <color> so the @container style(--spice-animation: #010101)
+   gate compares computed color values (010101 vs 000000), not raw tokens */
+@property --spice-animation {
+    syntax: "<color>";
+    initial-value: #010101;
+    inherits: true;
+}
+
+/* Perf: no custom-property crossfade. Transitioning --spice-* on <html> makes
+ * every var consumer repaint across the whole tree each frame (measured ~3s
+ * click-to-settle). Colors snap instantly instead — same final look, no jank. */
+
+/* Perf: frosted bars keep their blur look but must NOT transition their own
+   background — each backdrop-filter layer would otherwise re-render every
+   custom-property frame. Their rgba() backgrounds snap instantly while the
+   html vars above still crossfade. */
+.main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-background,
+.main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-overlay,
+.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+.main-trackList-trackListHeaderStuck,
+html[data-theme="light"] div:has(> button[class*="legacy-chip"]),
+html[data-theme="light"] div:has(> div > button[class*="legacy-chip"]) {
+    transition: none !important;
 }
 
 /* Sticky scrolled playlist header — clean frosted bar, no opaque cover tint.
@@ -480,9 +651,9 @@ html {
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
 }
 
-/* Kill inline cover-art color on the scrolled topBar (entity header only, play button excluded) */
+/* Kill inline cover-art color on the scrolled topBar (entity header only, play button + chip pills excluded) */
 .main-topBar-container:has(.main-entityHeader-topbarTitle)[style*="background"],
-.main-topBar-container:has(.main-entityHeader-topbarTitle) [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set) {
+.main-topBar-container:has(.main-entityHeader-topbarTitle) [style*="background"]:not(button):not([role="button"]):not(.encore-inverted-light-set):not([class*="Chip"]):not([class*="chip"]) {
     background: rgba(var(--spice-rgb-shadow), 0.5) !important;
     background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
     background-image: none !important;
@@ -522,4 +693,211 @@ div[data-testid="tracklist-header"] {
     background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
     backdrop-filter: blur(20px) saturate(1.4);
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Sticky Home filter bar ("Tout / Musique / Podcasts / Livres audio") — light-mode frost.
+   Dark mode is untouched: the base rgba(var(--spice-rgb-shadow), 0.5) rules above stay.
+   Gated on html[data-theme="light"], same gate as the body::before bleed rule. */
+html[data-theme="light"] .main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+html[data-theme="light"] .main-trackList-trackListHeaderStuck,
+html[data-theme="light"] div[data-testid="tracklist-header"].main-trackList-trackListHeaderStuck {
+    background: rgba(var(--spice-rgb-main), 0.7) !important;
+    background-color: rgba(var(--spice-rgb-main), 0.7) !important;
+    background-image: none !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Home filter/chips sticky bar ("Tout / Musique / Podcasts / ...") — clean frosted
+ * strip so pills float above content instead of sitting on a flat tint slab.
+ * Base rule = dark frost (same tone as the scrolled topBar / stuck tracklist
+ * header); the light override below swaps in the paper tone. Deliberately NO
+ * --background-* tokens here: they inherit into the pills and bleached the
+ * fills (see 481665b). Backdrop only on the wrapper; fills live on the pills.
+ * Bottom hairline defines the bar edge so it reads as a floating strip. */
+div:has(> button[class*="legacy-chip"]),
+div:has(> div > button[class*="legacy-chip"]),
+[data-testid*="filter-chips"],
+[data-testid*="home-filter"],
+[class*="filterChips"],
+[class*="FilterChips"],
+.main-home-filterChips,
+.main-home-filterChipsSection,
+.main-home-filterChipsContainer {
+    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(var(--spice-rgb-subtext), 0.12) !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Same bar in light mode — carries NO fill and NO edge of its own. The 0.85
+ * white rgba(var(--spice-rgb-main)) slab that used to sit behind the pills was
+ * removed at the user's request: an opaque light strip looked heavier than
+ * everything around it and flattened the pills onto it. The 1px subtext
+ * hairline went with it, so the bar now draws nothing at all and the pills
+ * float straight on the page. Separation comes from the pill fills themselves
+ * (solid dark selected / pale translucent unselected) plus the
+ * backdrop-filter wash of whatever scrolls under the strip. box-shadow stays
+ * off. Gated on html[data-theme="light"], same gate as the body::before bleed
+ * rule. */
+html[data-theme="light"] div:has(> button[class*="legacy-chip"]),
+html[data-theme="light"] div:has(> div > button[class*="legacy-chip"]),
+html[data-theme="light"] [data-testid*="filter-chips"],
+html[data-theme="light"] [data-testid*="home-filter"],
+html[data-theme="light"] [class*="filterChips"],
+html[data-theme="light"] [class*="FilterChips"],
+html[data-theme="light"] .main-home-filterChips,
+html[data-theme="light"] .main-home-filterChipsSection,
+html[data-theme="light"] .main-home-filterChipsContainer {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Home filter PILLS — explicitly excluded from the bar frost above.
+ * Re-assert solid fills so they stay readable on the frosted bar:
+ * selected pill = solid dark with light text, unselected = translucent
+ * gray with dark text. Covers Encore chip variants (legacy-chip, Chip,
+ * ChipInnerComponent) plus inner spans, which inherit wrapper tokens. */
+html[data-theme="light"] button[class*="chip"],
+html[data-theme="light"] button[class*="Chip"],
+html[data-theme="light"] button[class*="legacy-chip"],
+html[data-theme="light"] [class*="legacy-chip"],
+html[data-theme="light"] .e-10860-legacy-chip,
+html[data-theme="light"] [class*="ChipInnerComponent"],
+html[data-theme="light"] [class*="filterChips"] button {
+    --background-base: initial !important;
+    --background-tinted-base: initial !important;
+    --background-elevated-base: initial !important;
+    --background-highlight: initial !important;
+    --background-press: initial !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    opacity: 1 !important;
+}
+
+/* Unselected pills — readable translucent fill + dark text */
+html[data-theme="light"] button[class*="chip"]:not([aria-pressed="true"]):not([data-is-selected="true"]):not(.ChipInnerComponent-selected-secondary),
+html[data-theme="light"] button[class*="Chip"]:not([aria-pressed="true"]):not([data-is-selected="true"]):not(.ChipInnerComponent-selected-secondary),
+html[data-theme="light"] button[class*="legacy-chip"]:not([aria-pressed="true"]):not([data-is-selected="true"]):not(.ChipInnerComponent-selected-secondary) {
+    background: rgba(var(--spice-rgb-text), 0.12) !important;
+    background-color: rgba(var(--spice-rgb-text), 0.12) !important;
+    background-image: none !important;
+    color: var(--spice-text) !important;
+}
+
+/* Selected pill ("Tout") — solid dark fill + light text */
+html[data-theme="light"] button[class*="chip"][aria-pressed="true"],
+html[data-theme="light"] button[class*="Chip"][aria-pressed="true"],
+html[data-theme="light"] button[class*="legacy-chip"][aria-pressed="true"],
+html[data-theme="light"] button[class*="chip"][data-is-selected="true"],
+html[data-theme="light"] button[class*="Chip"][data-is-selected="true"],
+html[data-theme="light"] button[class*="legacy-chip"][data-is-selected="true"],
+html[data-theme="light"] .ChipInnerComponent-selected-secondary,
+html[data-theme="light"] button[class*="chip"].ChipInnerComponent-selected-secondary,
+html[data-theme="light"] button[class*="Chip"].ChipInnerComponent-selected-secondary,
+html[data-theme="light"] button[class*="legacy-chip"].ChipInnerComponent-selected-secondary {
+    background: var(--spice-text) !important;
+    background-color: var(--spice-text) !important;
+    background-image: none !important;
+    color: var(--spice-main) !important;
+}
+
+/* Same bar when Spotify paints the dark tint via ::before/::after */
+html[data-theme="light"] div[style*="sticky"]:has([class*="Chip"])::before,
+html[data-theme="light"] div[style*="sticky"]:has([class*="Chip"])::after,
+html[data-theme="light"] [data-testid*="filter-chips"]::before,
+html[data-theme="light"] [data-testid*="filter-chips"]::after,
+html[data-theme="light"] [data-testid*="home-filter"]::before,
+html[data-theme="light"] [data-testid*="home-filter"]::after,
+html[data-theme="light"] [class*="filterChips"]::before,
+html[data-theme="light"] [class*="filterChips"]::after {
+    background: transparent !important;
+    background-image: none !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Switch blackout: during the 0.25s light/dark crossfade, drop the expensive
+ * fullscreen bleed blur + the frosted-bar backdrop layers so frames repaint
+ * flat colors only. Flag is set synchronously in toggleDark() and cleared
+ * after ~350ms. Scoped to the actual filter owners — the previous
+ * `html[data-switching] *` universal selector restyled EVERY element twice
+ * per toggle (on + off), dwarfing what the blackout saved. No layout or
+ * at-rest look change. */
+html[data-switching="1"] body::before {
+    filter: none !important;
+}
+
+html[data-switching="1"] .main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-background,
+html[data-switching="1"] .main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-overlay,
+html[data-switching="1"] .main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+html[data-switching="1"] .main-trackList-trackListHeaderStuck,
+html[data-switching="1"] div[data-testid="tracklist-header"].main-trackList-trackListHeaderStuck,
+html[data-switching="1"] div:has(> button[class*="legacy-chip"]),
+html[data-switching="1"] div:has(> div > button[class*="legacy-chip"]),
+html[data-switching="1"] [data-testid*="filter-chips"],
+html[data-switching="1"] [data-testid*="home-filter"],
+html[data-switching="1"] [class*="filterChips"],
+html[data-switching="1"] [class*="FilterChips"],
+html[data-switching="1"] .main-home-filterChips,
+html[data-switching="1"] .main-home-filterChipsSection,
+html[data-switching="1"] .main-home-filterChipsContainer {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Sidebar + right-panel row hover — same tinted treatment as the center
+ * tracklist. CDP 1.3.4: now-playing rows are legacy-list-row BEM elements
+ * (__column/__header) inside a legacy-box--tinted wrapper — the
+ * --interactive modifier and the yourLibraryX / LeftSidebar /
+ * nowPlayingView-panel / now-playing-view / queue / up-next ancestors match
+ * zero live elements, so this rule targets only verified hooks: the
+ * legacy-list-row / legacy-box--tinted substrings (subset of the 427 live
+ * list-row hits) plus an optional #Desktop_PanelContainer_Id scope (1 live
+ * hit). Hover/focus background only — resting rows, text, layout untouched.
+ * Dark uses a subtle cover-aware tint (--spice-text derives from the cover,
+ * same family as the light frost, slightly stronger so it reads on dark
+ * surfaces).
+ * NOTE: the former separate light-mode "0.1 frost" rule was deleted — it had
+ * the same specificity (0,4,1) as the light override below but came earlier
+ * in the file, so it was always overridden and never painted. Light hover is
+ * the 0.06 frost from the override; the light-mode box-hover token override
+ * below is what actually reaches Encore, which paints row hover from
+ * --box-hover-background-color, not background-color (verified in DevTools). */
+[class*="legacy-list-row"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+[class*="legacy-box--tinted"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+[class*="legacy-box--tinted"] [class*="legacy-list-row__"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+#Desktop_PanelContainer_Id :is([class*="list-row"], [class*="ListRow"], [class*="legacy-box--tinted"]):is(:hover, :focus-visible, :focus-within, [data-hovered]),
+/* Encore box rows paint hover from --box-hover-background-color, not
+ * background-color (verified in DevTools) — override the token itself. */
+[class*="legacy-box--interactive"]:is(:hover, :focus-visible, :focus-within, [data-hovered]) {
+    background-color: rgba(var(--spice-rgb-text), 0.08) !important;
+    --box-hover-background-color: rgba(var(--spice-rgb-text), 0.08) !important;
+}
+
+html[data-theme="light"] [class*="legacy-list-row"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+html[data-theme="light"] [class*="legacy-box--tinted"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+html[data-theme="light"] [class*="legacy-box--tinted"] [class*="legacy-list-row__"]:is(:hover, :focus-visible, :focus-within, [data-hovered]),
+html[data-theme="light"] #Desktop_PanelContainer_Id :is([class*="list-row"], [class*="ListRow"], [class*="legacy-box--tinted"]):is(:hover, :focus-visible, :focus-within, [data-hovered]),
+html[data-theme="light"] [class*="legacy-box--interactive"]:is(:hover, :focus-visible, :focus-within, [data-hovered]) {
+    background-color: rgba(var(--spice-rgb-text), 0.06) !important;
+    --box-hover-background-color: rgba(var(--spice-rgb-text), 0.06) !important;
+}
+
+/* Artist/album links inside rows must never get a hover box — only underline.
+ * (The row tint above would otherwise paint a box behind link text too.) */
+[class*="legacy-list-row"] a:is(:hover, :focus-visible),
+[class*="legacy-box"] a:is(:hover, :focus-visible) {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-decoration: underline !important;
 }

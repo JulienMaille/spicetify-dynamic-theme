@@ -3,10 +3,20 @@ const colorCache = new Map();
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 const EXTRACTOR_KEYS = ["VIBRANT", "VIBRANT_NON_ALARMING", "PROMINENT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
 const isValidHex = (h) => typeof h === "string" && HEX_RE.test(h.trim());
+/* Playback item resolver: Spotify 1.3.4 removed Spicetify.Player.data —
+ * live state is Spicetify.Platform.PlayerAPI._state.item (same metadata
+ * shape, verified via CDP). Old paths kept first for backward compat. */
+function getPlaybackItem() {
+    try {
+        return Spicetify.Player?.data?.item ?? Spicetify.Player?.data?.track ?? Spicetify.Platform?.PlayerAPI?._state?.item ?? null;
+    } catch {
+        return null;
+    }
+}
 function isSkippedUri(uri) {
     if (!uri || uri.startsWith("spotify:local") || uri.startsWith("spotify:ad")) return true;
     try {
-        const item = Spicetify.Player?.data?.item;
+        const item = getPlaybackItem();
         if (item?.isLocal || item?.provider === "ad") return true;
     } catch {
         /* ignore */
@@ -57,15 +67,100 @@ function waitForElement(els, func, timeout = 100) {
     }
 }
 
+/* waitForElement() needs *every* selector; the hosts below are alternatives that
+ * differ per Spotify build, so resolve the first one that exists. Bounded, and it
+ * only feeds a cosmetic line — it never blocks the background image. */
+function waitForAny(els, func, timeout = 40) {
+    const host = els.map((el) => document.querySelector(el)).find((a) => a);
+    if (host) func(host);
+    else if (timeout > 0) setTimeout(waitForAny, 300, els, func, --timeout);
+}
+
+/* Album/artist + year line. Legacy `.main-trackInfo-container` is gone in Spotify
+ * 1.3.x (0 hits in xpui-snapshot.css) — verified live hosts, from
+ * dwp-now-playing-bar.js, are the now-playing bar rows below. */
+const YEAR_LINE_HOSTS = ['[data-testid="now-playing-widget-v2-byline"]', '[data-testid="now-playing-widget"]', ".main-trackInfo-container:not(#upcomingSongDiv)"];
+
+/* Resolve the title/artist text column inside a year-line host. The host
+ * ([data-testid="now-playing-widget"]) is a flex ROW — cover | text column |
+ * spacer — so appending the year line to the host itself renders it BESIDE
+ * the track instead of under it. The column is the first child div carrying
+ * real text that is not the cover slot; appending inside it stacks the
+ * album • year under title/artist. Falls back to the host (old behavior). */
+function findTrackTextColumn(host) {
+    try {
+        for (const kid of host.children || []) {
+            if (kid.id === "main-trackInfo-year") continue;
+            try {
+                const tid = (kid.getAttribute && kid.getAttribute("data-testid")) || "";
+                if (/cover/i.test(tid)) continue;
+            } catch (e) {}
+            if ((kid.textContent || "").trim().length > 0) return kid;
+        }
+    } catch (e) {}
+    return host;
+}
 function toHttpCover(u) {
     if (!u) return u;
     if (/^spotify:image:/i.test(u)) return u.replace(/^spotify:image:/i, "https://i.scdn.co/image/");
     return u;
 }
 function getCoverUrls() {
-    const d = Spicetify.Player?.data;
+    const d = Spicetify.Player?.data ?? Spicetify.Platform?.PlayerAPI?._state;
     const md = d?.item?.metadata ?? d?.track?.metadata ?? {};
     return { uri: d?.item?.uri ?? d?.track?.uri ?? md.album_uri, urls: [md.image_xlarge_url, md.image_large_url, md.image_url].filter(Boolean), meta: md };
+}
+
+/* Inline the cover as a data: URL so it always paints as a CSS background.
+ * Remote https:// URLs intermittently fail to paint from user.css in some
+ * Spotify builds even though <img> loads them fine (CDP-verified). The 96px
+ * thumb keeps the data URL small; cached per track URI. */
+const bgDataCache = new Map();
+function coverToDataURL(httpUrl, trackUri) {
+    try {
+        if (!httpUrl || !/^https?:/i.test(httpUrl)) return;
+        const key = trackUri || httpUrl;
+        if (bgDataCache.has(key)) {
+            const hit = bgDataCache.get(key);
+            if (hit) document.documentElement.style.setProperty("--image_url", `url("${hit}")`);
+            return;
+        }
+        if (bgDataCache.size >= 20) bgDataCache.delete(bgDataCache.keys().next().value);
+        bgDataCache.set(key, null); // mark in-flight so we don't stack loaders
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = function () {
+            try {
+                const S = 96;
+                const cv = document.createElement("canvas");
+                cv.width = S;
+                cv.height = S;
+                const cx = cv.getContext("2d");
+                if (!cx) return;
+                const iw = img.naturalWidth || S,
+                    ih = img.naturalHeight || S;
+                const sc = Math.max(S / iw, S / ih);
+                const dw = iw * sc,
+                    dh = ih * sc;
+                cx.drawImage(img, (S - dw) / 2, (S - dh) / 2, dw, dh);
+                const du = cv.toDataURL("image/jpeg", 0.82);
+                bgDataCache.set(key, du);
+                // Only apply if this track is still current.
+                const now = getCoverUrls();
+                if ((now.uri || now.urls[0]) === key || toHttpCover(now.urls[0]) === httpUrl) document.documentElement.style.setProperty("--image_url", `url("${du}")`);
+            } catch (e) {
+                try {
+                    bgDataCache.delete(key);
+                } catch (_e) {}
+            }
+        };
+        img.onerror = function () {
+            try {
+                bgDataCache.delete(key);
+            } catch (e) {}
+        };
+        img.src = httpUrl;
+    } catch (e) {}
 }
 
 function getAlbumInfo(uri) {
@@ -187,29 +282,148 @@ let textColor = "#1db954";
 let textColorBg = getComputedStyle(document.documentElement).getPropertyValue("--spice-main");
 let settingsDark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark") == "#010101";
 
-function setRootColor(name, colHex) {
-    let root = document.documentElement;
-    if (root === null) return;
-    root.style.setProperty("--spice-" + name, colHex);
-    root.style.setProperty("--spice-rgb-" + name, hexToRgb(colHex).join(","));
+/* Theme-write batching: toggleDark() + updateColors() issue ~35 setProperty
+ * calls. Queue them and apply once in a single rAF — same final colors, one
+ * recalc. The light-mode gate lives on html[data-theme] (equality selector,
+ * cheap) instead of html[style*="--is_light"] (substring match on the style
+ * attribute, re-evaluated against 40+ selectors on EVERY style mutation,
+ * including non-mode recolors). It is applied AFTER all color vars in the
+ * same flush so gated selectors restyle once, not twice. */
+let _pendingThemeVars = null;
+let _themeFlushQueued = false;
+let _switchClearTimer = null;
+let _pendingLightGate = null; // "light" | "dark" | null
+function queueThemeVar(name, value) {
+    if (!_pendingThemeVars) _pendingThemeVars = new Map();
+    _pendingThemeVars.set(name, value);
+    if (_themeFlushQueued) return;
+    _themeFlushQueued = true;
+    const schedule = window.requestAnimationFrame || ((cb) => setTimeout(cb, 16));
+    schedule(() => {
+        _themeFlushQueued = false;
+        const batch = _pendingThemeVars;
+        _pendingThemeVars = null;
+        const gate = _pendingLightGate;
+        _pendingLightGate = null;
+        if ((!batch || batch.size === 0) && !gate) return;
+        if (!document.documentElement) return;
+        const rootStyle = document.documentElement.style;
+        if (batch) for (const [k, v] of batch) rootStyle.setProperty(k, v);
+        if (gate) {
+            // --is_light var (drives the body::before opacity calc) and the
+            // data-theme gate flip together, after the colors, in one frame.
+            rootStyle.setProperty("--is_light", gate === "light" ? 1 : 0);
+            document.documentElement.dataset.theme = gate;
+        }
+    });
 }
 
+function setRootColor(name, colHex) {
+    if (!document.documentElement) return;
+    queueThemeVar("--spice-" + name, colHex);
+    queueThemeVar("--spice-rgb-" + name, hexToRgb(colHex).join(","));
+}
+
+let _lastToggleAt = 0;
+let _lastToggleDark = null;
+
+/* Adaptive kawarp tint: the lib's tint shader only blends pixels with
+ * luma < 0.5 toward tintColor (darkMask = 1 - smoothstep(0, 0.5, luma)),
+ * so bright covers sail through black/white tint untouched — that is the
+ * light-gray wash (dark mode) / white flood (light mode). Cover luminance
+ * comes from textColor (the per-track extracted color, refreshed in
+ * updateColors on every track change). Brightness/opacity are one-pass
+ * compositor ops — never a fullscreen blur() on the animated canvas. */
+function __kawarpCoverLuma() {
+    try {
+        if (!isValidHex(textColor)) return 0.5;
+        const [r, g, b] = hexToRgb(textColor);
+        return Math.min(1, Math.max(0, (r * 299 + g * 587 + b * 114) / 1000 / 255));
+    } catch (e) {
+        return 0.5;
+    }
+}
+function __kawarpApplyTint(explicitDark) {
+    try {
+        const dark = typeof explicitDark === "boolean" ? explicitDark : !isLight(textColorBg);
+        const luma = __kawarpCoverLuma();
+        // Dark: bright covers need max dark-area tint; dark covers less.
+        // Light: white stays low so hue survives (0.6 still flooded).
+        const intensity = dark ? 0.55 + 0.45 * luma : 0.3;
+        if (typeof __kawarpInstance !== "undefined" && __kawarpInstance) {
+            __kawarpInstance.tintColor = dark ? [0.0, 0.0, 0.0] : [1.0, 1.0, 1.0];
+            try {
+                __kawarpInstance.tintIntensity = intensity;
+            } catch (_e) {}
+        }
+        // Bright-pixel compensation the tint shader cannot do: darken and
+        // fade light covers in dark mode; quiet the canvas in light mode.
+        try {
+            const canvas = document.getElementById("dynamic-bg-canvas");
+            if (canvas) {
+                if (dark) {
+                    canvas.style.opacity = (0.55 - 0.2 * luma).toFixed(2);
+                    canvas.style.filter = `brightness(${(1 - 0.45 * luma).toFixed(2)}) saturate(1.1)`;
+                } else {
+                    canvas.style.opacity = "0.3";
+                    canvas.style.filter = "saturate(1.15) brightness(0.92)";
+                }
+            }
+        } catch (_e) {}
+    } catch (e) {}
+}
 function toggleDark(setDark) {
     if (setDark === undefined) setDark = isLight(textColorBg);
 
-    document.documentElement.style.setProperty("--is_light", setDark ? 0 : 1);
-    textColorBg = setDark ? "#0A0A0A" : "#FAFAFA";
+    /* Skip redundant same-mode passes (e.g. the Config proxy re-read firing
+     * right after a moon-button toggle): same mode within 800ms is a no-op —
+     * opposite-mode double-clicks still apply. */
+    try {
+        const now = performance.now();
+        if (setDark === _lastToggleDark && now - _lastToggleAt < 800) return;
+        _lastToggleAt = now;
+        _lastToggleDark = setDark;
+    } catch (e) {}
+
+    /* Switch blackout: every crossfade frame would otherwise repaint the
+     * fullscreen blurred bleed + all backdrop-filter layers. Flag the switch
+     * synchronously so user.css drops those filters for ~350ms (0.25s
+     * crossfade + margin); flat colors crossfade cheaply, blur pops back. */
+    try {
+        document.documentElement.dataset.switching = "1";
+        if (_switchClearTimer) clearTimeout(_switchClearTimer);
+        _switchClearTimer = setTimeout(() => {
+            try {
+                document.documentElement.removeAttribute("data-switching");
+            } catch (e) {}
+            _switchClearTimer = null;
+        }, 350);
+    } catch (e) {}
+
+    // Light-mode gate flips in the rAF flush AFTER all color vars
+    // (see queueThemeVar) so gated selectors restyle once, not twice.
+    _pendingLightGate = setDark ? "dark" : "light";
+    textColorBg = setDark ? "#0A0A0A" : "#FFFFFF";
+    /* Kawarp tint follows the mode (same as the radioking reference
+     * applyTheme): black in dark, white in light. The tint shader only
+     * blends DARK pixels (darkMask = 1-smoothstep(0,.5,luma)), so bright
+     * covers ignore tintColor entirely — __kawarpApplyTint() compensates
+     * with tintIntensity + canvas brightness/opacity from cover luminance
+     * (cheap compositor ops, never a fullscreen blur()). */
+    try {
+        __kawarpApplyTint(setDark);
+    } catch (e) {}
 
     setRootColor("main", textColorBg);
     setRootColor("sidebar", textColorBg);
     setRootColor("player", textColorBg);
     setRootColor("shadow", textColorBg);
-    setRootColor("card", setDark ? "#040404" : "#ECECEC");
+    setRootColor("card", setDark ? "#040404" : "#F5F5F5");
     setRootColor("subtext", setDark ? "#EAEAEA" : "#3D3D3D");
     setRootColor("selected-row", setDark ? "#EAEAEA" : "#3D3D3D");
-    setRootColor("main-elevated", setDark ? "#303030" : "#DDDDDD");
-    setRootColor("notification", setDark ? "#303030" : "#DDDDDD");
-    setRootColor("highlight-elevated", setDark ? "#303030" : "#DDDDDD");
+    setRootColor("main-elevated", setDark ? "#303030" : "#EDEDED");
+    setRootColor("notification", setDark ? "#303030" : "#EDEDED");
+    setRootColor("highlight-elevated", setDark ? "#303030" : "#EDEDED");
 
     updateColors(textColor);
 }
@@ -218,43 +432,119 @@ function toggleDark(setDark) {
 toggleDark(settingsDark);
 
 /* Hook user changes to toggle using a proxy for Spicetify.Config */
+let _proxyTimer = null;
 Spicetify.Config = new Proxy(Spicetify.Config, {
     set(target, property, value) {
         if (property === "color_scheme") {
-            // Wait 100ms for CSS variables to update
-            setTimeout(() => {
+            // Debounced: rapid successive sets coalesce into one re-read, and
+            // toggleDark() itself skips the pass if the mode is unchanged, so
+            // a settings change can never double-apply the full theme write.
+            // getComputedStyle forces a sync style recalc — do it once, after
+            // Spotify's own scheme variables have settled.
+            if (_proxyTimer) clearTimeout(_proxyTimer);
+            _proxyTimer = setTimeout(() => {
+                _proxyTimer = null;
                 let dark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark").trim() === "#010101";
                 toggleDark(dark);
-            }, 100);
+            }, 150);
         }
         target[property] = value;
         return true;
     }
 });
 
-waitForElement([".main-actionButtons"], (queries) => {
-    // Add activator on top bar
-    const buttonContainer = queries[0];
+/* Spotify 1.3.x dropped .main-actionButtons, .main-topBar-* , .Root__globalNav and
+ * .Root__top-container: all of them are 0 hits in xpui-snapshot.css / dwp-top-bar.css
+ * (they only exist in our own files). Handles that ARE real in this build, taken from
+ * dwp-top-bar.js (module 20628 "TopBar"), which renders:
+ *     <header data-testid="topbar">
+ *       <div class=…background>
+ *       <div class=…contentContainer><div data-testid="topbar-content-wrapper">
+ * and portals each route's <div data-testid="topbar-content"> into that wrapper.
+ * NOTE: that wrapper is `pointer-events:none` (dwp-top-bar.css), so the button
+ * re-enables it in user.css.
+ */
+const MOON_HOST_SELECTORS = ['[data-testid="topbar-content-wrapper"]', '[data-testid="topbar-content"]', '[data-testid="topbar"]'];
 
-    const button = document.createElement("button");
-    button.id = "main-topBar-moon-button";
-    button.type = "button";
-    // Use the transparent topbar icon-button style (bell / buddy-feed),
-    // not the dark nav pill from .main-actionButtons-button.
-    button.className = "main-topBar-buddyFeed";
-    button.setAttribute("aria-label", "Light/Dark");
-    button.onclick = () => {
-        toggleDark();
-    };
-    button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`;
+/* Resolve the topbar row that hosts the moon button: prefer the icon row holding
+ * the avatar/user-widget (top-right, next to bell+buddy), verified live via CDP;
+ * fall back to the topbar testids, then to a structural button-parent walk. */
+function findMoonHost() {
+    try {
+        const avatar = document.querySelector('[data-testid="user-widget-link"]');
+        if (avatar) {
+            let p = avatar.parentElement;
+            let depth = 0;
+            while (p && depth < 6) {
+                try {
+                    if (p.querySelectorAll("button").length >= 2) return p;
+                } catch (e) {}
+                p = p.parentElement;
+                depth++;
+            }
+        }
+    } catch (e) {}
+    for (const sel of MOON_HOST_SELECTORS) {
+        const el = document.querySelector(sel);
+        if (el) return el;
+    }
+    const header = document.querySelector('[data-testid="topbar"]');
+    if (!header) return null;
+    let best = null;
+    for (const btn of header.querySelectorAll('button, [role="button"]')) {
+        const row = btn.parentElement;
+        if (!row || row === header) continue;
+        const count = row.querySelectorAll(':scope > button, :scope > [role="button"]').length;
+        if (count >= 2 && (!best || count > best.count)) best = { el: row, count: count };
+    }
+    return best ? best.el : header;
+}
 
-    const tooltip = Spicetify.Tippy(button, {
-        ...Spicetify.TippyProps,
-        content: "Light/Dark"
-    });
+let topbarButtonHost = null;
+function ensureMoonButton() {
+    try {
+        if (document.getElementById("main-topBar-moon-button")) return true;
+        const host = findMoonHost();
+        if (!host) return false;
+        topbarButtonHost = host;
 
-    buttonContainer.insertBefore(button, buttonContainer.firstChild);
-});
+        const button = document.createElement("button");
+        button.id = "main-topBar-moon-button";
+        button.type = "button";
+        // Styling hook only (.main-topBar-buddyFeed is ours, not a Spotify class) —
+        // do not use it to locate a host, it matches nothing in Spotify's bundle.
+        button.className = "main-topBar-buddyFeed";
+        button.setAttribute("aria-label", "Light/Dark");
+        button.onclick = () => {
+            toggleDark();
+        };
+        button.innerHTML = `<svg role="img" viewBox="0 0 16 16" height="16" width="16"><path fill="currentColor" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path></svg>`;
+
+        try {
+            Spicetify.Tippy(button, {
+                ...Spicetify.TippyProps,
+                content: "Light/Dark"
+            });
+        } catch (e) {}
+
+        // Leftmost in the topbar row (before the history buttons / route actions).
+        host.insertBefore(button, host.firstChild);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+// Spotify 1.3.x removed .main-actionButtons; retry on route changes and re-insert
+// after React re-renders the topbar (bounded so it cannot poll forever).
+function waitForMoonHost(retries = 0) {
+    if (ensureMoonButton()) return;
+    if (retries >= 100) return;
+    setTimeout(() => waitForMoonHost(retries + 1), 300);
+}
+waitForMoonHost();
+try {
+    ["pushstate", "popstate", "popstateend"].forEach((ev) => document.addEventListener(ev, () => setTimeout(ensureMoonButton, 300)));
+} catch (e) {}
 
 function updateColors(textColHex) {
     if (textColHex == undefined) return registerCoverListener();
@@ -289,13 +579,22 @@ function updateColors(textColHex) {
         </filter>
       </svg>
       #recolor')`;
-    document.documentElement.style.setProperty("--colormatrix", encodeURI(m));
+    // Batched with the rest of the theme vars so toggleDark()+updateColors()
+    // flush in a single rAF (one style recalc instead of ~17 synchronous ones).
+    queueThemeVar("--colormatrix", encodeURI(m));
+    /* Per-track tint re-adapt: textColor just changed, so cover luminance
+     * changed — re-derive tintIntensity + canvas brightness/opacity.
+     * Synchronous lib writes only (no style recalc); the vars above still
+     * flush once in rAF. No-op until the async kawarp import resolves. */
+    try {
+        __kawarpApplyTint();
+    } catch (e) {}
 }
 
 let nearArtistSpanText = "";
 let nearArtistSpan = null;
 async function songchange(event, retries = 0) {
-    const dataItem = event?.data?.item ?? Spicetify.Player?.data?.item ?? Spicetify.Player?.data?.track;
+    const dataItem = event?.data?.item ?? getPlaybackItem();
     const meta = dataItem?.metadata;
     if (!dataItem || !meta) {
         if (retries >= 20) return;
@@ -318,6 +617,24 @@ async function songchange(event, retries = 0) {
         textColor = "#1db954";
         updateColors(textColor);
     }
+
+    /* Background first: set --image_url before any DOM-dependent work so the
+     * fullscreen body::before layer can never be blocked by a missing node.
+     * Remote cover URLs do not always paint as CSS backgrounds in Spotify's
+     * build (verified: gradient paints, https:// image does not), so convert
+     * to an inline data: URL via an anonymous-CORS canvas (i.scdn.co sends
+     * ACAO:*, keeping the canvas clean). Falls back to the remote URL. */
+    document.documentElement.style.setProperty("--image_url", `url("${bgImage}")`);
+    try {
+        coverToDataURL(bgImage, trackUri);
+    } catch (e) {}
+
+    /* Feed the warp canvas the raw HTTP cover (not the 96px data URL): it
+     * draws at 240px with its own slice warp, so it needs full-resolution
+     * pixels. --image_url above keeps the CSS backfill path in sync. */
+    try {
+        if (window.__dynamicBgSetCover) window.__dynamicBgSetCover(bgImage);
+    } catch (e) {}
 
     if (album_uri && !album_uri.includes("spotify:show")) {
         try {
@@ -368,6 +685,9 @@ async function songchange(event, retries = 0) {
         // ad
         nearArtistSpanText = "Advertisement";
         document.documentElement.style.setProperty("--image_url", `url("${FALLBACK_IMAGE}")`);
+        try {
+            if (window.__dynamicBgSetCover) window.__dynamicBgSetCover(FALLBACK_IMAGE);
+        } catch (e) {}
         textColor = "#1db954";
         updateColors(textColor);
         return;
@@ -376,21 +696,40 @@ async function songchange(event, retries = 0) {
         if (retries < 5) setTimeout(() => songchange(event, retries + 1), 200);
     }
 
-    if (!document.querySelector("#main-trackInfo-year")) {
-        waitForElement([".main-trackInfo-container:not(#upcomingSongDiv)"], (queries) => {
-            nearArtistSpan = document.createElement("div");
-            nearArtistSpan.id = "main-trackInfo-year";
-            nearArtistSpan.classList.add("main-trackInfo-release", "standalone-ellipsis-one-line", "main-type-finale");
-            nearArtistSpan.innerHTML = nearArtistSpanText;
-            queries[0].append(nearArtistSpan);
-        });
-    } else if (nearArtistSpan) {
-        nearArtistSpan.innerHTML = nearArtistSpanText;
-    } else {
-        const existingYear = document.querySelector("#main-trackInfo-year");
-        if (existingYear) existingYear.innerHTML = nearArtistSpanText;
+    /* Album/artist + year line: purely cosmetic, must never gate or break the
+     * background/colour work above and below. .main-trackInfo-container is gone
+     * in Spotify 1.3.x, so wait for a host that actually exists. */
+    try {
+        if (document.getElementById("main-trackInfo-year")) {
+            const yearLine = document.getElementById("main-trackInfo-year");
+            yearLine.innerHTML = nearArtistSpanText;
+            nearArtistSpan = yearLine;
+            /* Reparent if misplaced: the host is a flex ROW, so a year line
+             * appended to the host renders BESIDE the track. Move it into
+             * the title/artist text column so it stacks underneath. */
+            try {
+                const scope = yearLine.closest('[data-testid="now-playing-widget"], [data-testid="now-playing-widget-v2-byline"]') || yearLine.parentElement;
+                if (scope) {
+                    const col = findTrackTextColumn(scope);
+                    if (col && col !== yearLine.parentElement) col.append(yearLine);
+                }
+            } catch (_e) {}
+        } else {
+            waitForAny(YEAR_LINE_HOSTS, (host) => {
+                nearArtistSpan = document.createElement("div");
+                nearArtistSpan.id = "main-trackInfo-year";
+                nearArtistSpan.classList.add("main-trackInfo-release", "standalone-ellipsis-one-line", "main-type-finale");
+                nearArtistSpan.innerHTML = nearArtistSpanText;
+                try {
+                    findTrackTextColumn(host).append(nearArtistSpan);
+                } catch (_e) {
+                    host.append(nearArtistSpan);
+                }
+            });
+        }
+    } catch (err) {
+        console.error(err);
     }
-    document.documentElement.style.setProperty("--image_url", `url("${bgImage}")`);
     pickCoverColor(bgImage, trackUri, 0, album_uri);
 }
 
@@ -487,9 +826,10 @@ async function pickCoverColor(httpCoverUrl, trackUri, retryCount = 0, albumUri) 
     const img = document.querySelector(".main-image-image.cover-art-image") || document.querySelector("img.cover-art-image") || document.querySelector(".main-nowPlayingWidget-coverArt img");
     if ((!img || !img.complete) && retryCount < 10) return setTimeout(() => pickCoverColor(httpCoverUrl, trackUri, retryCount + 1, albumUri), 250);
 
-    if (img && Spicetify.Player?.data?.item?.isLocal) {
+    const _pbItem = getPlaybackItem();
+    if (img && _pbItem?.isLocal) {
         try {
-            img.src = toHttpCover(Spicetify.Player.data.item.metadata.image_url);
+            img.src = toHttpCover(_pbItem.metadata.image_url);
         } catch (err) {
             console.error(err);
         }
@@ -517,6 +857,100 @@ async function pickCoverColor(httpCoverUrl, trackUri, retryCount = 0, albumUri) 
         updateColors(textColor);
     };
 }
+
+/* Animated background: the real @kawarp/core WebGL warp, same geometry as the
+ * radioking reference (warpIntensity 1.0, blurPasses 8, animationSpeed 1.0,
+ * transitionDuration 2000, saturation 1.5, tint black/white). Intensity is
+ * adaptive, NOT 1.0: the tint shader only blends dark pixels
+ * (darkMask = 1-smoothstep(0,.5,luma)), so 1.0 merely maxes dark-area tint
+ * while bright covers wash through — see __kawarpApplyTint().
+ * Loaded via dynamic ESM import (same pattern as the reference); every step
+ * is guarded so a failed import can never break the extension — the static
+ * theme simply stays. */
+var __kawarpInstance = null;
+function __kawarpTint() {
+    try {
+        var dark = getComputedStyle(document.documentElement).getPropertyValue("--is_light").trim() !== "1";
+        return dark ? [0.0, 0.0, 0.0] : [1.0, 1.0, 1.0];
+    } catch (e) {
+        return [0.0, 0.0, 0.0];
+    }
+}
+async function initDynamicBgKawarp() {
+    try {
+        if (window.__dynamicBgInit) return;
+        window.__dynamicBgInit = true;
+        var canvas = document.getElementById("dynamic-bg-canvas");
+        if (!canvas) {
+            canvas = document.createElement("canvas");
+            canvas.id = "dynamic-bg-canvas";
+            try {
+                if (document.body && document.body.firstChild) document.body.insertBefore(canvas, document.body.firstChild);
+                else if (document.body) document.body.appendChild(canvas);
+                else document.documentElement.appendChild(canvas);
+            } catch (e) {
+                try {
+                    document.documentElement.appendChild(canvas);
+                } catch (_e) {
+                    return;
+                }
+            }
+        }
+        function fitKawarpCanvas() {
+            try {
+                var w = window.innerWidth || 1280,
+                    h = window.innerHeight || 720;
+                var dpr = Math.min(2, window.devicePixelRatio || 1);
+                canvas.width = Math.round((w * dpr) / 2);
+                canvas.height = Math.round((h * dpr) / 2);
+                if (__kawarpInstance && __kawarpInstance.resize) __kawarpInstance.resize();
+            } catch (e) {}
+        }
+        fitKawarpCanvas();
+        try {
+            window.addEventListener("resize", fitKawarpCanvas);
+        } catch (e) {}
+        const mod = await import("https://cdn.jsdelivr.net/npm/@kawarp/core/+esm");
+        const tint = __kawarpTint();
+        const _initDark = tint[0] < 0.5;
+        const _initLuma = __kawarpCoverLuma();
+        __kawarpInstance = new mod.Kawarp(canvas, {
+            warpIntensity: 1.0,
+            blurPasses: 8,
+            animationSpeed: 1.0,
+            transitionDuration: 2000,
+            saturation: 1.5,
+            tintColor: tint,
+            tintIntensity: _initDark ? 0.55 + 0.45 * _initLuma : 0.3
+        });
+        /* Theme may have toggled while the async import resolved. */
+        try {
+            __kawarpInstance.tintColor = __kawarpTint();
+        } catch (e) {}
+        try {
+            __kawarpApplyTint();
+        } catch (e) {}
+        /* Backfill: songchange() may have run before the import resolved. */
+        try {
+            var v = getComputedStyle(document.documentElement).getPropertyValue("--image_url") || "";
+            var m = v.match(/url\(["']?(.*?)["']?\)/);
+            if (m && m[1] && __kawarpInstance.loadImage) __kawarpInstance.loadImage(m[1]);
+        } catch (e) {}
+        try {
+            __kawarpInstance.start();
+        } catch (e) {}
+    } catch (e) {
+        try {
+            console.warn("kawarp", e);
+        } catch (_e) {}
+    }
+}
+initDynamicBgKawarp();
+window.__dynamicBgSetCover = function (url) {
+    try {
+        if (url && __kawarpInstance && __kawarpInstance.loadImage) __kawarpInstance.loadImage(url);
+    } catch (e) {}
+};
 
 Spicetify.Player.addEventListener("songchange", songchange);
 songchange();
