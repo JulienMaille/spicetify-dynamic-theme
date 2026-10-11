@@ -319,6 +319,15 @@ body::before {
     fill: var(--spice-button);
 }
 
+/* Verified badge (Spotify 1.3.x: svg[data-encore-id="verifiedBadge"]; legacy
+ * classes above match nothing — left untouched. data-encore-id is semantic,
+ * never the hashed e-10860- class. Encore paints via cascade layers; unlayered
+ * author CSS wins. Fill = button/accent dynamic color per original intent;
+ * foreground (checkmark cutout) untouched. */
+[data-encore-id="verifiedBadge"] {
+    --encore-verified-badge-background: var(--spice-button) !important;
+}
+
 /* Remove blue outline in confirmation popup */
 .main-confirmDialog-buttonContainer button:focus {
     outline: 5px auto white;
@@ -368,8 +377,7 @@ body::before {
  *                                          caught by the inline-var rules below
  * Only art layers are targeted: title, subtitle and play button live in a
  * different branch of the same portal and are untouched. */
-[data-testid="overscroll-background"],
-[data-testid="background-image"] {
+[data-testid="overscroll-background"] {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -498,6 +506,158 @@ div[data-testid="action-bar-row"]::after {
     --background-base: rgba(var(--spice-rgb-text), 0.1) !important;
     --background-base-min-contrast: rgba(var(--spice-rgb-text), 0.2) !important;
     --background-base-70: rgba(var(--spice-rgb-text), 0.2) !important;
+}
+
+/* Playlist/entity red wash kill ("Radar des sorties" solid red over header +
+ * action bar + tracklist top). Spotify paints it inline as background-color /
+ * background-image linear-gradient / --background-base* vars on a wrapper
+ * inside section[data-testid$="-page"] (or playlist-page) that HAS children,
+ * so the :not(:has(*)) leaf rules above miss it. [style*="background"] catches
+ * all three inline forms at once ("background" is a substring of
+ * background-color, background-image and --background-base*). Rotation-proof:
+ * only stable data-testid / main-entityHeader / main-actionBar hooks, no
+ * hashed classes. Interactive content excluded (button / role=button / Chip /
+ * chip / a) and the wrapper itself is never hidden — background only — so
+ * title/subtitle/play button/chips/tracklist stay visible and clickable.
+ * Placed AFTER the artist/album re-tint rule above so playlist/entity header
+ * scope wins back to transparent here (equal-or-higher specificity + later
+ * order); the re-tint still applies to artist/album pages elsewhere. */
+.main-view-container section[data-testid$="-page"] div[style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container div[data-testid="playlist-page"] div[style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container section[data-testid$="-page"] div[data-testid="entity-header"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container section[data-testid$="-page"] div[data-testid="action-bar-row"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container div[data-testid="entity-header"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container div[data-testid="action-bar-row"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container section[data-testid$="-page"] .main-entityHeader-container[style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+.main-view-container section[data-testid$="-page"] .main-actionBar-ActionBarRow[style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *) {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-base-min-contrast: transparent !important;
+    --background-base-70: transparent !important;
+    --background-base-20: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-tinted-highlight: transparent !important;
+    --background-tinted-press: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-elevated-highlight: transparent !important;
+    --background-elevated-press: transparent !important;
+    --background-highlight: transparent !important;
+    --background-press: transparent !important;
+    --background-color: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+    border-color: transparent !important;
+}
+
+/* Same wash painted via ::before/::after on the page/entity/action-bar
+ * wrappers (pseudo-elements only — never hides the wrapper content). */
+.main-view-container section[data-testid$="-page"][style*="background"]::before,
+.main-view-container section[data-testid$="-page"][style*="background"]::after,
+.main-view-container section[data-testid$="-page"] div[style*="background"]::before,
+.main-view-container section[data-testid$="-page"] div[style*="background"]::after,
+.main-view-container div[data-testid="playlist-page"][style*="background"]::before,
+.main-view-container div[data-testid="playlist-page"][style*="background"]::after,
+.main-view-container div[data-testid="playlist-page"] div[style*="background"]::before,
+.main-view-container div[data-testid="playlist-page"] div[style*="background"]::after,
+.main-view-container div[data-testid="entity-header"][style*="background"]::before,
+.main-view-container div[data-testid="entity-header"][style*="background"]::after,
+.main-view-container div[data-testid="action-bar-row"][style*="background"]::before,
+.main-view-container div[data-testid="action-bar-row"][style*="background"]::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Bundle-verified red playlist wash kill (Spotify 1.3.x bundle hooks, no
+ * hashed classes, no .main-view-container prefix, no :has leaf guard).
+ * Append-only: existing blocks left untouched. */
+section[data-testid="playlist-page"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+section[data-testid="playlist-page"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+section[data-testid="playlist-page"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+section[data-testid="playlist-page"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+section[data-testid="playlist-page"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+section[data-testid="playlist-page"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+section[data-testid="playlist-page"] [data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+section[data-testid="playlist-page"] [data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+section[data-testid="playlist-page"] [data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+section[data-testid="playlist-page"] [data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+section[data-testid="playlist-page"] [data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+section[data-testid="playlist-page"] [data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+div[data-testid="action-bar"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+div[data-testid="action-bar"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+div[data-testid="action-bar"][style*="background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+div[data-testid="action-bar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+div[data-testid="action-bar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+div[data-testid="action-bar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+div[data-testid="action-bar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+div[data-testid="action-bar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+div[data-testid="action-bar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+header[data-testid="topbar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+header[data-testid="topbar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+header[data-testid="topbar"] [style*="--background-base"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+header[data-testid="topbar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+header[data-testid="topbar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+header[data-testid="topbar"] [data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-base-min-contrast: transparent !important;
+    --background-base-70: transparent !important;
+    --background-base-20: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-highlight: transparent !important;
+    --color-from: transparent !important;
+    --color-to: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+    border-color: transparent !important;
+}
+
+/* Global portal wash kill (PrintWindow-verified: red band rows 1-3 survives
+ * section-scoped kills — Spotify renders wash layers in portals OUTSIDE
+ * section[data-testid="playlist-page"]: 5808.js overscroll-background +
+ * background-image portal, 173px absolute band, topbar wash. GLOBAL
+ * selectors, no ancestor prefix. Never display:none, never matches img. */
+[data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[data-testid="overscroll-background"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+[data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[data-testid="background-image"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+[data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[data-seamless-gradient]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+[style*="--background-base-70"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[style*="--background-base-70"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[style*="--background-base-70"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+[style*="--background-base-20"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[style*="--background-base-20"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[style*="--background-base-20"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after,
+[style*="--background-base-min-contrast"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *),
+[style*="--background-base-min-contrast"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::before,
+[style*="--background-base-min-contrast"]:not(button):not([role="button"]):not([class*="Chip"]):not([class*="chip"]):not(a):not(input):not(img):not([data-testid="tracklist-row"]):not([data-testid="tracklist-row"] *):not([class*="list-row"]):not([class*="List-row"]):not([class*="ListRow"]):not([class*="legacy-box"]):not([class*="list-row"] *):not([class*="List-row"] *):not([class*="ListRow"] *):not([class*="legacy-box"] *):not([class*="trackList"] *):not([class*="TrackList"] *)::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    --background-base: transparent !important;
+    --background-base-min-contrast: transparent !important;
+    --background-base-70: transparent !important;
+    --background-base-20: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-highlight: transparent !important;
+    --color-from: transparent !important;
+    --color-to: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+    border-color: transparent !important;
 }
 
 /* Fix canvas overlay in light mode */
@@ -640,13 +800,26 @@ html[data-theme="light"] div:has(> div > button[class*="legacy-chip"]) {
 }
 
 /* Sticky scrolled playlist header — clean frosted bar, no opaque cover tint.
-   Scoped to entity-title context only so the search topbar is untouched. */
+   Scoped to entity-title context only so the search topbar is untouched.
+   --background-* forced transparent so a class/Encore-var tint can't win. */
 .main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-background,
 .main-topBar-container:has(.main-entityHeader-topbarTitle) .main-topBar-overlay {
     background: rgba(var(--spice-rgb-shadow), 0.5) !important;
     background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
     background-image: none !important;
+    --background-base: transparent !important;
+    --background-base-min-contrast: transparent !important;
+    --background-base-70: transparent !important;
+    --background-base-20: transparent !important;
+    --background-tinted-base: transparent !important;
+    --background-tinted-highlight: transparent !important;
+    --background-tinted-press: transparent !important;
+    --background-elevated-base: transparent !important;
+    --background-highlight: transparent !important;
+    --background-press: transparent !important;
+    --background-color: transparent !important;
     opacity: 1 !important;
+    box-shadow: none !important;
     backdrop-filter: blur(20px) saturate(1.4);
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
 }
@@ -701,6 +874,37 @@ div[data-testid="tracklist-header"] {
 html[data-theme="light"] .main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
 html[data-theme="light"] .main-trackList-trackListHeaderStuck,
 html[data-theme="light"] div[data-testid="tracklist-header"].main-trackList-trackListHeaderStuck {
+    background: rgba(var(--spice-rgb-main), 0.7) !important;
+    background-color: rgba(var(--spice-rgb-main), 0.7) !important;
+    background-image: none !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* Scrolled playlist header + column bar frost (verified Spotify 1.3.x hooks:
+ * header[data-testid="topbar"] first-child backdrop layer and the sticky
+ * column container via :has(row > columnheader) — track rows use gridcell,
+ * so the column selector is inherently row-safe. Legacy .main-topBar-container
+ * / .main-trackList-trackListHeader rules above match nothing in 1.3.x and are
+ * left untouched. No :not() chains, no --background-* neutralization
+ * (inheritance!), backdrop only. */
+header[data-testid="topbar"] > div[style*="--background-base"],
+section[data-testid="playlist-page"] div:has(> div[role="row"]:has([role="columnheader"])) {
+    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
+    background-image: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+section[data-testid="playlist-page"] div:has(> div[role="row"]:has([role="columnheader"])) {
+    border-bottom: 1px solid rgba(var(--spice-rgb-subtext), 0.12) !important;
+}
+
+html[data-theme="light"] header[data-testid="topbar"] > div[style*="--background-base"],
+html[data-theme="light"] section[data-testid="playlist-page"] div:has(> div[role="row"]:has([role="columnheader"])) {
     background: rgba(var(--spice-rgb-main), 0.7) !important;
     background-color: rgba(var(--spice-rgb-main), 0.7) !important;
     background-image: none !important;

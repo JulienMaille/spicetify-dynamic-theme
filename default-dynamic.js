@@ -58,18 +58,9 @@ async function tryExtractor(uri) {
     return hex;
 }
 
-function waitForElement(els, func, timeout = 100) {
-    const queries = els.map((el) => document.querySelector(el));
-    if (queries.every((a) => a)) {
-        func(queries);
-    } else if (timeout > 0) {
-        setTimeout(waitForElement, 300, els, func, --timeout);
-    }
-}
-
-/* waitForElement() needs *every* selector; the hosts below are alternatives that
- * differ per Spotify build, so resolve the first one that exists. Bounded, and it
- * only feeds a cosmetic line — it never blocks the background image. */
+/* Year-line hosts are alternatives that differ per Spotify build, so resolve
+ * the first one that exists (waitForAny). Bounded, and it only feeds a
+ * cosmetic line — it never blocks the background image. */
 function waitForAny(els, func, timeout = 40) {
     const host = els.map((el) => document.querySelector(el)).find((a) => a);
     if (host) func(host);
@@ -203,6 +194,34 @@ function hexToRgb(hex) {
     var g = (bigint >> 8) & 255;
     var b = bigint & 255;
     return [r, g, b];
+}
+
+/* Red-wash guard: a red-dominant now-playing cover (e.g. "Caught Up") floods
+ * the fullscreen warp canvas red even on unrelated blue/purple playlist
+ * pages. Tint vars are achromatic and cannot create hue — the canvas is the
+ * source. Detect from the already-computed palette hex. */
+function __isRedDominantHex(hex) {
+    try {
+        if (!isValidHex(hex)) return false;
+        const [r, g, b] = hexToRgb(hex);
+        if (r > 1.4 * g && r > 1.4 * b) return true;
+        const [h, s] = rgbToHsl([r, g, b]);
+        const deg = h * 360;
+        if (s > 0.5 && (deg >= 350 || deg <= 20)) return true;
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+function __neutralizeRedWashCanvas() {
+    try {
+        const canvas = document.getElementById("dynamic-bg-canvas");
+        if (canvas) {
+            canvas.style.opacity = "0.32";
+            canvas.style.filter = "brightness(0.85) saturate(0.85)";
+        }
+    } catch (e) {}
 }
 
 function rgbToHex([r, g, b]) {
@@ -345,6 +364,22 @@ function __kawarpCoverLuma() {
 }
 function __kawarpApplyTint(explicitDark) {
     try {
+        /* Red-wash guard: palette is fresh here (called from updateColors on
+         * every palette resolution) — red-dominant cover keeps the canvas
+         * neutral instead of flooding the page red. */
+        if (__isRedDominantHex(textColor)) {
+            __neutralizeRedWashCanvas();
+            return;
+        }
+        /* A cover withheld by the red-wash guard in __dynamicBgSetCover now
+         * has a fresh non-red verdict — paint it (one-shot). */
+        try {
+            const pending = window.__pendingBgCover;
+            if (pending) {
+                window.__pendingBgCover = null;
+                if (typeof __kawarpInstance !== "undefined" && __kawarpInstance && __kawarpInstance.loadImage) __kawarpInstance.loadImage(pending);
+            }
+        } catch (e) {}
         const dark = typeof explicitDark === "boolean" ? explicitDark : !isLight(textColorBg);
         const luma = __kawarpCoverLuma();
         // Dark: bright covers need max dark-area tint; dark covers less.
@@ -363,7 +398,7 @@ function __kawarpApplyTint(explicitDark) {
             if (canvas) {
                 if (dark) {
                     canvas.style.opacity = (0.55 - 0.2 * luma).toFixed(2);
-                    canvas.style.filter = `brightness(${(1 - 0.45 * luma).toFixed(2)}) saturate(1.1)`;
+                    canvas.style.filter = `brightness(${(1 - 0.45 * luma).toFixed(2)}) saturate(0.9)`;
                 } else {
                     canvas.style.opacity = "0.3";
                     canvas.style.filter = "saturate(1.15) brightness(0.92)";
@@ -919,7 +954,7 @@ async function initDynamicBgKawarp() {
             blurPasses: 8,
             animationSpeed: 1.0,
             transitionDuration: 2000,
-            saturation: 1.5,
+            saturation: 1.2,
             tintColor: tint,
             tintIntensity: _initDark ? 0.55 + 0.45 * _initLuma : 0.3
         });
@@ -948,7 +983,21 @@ async function initDynamicBgKawarp() {
 initDynamicBgKawarp();
 window.__dynamicBgSetCover = function (url) {
     try {
-        if (url && __kawarpInstance && __kawarpInstance.loadImage) __kawarpInstance.loadImage(url);
+        if (!url) return;
+        /* Red-wash guard (last-known-palette fast path): withhold a cover
+         * while the palette reads red-dominant — __kawarpApplyTint paints the
+         * stashed URL once the fresh palette clears it as non-red. */
+        if (__isRedDominantHex(textColor)) {
+            try {
+                window.__pendingBgCover = url;
+            } catch (e) {}
+            __neutralizeRedWashCanvas();
+            return;
+        }
+        try {
+            window.__pendingBgCover = null;
+        } catch (e) {}
+        if (__kawarpInstance && __kawarpInstance.loadImage) __kawarpInstance.loadImage(url);
     } catch (e) {}
 };
 
