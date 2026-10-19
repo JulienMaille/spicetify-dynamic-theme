@@ -51,12 +51,6 @@ img.main-devicePicker-nowPlayingActiveIcon,
     filter: var(--colormatrix);
 }
 
-/* background cover */
-.main-entityHeader-overlay,
-.Root__globalNav {
-    background-color: transparent !important;
-}
-
 .encore-dark-theme,
 .encore-dark-theme .encore-base-set {
     --background-base: transparent;
@@ -126,40 +120,16 @@ body::before {
     background-image: none !important;
 }
 
-.main-view-container,
-.main-yourLibraryX-library,
-.main-topBar-background,
-.main-topBar-overlay {
+.main-view-container {
     background: transparent !important;
     background-image: none !important;
 }
 
-/* hashed 1.3.x shells rotate on Spotify update (xpui-snapshot.css:1, dwp-top-bar.css:1) */
-/* library inners (xpui-routes-your-library-x.css:1): scroll container + list header, children of .bQsutxbyIOatthweRHfK left-sidebar shell */
-.bQsutxbyIOatthweRHfK,
-.bTgBWvuzt0s_dQWLj2OL,
-.AOAgML4d2nmdGZhmu3QM,
-.AOAgML4d2nmdGZhmu3QM > *,
-.z0qdvwslOFVOAihShLIq,
-.NG0KBybUCTo8_SxXHF3N,
-.Root__globalNav,
+/* Stable shell hooks only. Hashed class names rotate on every Spotify
+ * update — three that were live at 21:18 were dead at 21:38 on the SAME
+ * 1.3.5 build — so nothing hashed is listed here. */
 #Desktop_LeftSidebar_Id,
-#Desktop_PanelContainer_Id,
-.WBFaUw_oOfN2m4aTxggt,
-.main-yourLibraryX-libraryContainer,
-.WWTxshVPO07BZLrdUL3h, /* xpui-routes-your-library-x.css:1 — library scroll container */
-.kSHT28CgP3pGzXbPHsC5, /* xpui-routes-your-library-x.css:1 — library list header */
-/* outer/panel shells over body::before (xpui-snapshot.css:1) */
-.V7i6WQ_5d6Zj2iWbD_Aq,
-.O2GuKxMq7fOerhmjo0iA,
-.D0qWErHdvHknfXqr6zOl,
-.oA2xvck_WSZn6mRFcZ2J,
-.jpHQLr33ZT5pJGBVFmjJ,
-.sLu5YjGhZIYg5idlIhjE,
-.bokji1jrN2MBe7RA0384, /* live grid root 1.3.4 (opaque rgb 10,10,10, verified via CDP) */
-.rLb4jRJmAjuDMN1b9Atw, /* live top-banner 1.3.4 (opaque, verified via CDP) */
-.L5dM7nzQpMJtRkvZZBZL {
-    /* live now-playing-bar 1.3.4 (opaque, verified via CDP) */
+#Desktop_PanelContainer_Id {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -225,12 +195,6 @@ body::before {
     background-color: rgba(var(--spice-rgb-selected-row), 0.2) !important;
 }
 
-/* new navbar interface */
-.Root__globalNav .main-topBar-buddyFeed {
-    color: var(--spice-selected-row);
-}
-
-.main-userWidget-box,
 .main-globalNav-link-icon {
     background-color: transparent !important;
 }
@@ -494,11 +458,6 @@ div[data-testid="action-bar-row"]::after {
     --background-highlight: var(--background-press) !important;
     --background-press: var(--spice-subtext) !important;
     --decorative-subdued: var(--spice-subtext) !important;
-}
-
-/* Fix avatar icon */
-.main-userWidget-box {
-    opacity: 1 !important;
 }
 
 /* Fix artist & album page gradient (filter/chip pills excluded — never re-tint pill fills) */
