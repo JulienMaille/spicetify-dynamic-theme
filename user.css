@@ -1105,3 +1105,15 @@ html[data-theme="light"] [class*="legacy-box--interactive"]:is(:hover, :focus-vi
     box-shadow: none !important;
     text-decoration: underline !important;
 }
+
+/* Fix background hidden on Spotify 1.3.5 (#147) — hashed shells above changed, use ids/testids instead */
+.Root > div:has(> #main-view), /* grid root */
+#global-nav-bar,
+.Root > div > div:has(> [data-testid="now-playing-bar"]), /* now-playing-bar */
+div:has(> section[data-testid="home-page"]) > div[style*="background-color"] {
+    /* home hero box */
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
