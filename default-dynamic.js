@@ -1,4 +1,4 @@
-let current = "5.8";
+let current = "5.9";
 const colorCache = new Map();
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 const EXTRACTOR_KEYS = ["VIBRANT", "VIBRANT_NON_ALARMING", "PROMINENT", "LIGHT_VIBRANT", "DESATURATED", "DARK_VIBRANT"];
