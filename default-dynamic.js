@@ -765,6 +765,7 @@ async function songchange(event, retries = 0) {
     } catch (err) {
         console.error(err);
     }
+    updateLosslessFlag();
     pickCoverColor(bgImage, trackUri, 0, album_uri);
 }
 
@@ -780,6 +781,35 @@ function getVibrant(image) {
     } catch (err) {
         console.error(err);
     }
+}
+
+/* Issue #150: Spotify renders the playing-from / audio-quality chip
+ * (" • Lossless") in the SAME "quality" grid row as our theme's year line —
+ * both texts start at the column's left edge, so our line paints directly on
+ * top of Spotify's chip. Track the chip's visibility + end position on
+ * <html data-lossless / --lossless-offset> each songchange so user.css can
+ * shift the year line right of the chip text while keeping the chip visible.
+ * The wrapped inner <button> carries the text; the wrapper div stretches to
+ * full row width, so measure the button when present. Boolean querySelector
+ * per songchange; no MutationObserver, no timers. */
+function updateLosslessFlag() {
+    try {
+        const q = document.querySelector('[data-testid="context-item-info-quality"]') || document.querySelector('[data-testid*="context-item-info"]');
+        const chip = q ? (q.matches("button") ? q : q.querySelector("button")) || q : null;
+        if (chip && chip.offsetWidth > 0) {
+            const col = document.getElementById("main-trackInfo-year");
+            const chipRect = chip.getBoundingClientRect();
+            /* Offset from the row's left edge to just past the chip text,
+             * clamped so an over-wide chip never pushes our text fully out. */
+            const colWidth = col ? col.parentElement.getBoundingClientRect().width : 350;
+            const off = Math.min(Math.round(chipRect.right - chipRect.left + 12), Math.round(colWidth * 0.88));
+            document.documentElement.setAttribute("data-lossless", "1");
+            document.documentElement.style.setProperty("--lossless-offset", Math.max(off, 0) + "px");
+        } else if (document.documentElement.getAttribute("data-lossless") === "1") {
+            document.documentElement.removeAttribute("data-lossless");
+            document.documentElement.style.removeProperty("--lossless-offset");
+        }
+    } catch (_e) {}
 }
 
 async function pickCoverColor(httpCoverUrl, trackUri, retryCount = 0, albumUri) {

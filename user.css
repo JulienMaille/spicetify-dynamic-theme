@@ -171,6 +171,76 @@ body::before {
     min-height: 32px;
 }
 
+/* Issue #148 — Spicy Lyrics paints lyric text with a hardcoded WHITE
+ * gradient (--gradient-color: 255, consumed as rgba(var(--gradient-color),…)
+ * in -webkit-background-clip:text) plus white credits/provider labels and
+ * NowBar song info. In light mode that ink sits on this theme's white
+ * background and disappears. Flip the ink to the theme's light-mode subtext
+ * (#3D3D3D) for the renderers that paint over the theme background; the
+ * fullscreen / canvas-immersive modes keep Spicy Lyrics' own dark backdrop,
+ * so their white ink is left untouched. */
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent .line,
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent .line .word,
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent .line .letter {
+    --gradient-color: 61; /* = #3D3D3D, the light-mode --spice-subtext */
+}
+
+/* The active (highlighted) line does not use --gradient-color: Spicy Lyrics
+ * hardcodes rgba(255,255,255,…) in its own gradient rule, so it stays white
+ * on the light card. Re-declare the same gradient shape with the theme ink,
+ * keeping the variables that drive its position/alpha animation. Only the
+ * text spans are targeted: they carry background-clip:text, while the .line
+ * box itself would paint the gradient as a visible rectangle. */
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent :is(.line.Active .word, .line.Active .letter) {
+    background-image: linear-gradient(
+        var(--gradient-degrees),
+        rgba(61, 61, 61, var(--gradient-alpha)) var(--gradient-position),
+        rgba(61, 61, 61, var(--gradient-alpha-end)) calc(var(--gradient-position) + 20% + var(--gradient-offset))
+    );
+}
+
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent :is(.Credits, .LyricsProvider, .SongInfo, .SongCredits),
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContent .LyricsProvider :is(.LyricsProviderViaLink, .LyricsProviderViaLabel),
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .ContentBox .NowBar .Metadata :is(.SongName, .Artists),
+html[data-theme="light"] #SpicyLyricsPage:not(.Fullscreen):not(.CanvasImmersive) .LyricsContainer :is(.loaderMessage, .SkeletonStatus) {
+    color: var(--spice-subtext);
+}
+
+/* Issue #148 (follow-up) — the Spotify now-playing card paints a fade behind
+ * its content that ends in var(--spice-main)
+ *   ::before { background: linear-gradient(#12121200 0%, #12121273 18%,
+ *                                         var(--spice-main) 89% 96%) }
+ * In dark mode that stop matches the card, but in light mode it is white and
+ * shows through Spicy Lyrics' transparent card as a hard-edged white
+ * rectangle over the lyrics. Neutralise it only for the Spicy Lyrics card
+ * branch, so the rest of the now-playing view keeps its normal fade. */
+html[data-theme="light"] #Desktop_PanelContainer_Id div:has(> #SpicyLyricsNPVCard) > div:not(#SpicyLyricsNPVCard) {
+    --spice-main: transparent;
+}
+
+/* Issue #148 (follow-up 2) — Spicy Lyrics' now-playing card is a glass panel:
+ *   #SpicyLyricsNPVCard {
+ *       background-color: var(--background-tinted-base, rgba(255,255,255,.07));
+ *       backdrop-filter: blur(12px);
+ *       border-radius: var(--radius-lg);
+ *       overflow: hidden;
+ *   }
+ * On the light theme that reads as a grey rectangle whose bottom edge stops
+ * dead above the artist section. Drop the blur (it is what makes the panel
+ * read as a flat block) and fade the same 7% tint out over the last third,
+ * so the card dissolves into the page instead of being cut off. */
+html[data-theme="light"] #SpicyLyricsNPVCard {
+    background-color: transparent;
+    background-image: linear-gradient(
+        180deg,
+        rgba(var(--spice-rgb-selected-row), 0.07) 0%,
+        rgba(var(--spice-rgb-selected-row), 0.07) 62%,
+        rgba(var(--spice-rgb-selected-row), 0) 100%
+    );
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
 /* explicit lyrics icon */
 .main-trackList-rowBadges > span,
 .main-tag-container {
@@ -183,6 +253,23 @@ body::before {
     font-size: 0.6875rem;
     grid-row: 4;
     grid-column: 1 / 3;
+}
+
+/* Issue #150: Spotify renders the playing-from / audio-quality chip
+ * (" • Lossless", grid-area:quality of the NPB info grid) in the SAME
+ * "quality" grid row our theme's album • year line occupies — both start at
+ * the column's left edge, so our line paints directly over Spotify's chip.
+ * Fix (JS sets both hooks each songchange): html[data-lossless="1"] appears
+ * only when the chip is actually visible, and --lossless-offset carries the
+ * measured chip end — the year line is then shifted right of the chip text
+ * ("album name" never drawn "on the lossless text") while the chip stays
+ * visible. Without the chip the line keeps full width, layout unchanged. */
+#main-trackInfo-year {
+    position: relative;
+    z-index: 2;
+}
+html[data-lossless="1"] #main-trackInfo-year {
+    margin-left: var(--lossless-offset, 120px);
 }
 
 /* fix discography buttons */
