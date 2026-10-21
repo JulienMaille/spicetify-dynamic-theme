@@ -36,7 +36,10 @@ h1,
     box-shadow: 0 4px 20px #21212130;
 }
 
-/* animated equaliser/heart icons */
+/* animated equaliser/heart icons + settings equalizer graph
+ * (the graph is a <canvas role="img"> drawn with a hardcoded Spotify green
+ * inside [data-settings-row]; the old .x-settings-equalizerPanelCanvas class
+ * no longer exists, which left the equalizer as the only untinted surface) */
 img.main-devicePicker-nowPlayingActiveIcon,
 .control-button-heart svg,
 .main-addButton-button,
@@ -47,7 +50,7 @@ img.main-devicePicker-nowPlayingActiveIcon,
 .main-nowPlayingView-contextItemInfo > button:hover,
 .main-whatsNewFeed-actions > button:hover,
 .main-trackCreditsModal-closeBtn > svg,
-.x-settings-equalizerPanelCanvas {
+[data-settings-row] canvas[role="img"] {
     filter: var(--colormatrix);
 }
 
@@ -246,21 +249,29 @@ html[data-theme="light"] #SpicyLyricsNPVCard {
     grid-column: 1 / 3;
 }
 
-/* Issue #150: Spotify renders the playing-from / audio-quality chip
- * (" • Lossless", grid-area:quality of the NPB info grid) in the SAME
- * "quality" grid row our theme's album • year line occupies — both start at
- * the column's left edge, so our line paints directly over Spotify's chip.
- * Fix (JS sets both hooks each songchange): html[data-lossless="1"] appears
- * only when the chip is actually visible, and --lossless-offset carries the
- * measured chip end — the year line is then shifted right of the chip text
- * ("album name" never drawn "on the lossless text") while the chip stays
- * visible. Without the chip the line keeps full width, layout unchanged. */
-#main-trackInfo-year {
-    position: relative;
-    z-index: 2;
+/* Issue #150: Spotify's audio-quality chip (" • Lossless") and our album •
+ * year line are both placed in the NPB info grid's "quality" row — the chip
+ * via grid-area:quality, our line via grid-row:4, so both were drawn on the
+ * same left edge and our line painted over the chip.
+ * Give each its own column in that row and let the grid size them: the chip
+ * keeps column 1, our line takes column 2. No measuring, no per-songchange
+ * work — with no chip (free account, non-lossless track) column 1 collapses
+ * to 0 and the line starts at the row's left edge exactly as before.
+ * The grid's own column-gap would still push column 2 by 8px when column 1 is
+ * empty, so it is dropped here and re-applied as padding on the chip, which
+ * only exists when there is something to separate from. */
+div:has(> #main-trackInfo-year) {
+    column-gap: 0;
 }
-html[data-lossless="1"] #main-trackInfo-year {
-    margin-left: var(--lossless-offset, 120px);
+div[data-testid="now-playing-widget"] [data-testid="context-item-info-quality"] {
+    grid-column: 1 !important;
+    min-width: 0;
+    padding-right: 8px;
+}
+#main-trackInfo-year {
+    grid-row: 4;
+    grid-column: 2;
+    min-width: 0;
 }
 
 /* fix discography buttons */
