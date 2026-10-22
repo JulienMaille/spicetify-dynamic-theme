@@ -391,14 +391,15 @@ function __kawarpApplyTint(explicitDark) {
                 __kawarpInstance.tintIntensity = intensity;
             } catch (_e) {}
         }
-        // Bright-pixel compensation the tint shader cannot do: darken and
-        // fade light covers in dark mode; quiet the canvas in light mode.
+        // Bright-pixel compensation the tint shader cannot do: bright covers
+        // pass through its dark-area mask, so lower both canvas opacity and
+        // brightness as cover luma rises. Quiet the canvas in light mode.
         try {
             const canvas = document.getElementById("dynamic-bg-canvas");
             if (canvas) {
                 if (dark) {
-                    canvas.style.opacity = (0.55 - 0.2 * luma).toFixed(2);
-                    canvas.style.filter = `brightness(${(1 - 0.45 * luma).toFixed(2)}) saturate(0.9)`;
+                    canvas.style.opacity = (0.4 - 0.3 * luma).toFixed(2);
+                    canvas.style.filter = `brightness(${(0.9 - 0.5 * luma).toFixed(2)}) saturate(0.9)`;
                 } else {
                     canvas.style.opacity = "0.3";
                     canvas.style.filter = "saturate(1.15) brightness(0.92)";
@@ -481,6 +482,7 @@ Spicetify.Config = new Proxy(Spicetify.Config, {
                 _proxyTimer = null;
                 let dark = getComputedStyle(document.documentElement).getPropertyValue("--spice-dark").trim() === "#010101";
                 toggleDark(dark);
+                __kawarpSyncAnimation();
             }, 150);
         }
         target[property] = value;
@@ -903,6 +905,53 @@ async function pickCoverColor(httpCoverUrl, trackUri, retryCount = 0, albumUri) 
  * is guarded so a failed import can never break the extension — the static
  * theme simply stays. */
 var __kawarpInstance = null;
+var __kawarpIsAnimated = null;
+const KAWARP_TRANSITION_DURATION = 2000;
+function __kawarpAnimationEnabled() {
+    try {
+        const value = getComputedStyle(document.documentElement).getPropertyValue("--spice-animation").trim();
+        const hex = value.match(/^#?([\da-f]{6})$/i);
+        if (hex) return hex[1] !== "000000";
+        const rgb = value.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+        if (rgb) return Number(rgb[1]) !== 0 || Number(rgb[2]) !== 0 || Number(rgb[3]) !== 0;
+        // Unknown/missing values keep the historical animated behavior.
+        return true;
+    } catch (e) {
+        return true;
+    }
+}
+function __kawarpSyncAnimation() {
+    try {
+        if (!__kawarpInstance) return;
+        const enabled = __kawarpAnimationEnabled();
+        if (__kawarpIsAnimated === enabled) return;
+        __kawarpIsAnimated = enabled;
+        __kawarpInstance.transitionDuration = enabled ? KAWARP_TRANSITION_DURATION : 0;
+        if (enabled) __kawarpInstance.start();
+        else {
+            __kawarpInstance.stop();
+            // Keep the current cover visible, but render one static frame.
+            __kawarpInstance.renderFrame(0);
+        }
+    } catch (e) {}
+}
+function __kawarpLoadCover(url) {
+    try {
+        if (!url || !__kawarpInstance || !__kawarpInstance.loadImage) return;
+        const loaded = __kawarpInstance.loadImage(url);
+        if (loaded && typeof loaded.then === "function") {
+            loaded
+                .then(() => {
+                    try {
+                        // Covers still update in NoAnimation mode; render the new
+                        // image once with a zero-duration transition, not a loop.
+                        if (!__kawarpAnimationEnabled() && __kawarpInstance) __kawarpInstance.renderFrame(0);
+                    } catch (e) {}
+                })
+                .catch(() => {});
+        }
+    } catch (e) {}
+}
 function __kawarpTint() {
     try {
         var dark = getComputedStyle(document.documentElement).getPropertyValue("--is_light").trim() !== "1";
@@ -953,7 +1002,7 @@ async function initDynamicBgKawarp() {
             warpIntensity: 1.0,
             blurPasses: 8,
             animationSpeed: 1.0,
-            transitionDuration: 2000,
+            transitionDuration: KAWARP_TRANSITION_DURATION,
             saturation: 1.2,
             tintColor: tint,
             tintIntensity: _initDark ? 0.55 + 0.45 * _initLuma : 0.3
@@ -969,11 +1018,9 @@ async function initDynamicBgKawarp() {
         try {
             var v = getComputedStyle(document.documentElement).getPropertyValue("--image_url") || "";
             var m = v.match(/url\(["']?(.*?)["']?\)/);
-            if (m && m[1] && __kawarpInstance.loadImage) __kawarpInstance.loadImage(m[1]);
+            if (m && m[1]) __kawarpLoadCover(m[1]);
         } catch (e) {}
-        try {
-            __kawarpInstance.start();
-        } catch (e) {}
+        __kawarpSyncAnimation();
     } catch (e) {
         try {
             console.warn("kawarp", e);
@@ -997,7 +1044,7 @@ window.__dynamicBgSetCover = function (url) {
         try {
             window.__pendingBgCover = null;
         } catch (e) {}
-        if (__kawarpInstance && __kawarpInstance.loadImage) __kawarpInstance.loadImage(url);
+        __kawarpLoadCover(url);
     } catch (e) {}
 };
 

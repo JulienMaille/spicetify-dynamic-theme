@@ -805,8 +805,9 @@ div[data-testid="home-banner"]::after,
     inherits: true;
 }
 
-/* registered as <color> so the @container style(--spice-animation: #010101)
-   gate compares computed color values (010101 vs 000000), not raw tokens */
+/* Registered as <color> so default-dynamic.js can read the scheme's animation
+   flag as a normalized computed color (#010101 on, #000000 off) and gate the
+   Kawarp render loop. */
 @property --spice-animation {
     syntax: "<color>";
     initial-value: #010101;
@@ -943,13 +944,10 @@ html[data-theme="light"] section[data-testid="playlist-page"] div:has(> div[role
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
 }
 
-/* Home filter/chips sticky bar ("Tout / Musique / Podcasts / ...") — clean frosted
- * strip so pills float above content instead of sitting on a flat tint slab.
- * Base rule = dark frost (same tone as the scrolled topBar / stuck tracklist
- * header); the light override below swaps in the paper tone. Deliberately NO
- * --background-* tokens here: they inherit into the pills and bleached the
- * fills (see 481665b). Backdrop only on the wrapper; fills live on the pills.
- * Bottom hairline defines the bar edge so it reads as a floating strip. */
+/* Home filter chips ("Tout / Musique / Podcasts / ..."): Spotify wraps every
+ * pill in its own div. Do not frost those wrappers or the row: that creates
+ * square cards around the rounded pills and a dark slab behind the whole set.
+ * Keep the wrappers visually absent so Spotify's chip surfaces stand alone. */
 div:has(> button[class*="legacy-chip"]),
 div:has(> div > button[class*="legacy-chip"]),
 [data-testid*="filter-chips"],
@@ -959,44 +957,17 @@ div:has(> div > button[class*="legacy-chip"]),
 .main-home-filterChips,
 .main-home-filterChipsSection,
 .main-home-filterChipsContainer {
-    background: rgba(var(--spice-rgb-shadow), 0.5) !important;
-    background-color: rgba(var(--spice-rgb-shadow), 0.5) !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    border-bottom: 1px solid rgba(var(--spice-rgb-subtext), 0.12) !important;
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-}
-
-/* Same bar in light mode — carries NO fill and NO edge of its own. The 0.85
- * white rgba(var(--spice-rgb-main)) slab that used to sit behind the pills was
- * removed at the user's request: an opaque light strip looked heavier than
- * everything around it and flattened the pills onto it. The 1px subtext
- * hairline went with it, so the bar now draws nothing at all and the pills
- * float straight on the page. Separation comes from the pill fills themselves
- * (solid dark selected / pale translucent unselected) plus the
- * backdrop-filter wash of whatever scrolls under the strip. box-shadow stays
- * off. Gated on html[data-theme="light"], same gate as the body::before bleed
- * rule. */
-html[data-theme="light"] div:has(> button[class*="legacy-chip"]),
-html[data-theme="light"] div:has(> div > button[class*="legacy-chip"]),
-html[data-theme="light"] [data-testid*="filter-chips"],
-html[data-theme="light"] [data-testid*="home-filter"],
-html[data-theme="light"] [class*="filterChips"],
-html[data-theme="light"] [class*="FilterChips"],
-html[data-theme="light"] .main-home-filterChips,
-html[data-theme="light"] .main-home-filterChipsSection,
-html[data-theme="light"] .main-home-filterChipsContainer {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
-/* Home filter PILLS — explicitly excluded from the bar frost above.
- * Re-assert solid fills so they stay readable on the frosted bar:
+/* Light-mode home filter PILLS — explicit fills keep them readable against
+ * the transparent wrappers:
  * selected pill = solid dark with light text, unselected = translucent
  * gray with dark text. Covers Encore chip variants (legacy-chip, Chip,
  * ChipInnerComponent) plus inner spans, which inherit wrapper tokens. */
